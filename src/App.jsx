@@ -23,7 +23,7 @@ import UserProfilePage from '@/pages/UserProfilePage';
 import RecipeDetailModal from '@/components/RecipeDetailModal';
 import MainAppLayout from '@/components/layout/MainAppLayout';
 import LoadingScreen from '@/components/layout/LoadingScreen';
-import { useRecipes } from '@/hooks/useRecipes.js';
+import { useRecipes } from '@/hooks/useRecipes.jsx';
 import { useWeeklyMenu } from '@/hooks/useWeeklyMenu.js';
 import { useToast } from '@/components/ui/use-toast.js';
 import { PlusCircle } from 'lucide-react';
@@ -402,16 +402,19 @@ function App() {
           <Route
             path="/app/menu"
             element={
+              session &&
               (recipesLoading || weeklyMenuLoading) &&
               isMenuDataEmpty(weeklyMenu) ? (
                 <LoadingScreen message="Chargement du menu..." />
-              ) : (
+              ) : session ? (
                 <MenuPlanner
                   recipes={recipes}
                   weeklyMenu={weeklyMenu}
                   setWeeklyMenu={saveUserWeeklyMenuHook}
                   userProfile={userProfile}
                 />
+              ) : (
+                <Navigate to="/app/recipes" replace />
               )
             }
           />

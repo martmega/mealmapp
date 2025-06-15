@@ -1,11 +1,13 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast.js';
+import { ToastAction } from '@/components/ui/toast.jsx';
 
 export function useRecipes(session) {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const pendingDeletions = useRef({});
 
   const safeSetRecipes = useCallback((data) => {
     setRecipes(Array.isArray(data) ? data : []);
@@ -297,55 +299,76 @@ export function useRecipes(session) {
     }
   };
 
-  const deleteRecipe = async (recipeId) => {
-    setLoading(true);
-    if (session?.user?.id) {
-      try {
-        const { error } = await supabase
-          .from('recipes')
-          .delete()
-          .eq('id', recipeId)
-          .eq('user_id', session.user.id);
-        if (error) {
-          console.error(
-            'Erreur suppression recette (Supabase) :',
-            error.message,
-            error.details,
-            error.hint
-          );
-          throw error;
-        }
-        setRecipes((prevRecipes) =>
-          (Array.isArray(prevRecipes) ? prevRecipes : []).filter(
-            (r) => r.id !== recipeId
-          )
-        );
-        toast({
-          title: 'Recette supprimée',
-          description: 'La recette a été supprimée avec succès.',
-        });
-      } catch (error) {
-        console.error('Error deleting recipe:', error);
-        toast({
-          title: 'Erreur',
-          description: 'Impossible de supprimer la recette: ' + error.message,
-          variant: 'destructive',
-        });
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      setRecipes((prevRecipes) =>
-        (Array.isArray(prevRecipes) ? prevRecipes : []).filter(
-          (r) => r.id !== recipeId
+  const undoDelete = useCallback(
+    (id) => {
+      const pending = pendingDeletions.current[id];
+      if (!pending) return;
+      clearTimeout(pending.timer);
+      pending.dismiss();
+      setRecipes((prev) =>
+        [pending.recipe, ...(Array.isArray(prev) ? prev : [])].sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
         )
       );
+      delete pendingDeletions.current[id];
       toast({
-        title: 'Recette supprimée localement',
-        description: 'La recette a été supprimée localement.',
+        title: 'Suppression annulée',
+        description: 'La recette a été restaurée.',
       });
-      setLoading(false);
-    }
+    },
+    [toast]
+  );
+
+  const deleteRecipe = async (recipeId) => {
+    setLoading(true);
+    const recipeToDelete = (Array.isArray(recipes) ? recipes : []).find(
+      (r) => r.id === recipeId
+    );
+    if (!recipeToDelete) return;
+
+    setRecipes((prevRecipes) =>
+      (Array.isArray(prevRecipes) ? prevRecipes : []).filter(
+        (r) => r.id !== recipeId
+      )
+    );
+
+    const { dismiss } = toast({
+      title: 'Recette supprimée',
+      description: 'La recette a été supprimée.',
+      action: (
+        <ToastAction altText="Annuler" onClick={() => undoDelete(recipeId)}>
+          Annuler
+        </ToastAction>
+      ),
+      duration: 5000,
+    });
+
+    const timer = setTimeout(async () => {
+      if (session?.user?.id && !recipeId.toString().startsWith('local_')) {
+        try {
+          const { error } = await supabase
+            .from('recipes')
+            .delete()
+            .eq('id', recipeId)
+            .eq('user_id', session.user.id);
+          if (error) {
+            console.error(
+              'Erreur suppression recette (Supabase) :',
+              error.message,
+              error.details,
+              error.hint
+            );
+          }
+        } catch (error) {
+          console.error('Error deleting recipe:', error);
+        }
+      }
+      dismiss();
+      delete pendingDeletions.current[recipeId];
+    }, 5000);
+
+    pendingDeletions.current[recipeId] = { recipe: recipeToDelete, timer, dismiss };
+    setLoading(false);
   };
 
   return {

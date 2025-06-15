@@ -1,10 +1,14 @@
 import React from 'react';
+import { Navigate } from 'react-router-dom';
 import ProfileInformationForm from '@/components/account/ProfileInformationForm';
 import EmailForm from '@/components/account/EmailForm';
 import PasswordChangeForm from '@/components/account/PasswordChangeForm';
 import SubscriptionManagement from '@/components/account/SubscriptionManagement';
 
 export default function AccountPage({ session, userProfile, onProfileUpdate }) {
+  if (!session) {
+    return <Navigate to="/app/recipes" replace />;
+  }
   if (!session || !userProfile) {
     return (
       <div className="flex justify-center items-center h-screen">
