@@ -52,7 +52,7 @@ export default function CommunityPage({ session, userProfile }) {
           </div>
         </TabsContent>
 
-        <TabsContent value="friends">
+        <TabsContent value="friends" className="mt-6">
           {session && userProfile ? (
             <FriendsTab session={session} userProfile={userProfile} />
           ) : (
@@ -60,7 +60,7 @@ export default function CommunityPage({ session, userProfile }) {
           )}
         </TabsContent>
 
-        <TabsContent value="my-profile-preview">
+        <TabsContent value="my-profile-preview" className="mt-6">
           {session && userProfile ? (
             <MyPublicProfile session={session} userProfile={userProfile} />
           ) : (

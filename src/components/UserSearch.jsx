@@ -56,7 +56,7 @@ export default function UserSearch({ session }) {
         </div>
       )}
       {term && !loading && results.length === 0 && (
-        <div className="text-center py-8 px-6 bg-pastel-card rounded-xl shadow-pastel-soft">
+        <div className="flex items-center justify-center h-40 bg-pastel-card rounded-xl shadow-pastel-soft px-6 text-center">
           <p className="text-lg text-pastel-muted-foreground">Aucun utilisateur trouvé pour "{term}".</p>
         </div>
       )}

@@ -168,7 +168,7 @@ export default function FriendsTab({ session, userProfile }) {
             {friendRequests.map((req) => (
               <li
                 key={req.id}
-                className="flex flex-col sm:flex-row items-center justify-between p-3 bg-pastel-card-alt rounded-md shadow-sm gap-3"
+                className="flex items-center justify-between p-3 bg-pastel-card-alt rounded-md shadow-sm gap-3"
               >
                 <Link
                   to={`/app/profile/${req.id}`}
@@ -231,7 +231,7 @@ export default function FriendsTab({ session, userProfile }) {
             {friends.map((friend) => (
               <li
                 key={friend.id}
-                className="flex flex-col sm:flex-row items-center justify-between p-3 bg-pastel-card-alt rounded-md shadow-sm gap-3"
+                className="flex items-center justify-between p-3 bg-pastel-card-alt rounded-md shadow-sm gap-3"
               >
                 <Link
                   to={`/app/profile/${friend.id}`}
