@@ -8,7 +8,6 @@ import MainAppLayout from '@/components/layout/MainAppLayout';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import { useRecipes } from '@/hooks/useRecipes.jsx';
 import { useWeeklyMenu } from '@/hooks/useWeeklyMenu.js';
-import { useToast } from '@/components/ui/use-toast.js';
 import { useSession } from '@/hooks/useSession.js';
 import { useUserProfile } from '@/hooks/useUserProfile.js';
 import AppRoutes from '@/components/AppRoutes.jsx';
@@ -34,7 +33,6 @@ function App() {
     return JSON.parse(savedMode);
   });
 
-  const { toast } = useToast();
   const {
     recipes,
     addRecipe: addRecipeHook,
@@ -112,17 +110,6 @@ function App() {
     await refreshSession();
     await refreshProfile();
   }, [refreshSession, refreshProfile]);
-
-  const isMenuDataEmpty = (menu) => {
-    if (!menu || !Array.isArray(menu)) return true;
-    return !menu.some(
-      (dayMeals) =>
-        Array.isArray(dayMeals) &&
-        dayMeals.some(
-          (mealRecipes) => Array.isArray(mealRecipes) && mealRecipes.length > 0
-        )
-    );
-  };
 
   if (loadingInitialState || session === undefined || userProfile === undefined) {
     return <LoadingScreen />;
