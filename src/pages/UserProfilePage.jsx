@@ -243,8 +243,8 @@ export default function UserProfilePage({ session, currentUserProfile }) {
           Profil introuvable
         </h1>
         <p className="text-pastel-muted-foreground">
-          L'utilisateur que vous cherchez n'existe pas ou une erreur est
-          survenue.
+          L&apos;utilisateur que vous cherchez n&apos;existe pas ou une erreur
+          est survenue.
         </p>
         <Button asChild variant="link" className="mt-4">
           <Link to="/app/community">
@@ -272,7 +272,7 @@ export default function UserProfilePage({ session, currentUserProfile }) {
             variant="secondary"
             className="mt-4 w-40"
           >
-            <UserX className="mr-2 h-4 w-4" /> Retirer l'ami
+            <UserX className="mr-2 h-4 w-4" /> Retirer l&apos;ami
           </Button>
         );
       case 'pending_them':
@@ -356,7 +356,7 @@ export default function UserProfilePage({ session, currentUserProfile }) {
                 toast({
                   title: '🚧 Action non disponible',
                   description:
-                    "Vous ne pouvez pas modifier les recettes d'un autre utilisateur.",
+                    'Vous ne pouvez pas modifier les recettes d&apos;un autre utilisateur.',
                   variant: 'default',
                 })
               }
@@ -364,7 +364,7 @@ export default function UserProfilePage({ session, currentUserProfile }) {
                 toast({
                   title: '🚧 Action non disponible',
                   description:
-                    "Vous ne pouvez pas supprimer les recettes d'un autre utilisateur.",
+                    'Vous ne pouvez pas supprimer les recettes d&apos;un autre utilisateur.',
                   variant: 'default',
                 })
               }
@@ -373,7 +373,7 @@ export default function UserProfilePage({ session, currentUserProfile }) {
           ) : (
             <div className="text-center py-10 section-card">
               <p className="text-xl text-pastel-muted-foreground">
-                {profileData.username} n'a pas encore partagé de recettes.
+                {profileData.username} n&apos;a pas encore partagé de recettes.
               </p>
             </div>
           )}
