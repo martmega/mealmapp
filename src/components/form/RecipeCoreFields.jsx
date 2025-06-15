@@ -1,14 +1,20 @@
-
 import React from 'react';
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
-export default function RecipeCoreFields({ formData, handleInputChange, descriptionRef, handleDescriptionChange }) {
+export default function RecipeCoreFields({
+  formData,
+  handleInputChange,
+  descriptionRef,
+  handleDescriptionChange,
+}) {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="name" className="text-pastel-text/90">Nom de la recette</Label>
+        <Label htmlFor="name" className="text-pastel-text/90">
+          Nom de la recette
+        </Label>
         <Input
           id="name"
           name="name"
@@ -21,7 +27,9 @@ export default function RecipeCoreFields({ formData, handleInputChange, descript
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description" className="text-pastel-text/90">Description</Label>
+        <Label htmlFor="description" className="text-pastel-text/90">
+          Description
+        </Label>
         <Textarea
           id="description"
           name="description"
@@ -33,10 +41,12 @@ export default function RecipeCoreFields({ formData, handleInputChange, descript
           className="bg-pastel-input border-pastel-input-border focus:border-pastel-input-focus-border"
         />
       </div>
-      
+
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="servings" className="text-pastel-text/90">Portions</Label>
+          <Label htmlFor="servings" className="text-pastel-text/90">
+            Portions
+          </Label>
           <Input
             id="servings"
             name="servings"
@@ -49,7 +59,9 @@ export default function RecipeCoreFields({ formData, handleInputChange, descript
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="calories" className="text-pastel-text/90">Calories (par portion)</Label>
+          <Label htmlFor="calories" className="text-pastel-text/90">
+            Calories (par portion)
+          </Label>
           <Input
             id="calories"
             name="calories"
