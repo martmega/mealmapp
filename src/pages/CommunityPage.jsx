@@ -134,19 +134,6 @@ export default function CommunityPage({ session, userProfile }) {
 
   return (
     <div className="space-y-8">
-      <div className="bg-pastel-card p-6 sm:p-8 rounded-xl shadow-pastel-soft">
-        <div className="flex flex-col items-center text-center">
-          <Users className="w-16 h-16 text-pastel-secondary mb-4" />
-          <h1 className="text-3xl sm:text-4xl font-bold text-pastel-primary mb-3 tracking-tight">
-            Communauté
-          </h1>
-          <p className="text-pastel-muted-foreground mb-8 max-w-xl">
-            Explorez les créations culinaires, trouvez de l'inspiration et gérez
-            vos connexions.
-          </p>
-        </div>
-      </div>
-
       <Tabs
         value={activeSubTab}
         onValueChange={setActiveSubTab}
