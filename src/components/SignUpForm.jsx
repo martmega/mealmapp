@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
@@ -18,31 +17,38 @@ export default function SignUpForm({ onClose, onBackToLogin }) {
   const handleSignUp = async (e) => {
     e.preventDefault();
 
-    if (!userTag || !username || !email || !dateOfBirth || !password || !confirmPassword) {
+    if (
+      !userTag ||
+      !username ||
+      !email ||
+      !dateOfBirth ||
+      !password ||
+      !confirmPassword
+    ) {
       toast({
-        title: "Champs manquants",
-        description: "Veuillez remplir tous les champs.",
-        variant: "destructive",
+        title: 'Champs manquants',
+        description: 'Veuillez remplir tous les champs.',
+        variant: 'destructive',
       });
       return;
     }
-    
+
     const userTagRegex = /^[a-zA-Z0-9_]{3,15}$/;
     if (!userTagRegex.test(userTag)) {
       toast({
         title: "Format d'Identifiant Unique Invalide",
-        description: "L'identifiant unique doit contenir 3 à 15 caractères alphanumériques ou underscores.",
-        variant: "destructive",
+        description:
+          "L'identifiant unique doit contenir 3 à 15 caractères alphanumériques ou underscores.",
+        variant: 'destructive',
       });
       return;
     }
 
-
     if (password !== confirmPassword) {
       toast({
-        title: "Erreur de mot de passe",
-        description: "Les mots de passe ne correspondent pas.",
-        variant: "destructive",
+        title: 'Erreur de mot de passe',
+        description: 'Les mots de passe ne correspondent pas.',
+        variant: 'destructive',
       });
       return;
     }
@@ -58,14 +64,15 @@ export default function SignUpForm({ onClose, onBackToLogin }) {
 
       if (userTagCheckError) {
         // Allow signup to proceed, auth.signUp will handle other errors like duplicate email
-        console.warn("Warning checking user_tag:", userTagCheckError.message);
+        console.warn('Warning checking user_tag:', userTagCheckError.message);
       }
 
       if (existingUserTag) {
         toast({
-          title: "Identifiant Unique Déjà Pris",
-          description: "Cet identifiant unique est déjà utilisé. Veuillez en choisir un autre.",
-          variant: "destructive",
+          title: 'Identifiant Unique Déjà Pris',
+          description:
+            'Cet identifiant unique est déjà utilisé. Veuillez en choisir un autre.',
+          variant: 'destructive',
         });
         setLoading(false);
         return;
@@ -76,12 +83,12 @@ export default function SignUpForm({ onClose, onBackToLogin }) {
         password: password,
         options: {
           data: {
-            user_tag: userTag.toLowerCase(), 
+            user_tag: userTag.toLowerCase(),
             username: username,
             date_of_birth: dateOfBirth,
-            subscription_tier: 'standard' 
-          }
-        }
+            subscription_tier: 'standard',
+          },
+        },
       });
 
       if (error) {
@@ -90,39 +97,45 @@ export default function SignUpForm({ onClose, onBackToLogin }) {
         // but auth.signUp itself might succeed if email is unique.
         // The UNIQUE constraint on public_users.user_tag is the primary defense.
         // Error.message from Supabase might directly mention the unique constraint violation from the trigger.
-        if (error.message.includes('public_users_user_tag_key') || error.message.includes('user_tag_already_taken')) { // Adjust based on actual error
-             toast({
-                title: "Identifiant Unique Déjà Pris",
-                description: "Cet identifiant unique est déjà utilisé. Veuillez en choisir un autre.",
-                variant: "destructive",
-            });
+        if (
+          error.message.includes('public_users_user_tag_key') ||
+          error.message.includes('user_tag_already_taken')
+        ) {
+          // Adjust based on actual error
+          toast({
+            title: 'Identifiant Unique Déjà Pris',
+            description:
+              'Cet identifiant unique est déjà utilisé. Veuillez en choisir un autre.',
+            variant: 'destructive',
+          });
         } else if (error.message.includes('User already registered')) {
-            toast({
-                title: "Email Déjà Utilisé",
-                description: "Un compte existe déjà avec cette adresse email.",
-                variant: "destructive",
-            });
-        }
-        else {
-            toast({
-              title: "Erreur d'inscription",
-              description: error.message,
-              variant: "destructive",
-            });
+          toast({
+            title: 'Email Déjà Utilisé',
+            description: 'Un compte existe déjà avec cette adresse email.',
+            variant: 'destructive',
+          });
+        } else {
+          toast({
+            title: "Erreur d'inscription",
+            description: error.message,
+            variant: 'destructive',
+          });
         }
       } else {
         toast({
-          title: "Inscription réussie !",
-          description: "Veuillez vérifier votre email pour confirmer votre compte.",
+          title: 'Inscription réussie !',
+          description:
+            'Veuillez vérifier votre email pour confirmer votre compte.',
         });
         onClose();
       }
     } catch (unexpectedError) {
       console.error('Unexpected SignUp issue →', unexpectedError);
       toast({
-        title: "Erreur inattendue",
-        description: "Une erreur s'est produite lors de la tentative d'inscription.",
-        variant: "destructive",
+        title: 'Erreur inattendue',
+        description:
+          "Une erreur s'est produite lors de la tentative d'inscription.",
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -141,21 +154,24 @@ export default function SignUpForm({ onClose, onBackToLogin }) {
           <X className="h-4 w-4" />
         </Button>
         <Button
-            variant="ghost"
-            size="icon"
-            className="absolute left-2 top-2"
-            onClick={onBackToLogin}
-          >
-            <ArrowLeft className="h-4 w-4" />
+          variant="ghost"
+          size="icon"
+          className="absolute left-2 top-2"
+          onClick={onBackToLogin}
+        >
+          <ArrowLeft className="h-4 w-4" />
         </Button>
-        
+
         <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
           Inscription
         </h2>
-        
+
         <form className="space-y-4" onSubmit={handleSignUp}>
           <div>
-            <label htmlFor="user-tag-signup" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="user-tag-signup"
+              className="block text-sm font-medium text-gray-700"
+            >
               Identifiant Unique (non modifiable)
             </label>
             <input
@@ -166,10 +182,15 @@ export default function SignUpForm({ onClose, onBackToLogin }) {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
               placeholder="Ex: mon_id_123"
             />
-            <p className="text-xs text-gray-500 mt-1">3-15 caractères, alphanumériques et '_'.</p>
+            <p className="text-xs text-gray-500 mt-1">
+              3-15 caractères, alphanumériques et '_'.
+            </p>
           </div>
           <div>
-            <label htmlFor="username-signup" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="username-signup"
+              className="block text-sm font-medium text-gray-700"
+            >
               Pseudo (modifiable)
             </label>
             <input
@@ -181,7 +202,10 @@ export default function SignUpForm({ onClose, onBackToLogin }) {
             />
           </div>
           <div>
-            <label htmlFor="email-signup" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email-signup"
+              className="block text-sm font-medium text-gray-700"
+            >
               Email
             </label>
             <input
@@ -193,7 +217,10 @@ export default function SignUpForm({ onClose, onBackToLogin }) {
             />
           </div>
           <div>
-            <label htmlFor="dob-signup" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="dob-signup"
+              className="block text-sm font-medium text-gray-700"
+            >
               Date de naissance
             </label>
             <input
@@ -205,7 +232,10 @@ export default function SignUpForm({ onClose, onBackToLogin }) {
             />
           </div>
           <div>
-            <label htmlFor="password-signup" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password-signup"
+              className="block text-sm font-medium text-gray-700"
+            >
               Mot de passe
             </label>
             <input
@@ -217,7 +247,10 @@ export default function SignUpForm({ onClose, onBackToLogin }) {
             />
           </div>
           <div>
-            <label htmlFor="confirm-password-signup" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="confirm-password-signup"
+              className="block text-sm font-medium text-gray-700"
+            >
               Confirmation du mot de passe
             </label>
             <input
@@ -231,7 +264,15 @@ export default function SignUpForm({ onClose, onBackToLogin }) {
           <div className="flex flex-col space-y-4 pt-2">
             <Button
               type="submit"
-              disabled={loading || !email || !password || !username || !dateOfBirth || !confirmPassword || !userTag}
+              disabled={
+                loading ||
+                !email ||
+                !password ||
+                !username ||
+                !dateOfBirth ||
+                !confirmPassword ||
+                !userTag
+              }
               className="w-full"
             >
               {loading ? 'Chargement...' : "Valider l'inscription"}

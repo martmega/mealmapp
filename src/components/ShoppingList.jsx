@@ -1,17 +1,18 @@
-import React, { useMemo } from "react";
-import { motion } from "framer-motion";
-import { 
-  normalizeIngredientName, 
-  normalizeUnit, 
-  canCombineUnits, 
-  convertQuantity 
-} from "@/lib/ingredientNormalizer";
+import React, { useMemo } from 'react';
+import { motion } from 'framer-motion';
+import {
+  normalizeIngredientName,
+  normalizeUnit,
+  canCombineUnits,
+  convertQuantity,
+} from '@/lib/ingredientNormalizer';
 
-function ShoppingList({ weeklyMenu, recipes, userProfile }) { // recipes prop is not strictly needed here if weeklyMenu contains full recipe details
-  
+function ShoppingList({ weeklyMenu, recipes, userProfile }) {
+  // recipes prop is not strictly needed here if weeklyMenu contains full recipe details
+
   const defaultServingsPerMeal = useMemo(() => {
     const prefServings = userProfile?.preferences?.servingsPerMeal;
-    return (prefServings && prefServings > 0) ? prefServings : 4; 
+    return prefServings && prefServings > 0 ? prefServings : 4;
   }, [userProfile]);
 
   const calculateIngredients = () => {
@@ -21,15 +22,23 @@ function ShoppingList({ weeklyMenu, recipes, userProfile }) { // recipes prop is
       return [];
     }
 
-    weeklyMenu.forEach((dayMeals) => { // dayMeals is an array of meals for the day
+    weeklyMenu.forEach((dayMeals) => {
+      // dayMeals is an array of meals for the day
       if (!Array.isArray(dayMeals)) return;
-      dayMeals.forEach((mealRecipes) => { // mealRecipes is an array of recipes for a specific meal
+      dayMeals.forEach((mealRecipes) => {
+        // mealRecipes is an array of recipes for a specific meal
         if (!Array.isArray(mealRecipes)) return;
-        mealRecipes.forEach((recipeDetails) => { // recipeDetails is a single recipe object
-          if (!recipeDetails || !recipeDetails.id || !recipeDetails.ingredients) return;
+        mealRecipes.forEach((recipeDetails) => {
+          // recipeDetails is a single recipe object
+          if (!recipeDetails || !recipeDetails.id || !recipeDetails.ingredients)
+            return;
 
-          const plannedServings = recipeDetails.plannedServings || defaultServingsPerMeal;
-          const recipeBaseServings = (recipeDetails.servings && recipeDetails.servings > 0) ? recipeDetails.servings : 1;
+          const plannedServings =
+            recipeDetails.plannedServings || defaultServingsPerMeal;
+          const recipeBaseServings =
+            recipeDetails.servings && recipeDetails.servings > 0
+              ? recipeDetails.servings
+              : 1;
           const scaleFactor = plannedServings / recipeBaseServings;
 
           recipeDetails.ingredients.forEach((ingredient) => {
@@ -38,7 +47,7 @@ function ShoppingList({ weeklyMenu, recipes, userProfile }) { // recipes prop is
             const normalizedName = normalizeIngredientName(ingredient.name);
             const normalizedUnit = normalizeUnit(ingredient.unit);
             let quantity = parseFloat(ingredient.quantity) || 0;
-            
+
             quantity *= scaleFactor;
 
             const key = `${normalizedName}|${normalizedUnit}`;
@@ -49,8 +58,15 @@ function ShoppingList({ weeklyMenu, recipes, userProfile }) { // recipes prop is
               let combined = false;
               for (const existingKey in ingredientsMap) {
                 const [existingName, existingUnit] = existingKey.split('|');
-                if (existingName === normalizedName && canCombineUnits(existingUnit, normalizedUnit)) {
-                  const convertedQuantity = convertQuantity(quantity, normalizedUnit, existingUnit);
+                if (
+                  existingName === normalizedName &&
+                  canCombineUnits(existingUnit, normalizedUnit)
+                ) {
+                  const convertedQuantity = convertQuantity(
+                    quantity,
+                    normalizedUnit,
+                    existingUnit
+                  );
                   ingredientsMap[existingKey].quantity += convertedQuantity;
                   combined = true;
                   break;
@@ -58,7 +74,7 @@ function ShoppingList({ weeklyMenu, recipes, userProfile }) { // recipes prop is
               }
               if (!combined) {
                 ingredientsMap[key] = {
-                  name: ingredient.name, 
+                  name: ingredient.name,
                   quantity: quantity,
                   unit: normalizedUnit,
                 };
@@ -71,7 +87,10 @@ function ShoppingList({ weeklyMenu, recipes, userProfile }) { // recipes prop is
     return Object.values(ingredientsMap);
   };
 
-  const shoppingList = useMemo(calculateIngredients, [weeklyMenu, defaultServingsPerMeal]);
+  const shoppingList = useMemo(calculateIngredients, [
+    weeklyMenu,
+    defaultServingsPerMeal,
+  ]);
 
   const sortedShoppingList = useMemo(() => {
     return [...shoppingList].sort((a, b) => a.name.localeCompare(b.name));
@@ -79,7 +98,9 @@ function ShoppingList({ weeklyMenu, recipes, userProfile }) { // recipes prop is
 
   return (
     <div className="section-card">
-      <h2 className="text-2xl sm:text-3xl font-bold text-pastel-primary mb-6">Liste de courses</h2>
+      <h2 className="text-2xl sm:text-3xl font-bold text-pastel-primary mb-6">
+        Liste de courses
+      </h2>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

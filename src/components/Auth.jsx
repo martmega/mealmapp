@@ -24,23 +24,24 @@ export default function Auth({ onClose }) {
       if (error) {
         console.error('Login error →', error);
         toast({
-          title: "Erreur de connexion",
+          title: 'Erreur de connexion',
           description: error.message,
-          variant: "destructive",
+          variant: 'destructive',
         });
       } else {
         toast({
-          title: "Connecté !",
-          description: "Vous êtes maintenant connecté à votre compte.",
+          title: 'Connecté !',
+          description: 'Vous êtes maintenant connecté à votre compte.',
         });
         onClose();
       }
     } catch (unexpectedError) {
       console.error('Unexpected login issue →', unexpectedError);
       toast({
-        title: "Erreur inattendue",
-        description: "Une erreur s'est produite lors de la tentative de connexion.",
-        variant: "destructive",
+        title: 'Erreur inattendue',
+        description:
+          "Une erreur s'est produite lors de la tentative de connexion.",
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -48,7 +49,12 @@ export default function Auth({ onClose }) {
   };
 
   if (showSignUp) {
-    return <SignUpForm onClose={onClose} onBackToLogin={() => setShowSignUp(false)} />;
+    return (
+      <SignUpForm
+        onClose={onClose}
+        onBackToLogin={() => setShowSignUp(false)}
+      />
+    );
   }
 
   return (
@@ -62,14 +68,17 @@ export default function Auth({ onClose }) {
         >
           <X className="h-4 w-4" />
         </Button>
-        
+
         <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
           Connexion
         </h2>
-        
+
         <form className="space-y-6">
           <div>
-            <label htmlFor="email-login" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email-login"
+              className="block text-sm font-medium text-gray-700"
+            >
               Email
             </label>
             <input
@@ -81,7 +90,10 @@ export default function Auth({ onClose }) {
             />
           </div>
           <div>
-            <label htmlFor="password-login" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password-login"
+              className="block text-sm font-medium text-gray-700"
+            >
               Mot de passe
             </label>
             <input
