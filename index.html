@@ -5,65 +5,17 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="generator" content="Hostinger Horizons" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy" 
-          content="default-src 'self'; 
-                   script-src 'self' 'unsafe-inline' https://js.stripe.com; 
-                   style-src 'self' 'unsafe-inline'; 
-                   img-src 'self' data: https://*.supabase.co https://bunolnhegwzhxqxymmet.supabase.co; 
-                   frame-src https://js.stripe.com; 
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self';
+                   script-src 'self' https://js.stripe.com;
+                   style-src 'self' 'unsafe-inline';
+                   img-src 'self' data: https://*.supabase.co https://bunolnhegwzhxqxymmet.supabase.co;
+                   frame-src https://js.stripe.com;
                    connect-src 'self' https://*.supabase.co wss://*.supabase.co https://bunolnhegwzhxqxymmet.supabase.co;" />
     <title>Mealmapp - Alpha</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    <script type="module">
-      window.addEventListener('DOMContentLoaded', function() {
-        // Bouton Générer l'image
-        var btnImg = document.querySelector('button[id="btnGenerateImage"]');
-        if (!btnImg) return;
-        
-        btnImg.onclick = function() {
-          // Lecture des valeurs
-          var name = document.querySelector('input[name="name"]').value;
-          var ingEls = document.querySelectorAll('input[name="ingredient"]');
-          var ingredients = [];
-          for (var i = 0; i < ingEls.length; i++) {
-            if (ingEls[i].value.trim()) {
-              ingredients.push(ingEls[i].value);
-            }
-          }
-          var desc = document.getElementById('description').textContent;
-          var promptImg = 
-            'Illustration appétissante pour la recette "' + name + '", ' +
-            'ingrédients : ' + ingredients.join(', ') + '. ' +
-            'Description : ' + desc + '.';
-
-          // Appel à la fonction Supabase
-          fetch(
-            'https://bunolnhegwzhxqxymmet.supabase.co/functions/v1/generate-image',
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ prompt: promptImg })
-            }
-          )
-          .then(function(res) {
-            if (!res.ok) {
-              console.error('Erreur img', res.status);
-              alert('Échec génération image');
-              throw '';
-            }
-            return res.json();
-          })
-          .then(function(data) {
-            if (data.url) {
-              document.querySelector('img[alt="Image de la recette"]').src = data.url;
-            }
-          })
-          .catch(function(){});
-        };
-      });
-    </script>
   </body>
 </html>
