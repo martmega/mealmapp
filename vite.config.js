@@ -1,5 +1,6 @@
 import path from 'node:path';
 import react from '@vitejs/plugin-react';
+
 import { createLogger, defineConfig } from 'vite';
 
 const isDev = process.env.NODE_ENV !== 'production';
@@ -196,6 +197,11 @@ export default defineConfig({
 		react(),
 		addTransformIndexHtml
 	],
+	test: {
+  include: ['src/**/*.test.{js,jsx}', 'src/**/*.spec.{js,jsx}'],
+  globals: true,
+  environment: 'jsdom',
+  },
 	server: {
 		cors: true,
 		headers: {
