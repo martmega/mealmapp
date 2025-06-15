@@ -7,7 +7,8 @@ export function useUserSearch(session) {
 
   const search = useCallback(async (term) => {
     const trimmed = term.trim();
-    if (!trimmed) {
+    const sanitized = trimmed.replace(/^@/, '');
+    if (!sanitized) {
       setResults([]);
       return;
     }
@@ -15,8 +16,8 @@ export function useUserSearch(session) {
     try {
       let query = supabase
         .from('public_users')
-        .select('id, username, avatar_url, user_tag')
-        .or(`username.ilike.%${trimmed}%,user_tag.ilike.%${trimmed}%`)
+        .select('id, username, avatar_url')
+        .or(`username.ilike.*${sanitized}*,id.ilike.*${sanitized}*`)
         .limit(10);
       if (session?.user?.id) {
         query = query.neq('id', session.user.id);
