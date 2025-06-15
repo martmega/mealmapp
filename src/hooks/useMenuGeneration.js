@@ -139,51 +139,43 @@ export function useMenuGeneration(
         let bestRecipeScore = -1;
 
         let candidateRecipesForSlot = [];
+        let candidateStageUsed = 0;
 
-        for (let i = 0; i < availableRecipes.length; i++) {
-          const recipe = availableRecipes[i];
-          const baseId = recipe.id.split('_')[0];
-          if (
-            usedRecipeOriginalIdsThisDay.has(baseId) ||
-            recipeUsageCount[baseId] >= 3
-          )
-            continue;
+        const candidateStages = [
+          (r, baseId, matchesMealType) =>
+            !usedRecipeOriginalIdsThisDay.has(baseId) &&
+            recipeUsageCount[baseId] < 3 &&
+            matchesMealType,
+          (r, baseId, matchesMealType) =>
+            !usedRecipeOriginalIdsThisDay.has(baseId) && matchesMealType,
+          (r, baseId, matchesMealType) => matchesMealType,
+          (r, baseId) => !usedRecipeOriginalIdsThisDay.has(baseId),
+          () => true,
+        ];
 
-          const recipeMealTypes = recipe.meal_types || [];
-          const matchesMealType = mealPreference.types.some((prefType) =>
-            recipeMealTypes.includes(prefType)
-          );
-
-          if (!matchesMealType) continue;
-          candidateRecipesForSlot.push({ recipe, originalIndexInAvailable: i });
-        }
-
-        if (candidateRecipesForSlot.length === 0 && baseRecipes.length > 0) {
-          availableRecipes = shuffleArray(
-            baseRecipes.filter(
-              (r) =>
-                recipeUsageCount[r.id.split('_')[0]] < 3 &&
-                !usedRecipeOriginalIdsThisDay.has(r.id.split('_')[0])
-            )
-          );
+        for (let stage = 0; stage < candidateStages.length; stage++) {
+          const filterFn = candidateStages[stage];
+          candidateRecipesForSlot = [];
+          if (availableRecipes.length === 0) {
+            availableRecipes = shuffleArray(baseRecipes);
+          }
           for (let i = 0; i < availableRecipes.length; i++) {
             const recipe = availableRecipes[i];
             const baseId = recipe.id.split('_')[0];
-            if (
-              usedRecipeOriginalIdsThisDay.has(baseId) ||
-              recipeUsageCount[baseId] >= 3
-            )
-              continue;
-
             const recipeMealTypes = recipe.meal_types || [];
             const matchesMealType = mealPreference.types.some((prefType) =>
               recipeMealTypes.includes(prefType)
             );
-            if (!matchesMealType) continue;
-            candidateRecipesForSlot.push({
-              recipe,
-              originalIndexInAvailable: i,
-            });
+            if (filterFn(recipe, baseId, matchesMealType)) {
+              candidateRecipesForSlot.push({
+                recipe,
+                originalIndexInAvailable: i,
+              });
+            }
+          }
+          if (candidateRecipesForSlot.length > 0) {
+            candidateStageUsed = stage;
+            break;
           }
         }
 
@@ -295,7 +287,7 @@ export function useMenuGeneration(
           if (actualIndexInAvailable !== -1) {
             availableRecipes.splice(actualIndexInAvailable, 1);
           }
-          if (recipeUsageCount[baseId] < 3) {
+          if (recipeUsageCount[baseId] < 3 || candidateStageUsed > 0) {
             availableRecipes.push(bestRecipeForMeal);
           }
         } else {
