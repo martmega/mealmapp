@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { X, ArrowLeft } from 'lucide-react';
 
@@ -144,7 +145,7 @@ export default function SignUpForm({ onClose, onBackToLogin }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg relative">
+      <div className="w-full max-w-md bg-pastel-card text-pastel-text p-8 rounded-xl shadow-lg relative">
         <Button
           variant="ghost"
           size="icon"
@@ -162,7 +163,7 @@ export default function SignUpForm({ onClose, onBackToLogin }) {
           <ArrowLeft className="h-4 w-4" />
         </Button>
 
-        <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
+        <h2 className="text-3xl font-bold text-center text-pastel-text mb-8">
           Inscription
         </h2>
 
@@ -170,95 +171,95 @@ export default function SignUpForm({ onClose, onBackToLogin }) {
           <div>
             <label
               htmlFor="user-tag-signup"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-pastel-text"
             >
               Identifiant Unique (non modifiable)
             </label>
-            <input
+            <Input
               id="user-tag-signup"
               type="text"
               value={userTag}
               onChange={(e) => setUserTag(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="mt-1 w-full"
               placeholder="Ex: mon_id_123"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-pastel-muted-foreground mt-1">
               3-15 caractères, alphanumériques et '_'.
             </p>
           </div>
           <div>
             <label
               htmlFor="username-signup"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-pastel-text"
             >
               Pseudo (modifiable)
             </label>
-            <input
+            <Input
               id="username-signup"
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="mt-1 w-full"
             />
           </div>
           <div>
             <label
               htmlFor="email-signup"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-pastel-text"
             >
               Email
             </label>
-            <input
+            <Input
               id="email-signup"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="mt-1 w-full"
             />
           </div>
           <div>
             <label
               htmlFor="dob-signup"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-pastel-text"
             >
               Date de naissance
             </label>
-            <input
+            <Input
               id="dob-signup"
               type="date"
               value={dateOfBirth}
               onChange={(e) => setDateOfBirth(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="mt-1 w-full"
             />
           </div>
           <div>
             <label
               htmlFor="password-signup"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-pastel-text"
             >
               Mot de passe
             </label>
-            <input
+            <Input
               id="password-signup"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="mt-1 w-full"
             />
           </div>
           <div>
             <label
               htmlFor="confirm-password-signup"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-pastel-text"
             >
               Confirmation du mot de passe
             </label>
-            <input
+            <Input
               id="confirm-password-signup"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="mt-1 w-full"
             />
           </div>
           <div className="flex flex-col space-y-4 pt-2">

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { X } from 'lucide-react';
 import SignUpForm from '@/components/SignUpForm';
@@ -59,7 +60,7 @@ export default function Auth({ onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg relative">
+      <div className="w-full max-w-md bg-pastel-card text-pastel-text p-8 rounded-xl shadow-lg relative">
         <Button
           variant="ghost"
           size="icon"
@@ -69,7 +70,7 @@ export default function Auth({ onClose }) {
           <X className="h-4 w-4" />
         </Button>
 
-        <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
+        <h2 className="text-3xl font-bold text-center text-pastel-text mb-8">
           Connexion
         </h2>
 
@@ -77,31 +78,31 @@ export default function Auth({ onClose }) {
           <div>
             <label
               htmlFor="email-login"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-pastel-text"
             >
               Email
             </label>
-            <input
+            <Input
               id="email-login"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="mt-1 w-full"
             />
           </div>
           <div>
             <label
               htmlFor="password-login"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-pastel-text"
             >
               Mot de passe
             </label>
-            <input
+            <Input
               id="password-login"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="mt-1 w-full"
             />
           </div>
           <div className="flex flex-col space-y-4">

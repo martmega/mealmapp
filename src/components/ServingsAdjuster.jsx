@@ -14,7 +14,7 @@ function ServingsAdjuster({
       <Button
         variant="ghost"
         size="icon"
-        className="h-6 w-6 text-white/70 hover:text-white hover:bg-white/30 rounded-full"
+        className="h-6 w-6 text-pastel-text/70 hover:text-pastel-text hover:bg-pastel-card/30 rounded-full"
         onClick={onDecrease}
         disabled={servings <= min}
       >
@@ -26,7 +26,7 @@ function ServingsAdjuster({
       <Button
         variant="ghost"
         size="icon"
-        className="h-6 w-6 text-white/70 hover:text-white hover:bg-white/30 rounded-full"
+        className="h-6 w-6 text-pastel-text/70 hover:text-pastel-text hover:bg-pastel-card/30 rounded-full"
         onClick={onIncrease}
         disabled={servings >= max}
       >
