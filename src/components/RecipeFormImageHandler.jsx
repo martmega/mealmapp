@@ -77,7 +77,7 @@ const RecipeFormImageHandler = ({
       {previewImage && (
         <div className="mt-3 aspect-video rounded-lg overflow-hidden border border-pastel-border bg-pastel-card-alt shadow-pastel-card-item">
           <img
-            class="w-full h-full object-cover"
+            className="w-full h-full object-cover"
             alt={`Aperçu de ${formDataName || 'la recette'}`}
             src={previewImage}
           />
