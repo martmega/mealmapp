@@ -1,21 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
-import RecipeList from '@/components/RecipeList';
+import UserRecipeList from '@/components/UserRecipeList.jsx';
 import LoadingScreen from '@/components/layout/LoadingScreen';
-import {
-  UserCircle,
-  Calendar,
-  ArrowLeft,
-  UserPlus,
-  UserCheck,
-  UserX,
-  Loader2,
-  MessageCircle,
-} from 'lucide-react';
+import { UserCircle, Calendar, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import RecipeDetailModal from '@/components/RecipeDetailModal';
+import FriendActionButton from '@/components/FriendActionButton.jsx';
 
 export default function UserProfilePage({ session, currentUserProfile }) {
   const { userId } = useParams();
@@ -24,7 +16,6 @@ export default function UserProfilePage({ session, currentUserProfile }) {
   const [loading, setLoading] = useState(true);
   const [relationshipStatus, setRelationshipStatus] = useState(null);
   const [relationshipId, setRelationshipId] = useState(null);
-  const [actionLoading, setActionLoading] = useState(false);
   const [selectedRecipeForDetail, setSelectedRecipeForDetail] = useState(null);
 
   const { toast } = useToast();
@@ -142,95 +133,6 @@ export default function UserProfilePage({ session, currentUserProfile }) {
     }
   }, [location.search, recipes, location.pathname, navigate]);
 
-  const handleFriendAction = async () => {
-    if (!session?.user?.id) {
-      toast({
-        title: 'Connexion requise',
-        description: 'Veuillez vous connecter pour gérer les amis.',
-        variant: 'default',
-      });
-      return;
-    }
-    setActionLoading(true);
-    try {
-      if (relationshipStatus === 'not_friends') {
-        const { data, error } = await supabase
-          .from('user_relationships')
-          .insert({
-            requester_id: session.user.id,
-            addressee_id: userId,
-            status: 'pending',
-          })
-          .select()
-          .single();
-        if (error) throw error;
-        setRelationshipId(data.id);
-        setRelationshipStatus('pending_them');
-        toast({
-          title: 'Demande envoyée',
-          description: `Demande d'ami envoyée à ${profileData.username}.`,
-        });
-      } else if (relationshipStatus === 'pending_me') {
-        const { error } = await supabase
-          .from('user_relationships')
-          .update({ status: 'accepted', updated_at: new Date().toISOString() })
-          .eq('id', relationshipId);
-        if (error) throw error;
-        setRelationshipStatus('friends');
-        toast({
-          title: 'Demande acceptée',
-          description: `Vous êtes maintenant amis avec ${profileData.username}.`,
-        });
-      } else if (
-        relationshipStatus === 'pending_them' ||
-        relationshipStatus === 'friends'
-      ) {
-        const { error } = await supabase
-          .from('user_relationships')
-          .delete()
-          .eq('id', relationshipId);
-        if (error) throw error;
-        setRelationshipStatus('not_friends');
-        setRelationshipId(null);
-        toast({
-          title:
-            relationshipStatus === 'friends'
-              ? 'Ami supprimé'
-              : 'Demande annulée',
-        });
-      }
-      // No full refetch here, just update local state for relationship
-    } catch (error) {
-      console.error('Friend action error:', error);
-      let userFriendlyMessage = "Une action d'ami a échoué.";
-      if (
-        error.message.includes(
-          'violates unique constraint "unique_relationship"'
-        )
-      ) {
-        userFriendlyMessage =
-          "Une demande d'ami existe déjà ou vous êtes déjà amis.";
-        // Attempt to refetch to get the correct current state
-        fetchProfileAndRecipes();
-      } else if (
-        error.message.includes(
-          'violates check constraint "check_different_users"'
-        )
-      ) {
-        userFriendlyMessage =
-          'Vous ne pouvez pas vous ajouter vous-même en ami.';
-      } else {
-        userFriendlyMessage = error.message;
-      }
-      toast({
-        title: 'Erreur',
-        description: userFriendlyMessage,
-        variant: 'destructive',
-      });
-    } finally {
-      setActionLoading(false);
-    }
-  };
 
   if (loading) {
     return <LoadingScreen message="Chargement du profil..." />;
@@ -257,56 +159,6 @@ export default function UserProfilePage({ session, currentUserProfile }) {
 
   const isOwnProfile = session?.user?.id === userId;
 
-  const getFriendButton = () => {
-    if (actionLoading)
-      return (
-        <Button disabled className="mt-4 w-40">
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Chargement...
-        </Button>
-      );
-    switch (relationshipStatus) {
-      case 'friends':
-        return (
-          <Button
-            onClick={handleFriendAction}
-            variant="secondary"
-            className="mt-4 w-40"
-          >
-            <UserX className="mr-2 h-4 w-4" /> Retirer l&apos;ami
-          </Button>
-        );
-      case 'pending_them':
-        return (
-          <Button
-            onClick={handleFriendAction}
-            variant="outline"
-            className="mt-4 w-40"
-          >
-            <MessageCircle className="mr-2 h-4 w-4" /> Demande envoyée
-          </Button>
-        );
-      case 'pending_me':
-        return (
-          <Button
-            onClick={handleFriendAction}
-            variant="default"
-            className="mt-4 w-40"
-          >
-            <UserCheck className="mr-2 h-4 w-4" /> Accepter la demande
-          </Button>
-        );
-      default:
-        return (
-          <Button
-            onClick={handleFriendAction}
-            variant="default"
-            className="mt-4 w-40"
-          >
-            <UserPlus className="mr-2 h-4 w-4" /> Ajouter en ami
-          </Button>
-        );
-    }
-  };
 
   return (
     <>
@@ -340,7 +192,18 @@ export default function UserProfilePage({ session, currentUserProfile }) {
                   {new Date(profileData.created_at).toLocaleDateString()}
                 </span>
               </div>
-              {!isOwnProfile && session && getFriendButton()}
+              {!isOwnProfile && session && (
+                <FriendActionButton
+                  session={session}
+                  profileUserId={userId}
+                  initialStatus={relationshipStatus}
+                  relationshipId={relationshipId}
+                  onStatusChange={(s, id) => {
+                    setRelationshipStatus(s);
+                    setRelationshipId(id);
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -350,25 +213,19 @@ export default function UserProfilePage({ session, currentUserProfile }) {
             Recettes de {profileData.username} ({recipes.length})
           </h2>
           {recipes.length > 0 ? (
-            <RecipeList
+            <UserRecipeList
               recipes={recipes}
-              onEdit={() =>
-                toast({
-                  title: '🚧 Action non disponible',
-                  description:
-                    'Vous ne pouvez pas modifier les recettes d&apos;un autre utilisateur.',
-                  variant: 'default',
-                })
-              }
-              onDelete={() =>
-                toast({
-                  title: '🚧 Action non disponible',
-                  description:
-                    'Vous ne pouvez pas supprimer les recettes d&apos;un autre utilisateur.',
-                  variant: 'default',
-                })
-              }
               onSelectRecipe={setSelectedRecipeForDetail}
+              onToast={(type) =>
+                toast({
+                  title: '🚧 Action non disponible',
+                  description:
+                    type === 'edit'
+                      ? "Vous ne pouvez pas modifier les recettes d'un autre utilisateur."
+                      : "Vous ne pouvez pas supprimer les recettes d'un autre utilisateur.",
+                  variant: 'default',
+                })
+              }
             />
           ) : (
             <div className="text-center py-10 px-6 bg-pastel-card rounded-xl shadow-pastel-soft">
