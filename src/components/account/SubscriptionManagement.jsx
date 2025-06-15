@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2, Star, CheckCircle, CreditCard, Users } from 'lucide-react';
+import { Loader2, Star, CheckCircle, CreditCard } from 'lucide-react';
+import PropTypes from 'prop-types';
 import { loadStripe } from '@stripe/stripe-js';
 
 const STRIPE_PUBLISHABLE_KEY =
@@ -148,7 +149,7 @@ export default function SubscriptionManagement({
   return (
     <div className="bg-pastel-card p-6 sm:p-8 rounded-xl shadow-pastel-soft space-y-6">
       <h3 className="text-xl sm:text-2xl font-semibold text-pastel-text/90 border-b border-pastel-border pb-3 mb-5">
-        Gestion de l'Abonnement
+        Gestion de l&apos;Abonnement
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -217,7 +218,7 @@ export default function SubscriptionManagement({
               Génération IA de descriptions
             </li>
             <li className="font-medium text-pastel-accent/90">
-              Génération IA d'images
+              Génération IA d&apos;images
             </li>
             <li>Support prioritaire (à venir)</li>
           </ul>
@@ -249,3 +250,16 @@ export default function SubscriptionManagement({
     </div>
   );
 }
+
+SubscriptionManagement.propTypes = {
+  session: PropTypes.shape({
+    user: PropTypes.shape({
+      id: PropTypes.string,
+      email: PropTypes.string,
+    }),
+  }),
+  userProfile: PropTypes.shape({
+    subscription_tier: PropTypes.string,
+  }),
+  onProfileUpdate: PropTypes.func,
+};
