@@ -9,6 +9,7 @@ function TagManager({
   onClose,
   existingTags: propExistingTags,
   setExistingTags: propSetExistingTags,
+  session,
 }) {
   const [localExistingTags, setLocalExistingTags] = useState(propExistingTags);
   const { toast } = useToast();
@@ -18,6 +19,14 @@ function TagManager({
   }, [propExistingTags]);
 
   const handleDeleteTag = async (tagToDelete) => {
+    if (!session?.user) {
+      toast({
+        title: 'Connexion requise',
+        description: 'Veuillez vous connecter pour gérer les tags.',
+        variant: 'destructive',
+      });
+      return;
+    }
     const { data: recipesWithTag, error: fetchError } = await supabase
       .from('recipes')
       .select('id, tags')
@@ -73,6 +82,36 @@ function TagManager({
       description: `Le tag "${tagToDelete}" a été supprimé de la liste globale.`,
     });
   };
+
+  if (!session?.user) {
+    return (
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-pastel-text/40 backdrop-blur-md flex items-center justify-center z-[60] p-4"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ y: 30, opacity: 0, scale: 0.95 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 30, opacity: 0, scale: 0.95 }}
+            transition={{ type: 'spring', stiffness: 280, damping: 28 }}
+            className="bg-pastel-card text-pastel-text rounded-xl p-6 w-full max-w-md shadow-pastel-medium"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-center text-pastel-muted-foreground py-4">
+              Veuillez vous connecter pour gérer vos tags.
+            </p>
+            <Button variant="outline" onClick={onClose} className="w-full mt-6">
+              Fermer
+            </Button>
+          </motion.div>
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
 
   return (
     <AnimatePresence>
