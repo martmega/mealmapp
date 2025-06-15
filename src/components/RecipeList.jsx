@@ -37,7 +37,7 @@ const MemoizedRecipeCard = React.memo(function RecipeCard({
         </div>
       )}
       <div className="flex justify-between items-start mb-1.5">
-        <h3 className="text-xl font-bold group-hover:text-white/90 transition-colors">
+        <h3 className="text-xl font-bold group-hover:text-pastel-text/90 transition-colors">
           {recipe.name}
         </h3>
         <div className="flex gap-1 shrink-0">
@@ -49,7 +49,7 @@ const MemoizedRecipeCard = React.memo(function RecipeCard({
               onSelectRecipe(recipe);
             }}
             title="Voir le détail"
-            className={`h-8 w-8 hover:bg-white/20 ${color.text} hover:${color.text}`}
+            className={`h-8 w-8 hover:bg-pastel-highlight/20 ${color.text} hover:${color.text}`}
           >
             <Eye className="h-4 w-4" />
           </Button>
@@ -61,7 +61,7 @@ const MemoizedRecipeCard = React.memo(function RecipeCard({
               onEdit(recipe);
             }}
             title="Modifier"
-            className={`h-8 w-8 hover:bg-white/20 ${color.text} hover:${color.text}`}
+            className={`h-8 w-8 hover:bg-pastel-highlight/20 ${color.text} hover:${color.text}`}
           >
             <Edit2 className="h-4 w-4" />
           </Button>
@@ -73,7 +73,7 @@ const MemoizedRecipeCard = React.memo(function RecipeCard({
               onDelete(recipe.id);
             }}
             title="Supprimer"
-            className={`h-8 w-8 text-red-300 hover:bg-red-400/30 hover:text-red-200`}
+            className={`h-8 w-8 text-destructive/70 hover:bg-destructive/30 hover:text-destructive-foreground`}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -93,7 +93,7 @@ const MemoizedRecipeCard = React.memo(function RecipeCard({
           recipe.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
-              className={`text-[10px] ${color.text} bg-white/20 px-2.5 py-1 rounded-full font-medium`}
+              className={`text-[10px] ${color.text} bg-pastel-highlight/20 px-2.5 py-1 rounded-full font-medium`}
             >
               {tag}
             </span>
@@ -102,7 +102,7 @@ const MemoizedRecipeCard = React.memo(function RecipeCard({
           Array.isArray(recipe.tags) &&
           recipe.tags.length > 3 && (
             <span
-              className={`text-[10px] ${color.text} bg-white/20 px-2.5 py-1 rounded-full font-medium`}
+              className={`text-[10px] ${color.text} bg-pastel-highlight/20 px-2.5 py-1 rounded-full font-medium`}
             >
               +{recipe.tags.length - 3}
             </span>

@@ -11,7 +11,7 @@ const buttonVariants = cva(
         default:
           'bg-pastel-primary text-pastel-primary-text shadow-pastel-button border border-transparent hover:bg-pastel-primary-hover hover:shadow-pastel-button-hover hover:border-pastel-primary-hover active:bg-pastel-primary-hover/90 active:shadow-pastel-button-inset active:border-pastel-primary transform active:scale-[0.97]',
         destructive:
-          'bg-red-500 text-white shadow-pastel-button border border-transparent hover:bg-red-600 hover:shadow-pastel-button-hover hover:border-red-600 active:bg-red-700/90 active:shadow-pastel-button-inset active:border-red-700 transform active:scale-[0.97]',
+          'bg-destructive text-destructive-foreground shadow-pastel-button border border-transparent hover:bg-destructive/90 hover:shadow-pastel-button-hover hover:border-destructive active:bg-destructive/80 active:shadow-pastel-button-inset active:border-destructive transform active:scale-[0.97]',
         outline:
           'border border-pastel-input-border bg-pastel-card text-pastel-text hover:bg-pastel-highlight hover:border-pastel-active-border hover:shadow-pastel-button active:bg-pastel-highlight/80 active:border-pastel-active-border/70 active:shadow-pastel-button-inset transform active:scale-[0.98]',
         secondary:
@@ -23,9 +23,9 @@ const buttonVariants = cva(
           'bg-pastel-tertiary text-pastel-tertiary-text shadow-pastel-button border border-transparent hover:bg-pastel-tertiary-hover hover:shadow-pastel-button-hover hover:border-pastel-tertiary-hover active:bg-pastel-tertiary-hover/90 active:shadow-pastel-button-inset active:border-pastel-tertiary transform active:scale-[0.97]',
         accent:
           'bg-pastel-accent text-pastel-accent-text shadow-pastel-button border border-transparent hover:bg-pastel-accent-hover hover:shadow-pastel-button-hover hover:border-pastel-accent-hover active:bg-pastel-accent-hover/90 active:shadow-pastel-button-inset active:border-pastel-accent transform active:scale-[0.97]',
-        tag: 'border data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-transparent bg-white text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transform active:scale-[0.97]',
+        tag: 'border data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-transparent bg-pastel-card text-pastel-text border-pastel-border dark:bg-pastel-card-alt dark:text-pastel-text dark:border-pastel-border hover:bg-pastel-highlight dark:hover:bg-pastel-highlight transform active:scale-[0.97]',
         premium:
-          'bg-yellow-400 text-black border-yellow-600 rounded-md px-4 py-2 hover:bg-yellow-500 active:bg-yellow-600 transform active:scale-[0.97] border',
+          'bg-pastel-accent text-pastel-accent-text border-pastel-accent rounded-md px-4 py-2 hover:bg-pastel-accent-hover active:bg-pastel-accent-hover/90 transform active:scale-[0.97] border',
       },
       size: {
         default: 'h-10 px-4 py-2',

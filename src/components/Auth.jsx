@@ -59,7 +59,7 @@ export default function Auth({ onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg relative">
+      <div className="w-full max-w-md bg-pastel-card p-8 rounded-xl shadow-lg relative">
         <Button
           variant="ghost"
           size="icon"
@@ -69,7 +69,7 @@ export default function Auth({ onClose }) {
           <X className="h-4 w-4" />
         </Button>
 
-        <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
+        <h2 className="text-3xl font-bold text-center text-pastel-text mb-8">
           Connexion
         </h2>
 
@@ -77,7 +77,7 @@ export default function Auth({ onClose }) {
           <div>
             <label
               htmlFor="email-login"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-pastel-text"
             >
               Email
             </label>
@@ -86,13 +86,13 @@ export default function Auth({ onClose }) {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="mt-1 block w-full px-3 py-2 border border-pastel-input-border rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary bg-pastel-card text-pastel-text"
             />
           </div>
           <div>
             <label
               htmlFor="password-login"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-pastel-text"
             >
               Mot de passe
             </label>
@@ -101,7 +101,7 @@ export default function Auth({ onClose }) {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              className="mt-1 block w-full px-3 py-2 border border-pastel-input-border rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary bg-pastel-card text-pastel-text"
             />
           </div>
           <div className="flex flex-col space-y-4">
