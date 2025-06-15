@@ -666,6 +666,7 @@ function RecipeForm({
 
           {showTagManager && (
             <TagManager
+              session={session}
               onClose={() => setShowTagManager(false)}
               existingTags={existingTags}
               setExistingTags={setExistingTags}
