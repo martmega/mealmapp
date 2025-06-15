@@ -198,7 +198,7 @@ export default defineConfig({
 		addTransformIndexHtml
 	],
 	test: {
-  include: ['src/**/*.test.{js,jsx}', 'src/**/*.spec.{js,jsx}'],
+  include: ['src/__tests__/**/*.{test,spec}.{js,jsx}'],
   globals: true,
   environment: 'jsdom',
   },
