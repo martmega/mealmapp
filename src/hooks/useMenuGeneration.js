@@ -88,6 +88,11 @@ export function useMenuGeneration(
 
     const shuffledRecipes = shuffleArray(baseRecipes);
     let availableRecipes = [...shuffledRecipes];
+    const recipeUsageCount = {};
+    baseRecipes.forEach((r) => {
+      const baseId = r.id.split('_')[0];
+      recipeUsageCount[baseId] = 0;
+    });
 
     const dailyCalorieTarget = preferences.maxCalories || 2200;
 
@@ -117,7 +122,9 @@ export function useMenuGeneration(
         if (availableRecipes.length === 0 && baseRecipes.length > 0) {
           availableRecipes = shuffleArray(
             baseRecipes.filter(
-              (r) => !usedRecipeOriginalIdsThisDay.has(r.id.split('_')[0])
+              (r) =>
+                recipeUsageCount[r.id.split('_')[0]] < 3 &&
+                !usedRecipeOriginalIdsThisDay.has(r.id.split('_')[0])
             )
           );
         }
@@ -135,7 +142,11 @@ export function useMenuGeneration(
 
         for (let i = 0; i < availableRecipes.length; i++) {
           const recipe = availableRecipes[i];
-          if (usedRecipeOriginalIdsThisDay.has(recipe.id.split('_')[0]))
+          const baseId = recipe.id.split('_')[0];
+          if (
+            usedRecipeOriginalIdsThisDay.has(baseId) ||
+            recipeUsageCount[baseId] >= 3
+          )
             continue;
 
           const recipeMealTypes = recipe.meal_types || [];
@@ -147,6 +158,35 @@ export function useMenuGeneration(
           candidateRecipesForSlot.push({ recipe, originalIndexInAvailable: i });
         }
 
+        if (candidateRecipesForSlot.length === 0 && baseRecipes.length > 0) {
+          availableRecipes = shuffleArray(
+            baseRecipes.filter(
+              (r) =>
+                recipeUsageCount[r.id.split('_')[0]] < 3 &&
+                !usedRecipeOriginalIdsThisDay.has(r.id.split('_')[0])
+            )
+          );
+          for (let i = 0; i < availableRecipes.length; i++) {
+            const recipe = availableRecipes[i];
+            const baseId = recipe.id.split('_')[0];
+            if (
+              usedRecipeOriginalIdsThisDay.has(baseId) ||
+              recipeUsageCount[baseId] >= 3
+            )
+              continue;
+
+            const recipeMealTypes = recipe.meal_types || [];
+            const matchesMealType = mealPreference.types.some((prefType) =>
+              recipeMealTypes.includes(prefType)
+            );
+            if (!matchesMealType) continue;
+            candidateRecipesForSlot.push({
+              recipe,
+              originalIndexInAvailable: i,
+            });
+          }
+        }
+
         if (candidateRecipesForSlot.length === 0) {
           console.warn(
             `Aucune recette candidate (type de repas) pour le repas ${mealPreference.mealNumber} (${mealPreference.types.join(', ')}) le ${days[dayIndex]}`
@@ -156,7 +196,10 @@ export function useMenuGeneration(
 
         for (const candidate of candidateRecipesForSlot) {
           const recipe = candidate.recipe;
+          const baseId = recipe.id.split('_')[0];
           let score = 1 + Math.random() * 0.2;
+          const timesUsed = recipeUsageCount[baseId] || 0;
+          score /= 1 + timesUsed * 0.5;
 
           const recipeBaseServings =
             recipe.servings && recipe.servings > 0 ? recipe.servings : 1;
@@ -242,13 +285,18 @@ export function useMenuGeneration(
 
           newWeeklyMenu[dayIndex][mealPrefIndex].push(recipeToAdd);
           dailyCalories += scaledCalories;
-          usedRecipeOriginalIdsThisDay.add(bestRecipeForMeal.id.split('_')[0]);
+          const baseId = bestRecipeForMeal.id.split('_')[0];
+          usedRecipeOriginalIdsThisDay.add(baseId);
+          recipeUsageCount[baseId] = (recipeUsageCount[baseId] || 0) + 1;
 
           const actualIndexInAvailable = availableRecipes.findIndex(
             (r) => r.id === bestRecipeForMeal.id
           );
           if (actualIndexInAvailable !== -1) {
             availableRecipes.splice(actualIndexInAvailable, 1);
+          }
+          if (recipeUsageCount[baseId] < 3) {
+            availableRecipes.push(bestRecipeForMeal);
           }
         } else {
           console.warn(
