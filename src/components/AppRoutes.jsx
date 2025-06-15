@@ -12,6 +12,7 @@ import CommunityPage from '@/pages/CommunityPage';
 import UserProfilePage from '@/pages/UserProfilePage';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import { PlusCircle } from 'lucide-react';
+import LoginPage from '@/pages/Login.jsx';
 
 export default function AppRoutes({
   session,
@@ -158,6 +159,7 @@ export default function AppRoutes({
         }
       />
       <Route path="/app/*" element={<Navigate to="/app/recipes" replace />} />
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<Navigate to="/app/recipes" replace />} />
     </Routes>
   );

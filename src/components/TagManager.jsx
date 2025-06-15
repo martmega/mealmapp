@@ -4,6 +4,7 @@ import { X, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabase';
+import useSessionRequired from '@/hooks/useSessionRequired';
 
 function TagManager({
   onClose,
@@ -11,15 +12,31 @@ function TagManager({
   setExistingTags: propSetExistingTags,
   session,
 }) {
+  useSessionRequired();
   const [localExistingTags, setLocalExistingTags] = useState(propExistingTags);
+  const [currentSession, setCurrentSession] = useState(session);
   const { toast } = useToast();
 
   useEffect(() => {
     setLocalExistingTags(propExistingTags);
   }, [propExistingTags]);
 
+  useEffect(() => {
+    setCurrentSession(session);
+  }, [session]);
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      const {
+        data: { session: freshSession },
+      } = await supabase.auth.getSession();
+      setCurrentSession(freshSession);
+    };
+    fetchSession();
+  }, []);
+
   const handleDeleteTag = async (tagToDelete) => {
-    if (!session?.user) {
+    if (!currentSession?.user) {
       toast({
         title: 'Connexion requise',
         description: 'Veuillez vous connecter pour gérer les tags.',
@@ -83,7 +100,7 @@ function TagManager({
     });
   };
 
-  if (!session?.user) {
+  if (!currentSession?.user) {
     return (
       <AnimatePresence>
         <motion.div
