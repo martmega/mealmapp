@@ -8,7 +8,7 @@ export default function AccountPage({ session, userProfile, onProfileUpdate }) {
   if (!session || !userProfile) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="section-card text-center p-8">
+        <p className="bg-pastel-card p-6 rounded-xl shadow-pastel-soft text-center p-8">
           Chargement des informations du compte...
         </p>
       </div>

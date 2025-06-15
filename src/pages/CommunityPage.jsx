@@ -134,7 +134,7 @@ export default function CommunityPage({ session, userProfile }) {
 
   return (
     <div className="space-y-8">
-      <div className="section-card p-6 sm:p-8">
+      <div className="bg-pastel-card p-6 sm:p-8 rounded-xl shadow-pastel-soft">
         <div className="flex flex-col items-center text-center">
           <Users className="w-16 h-16 text-pastel-secondary mb-4" />
           <h1 className="text-3xl sm:text-4xl font-bold text-pastel-primary mb-3 tracking-tight">
@@ -169,7 +169,7 @@ export default function CommunityPage({ session, userProfile }) {
 
         <TabsContent value="discover" className="mt-6">
           <div className="space-y-8">
-            <div className="section-card p-6">
+            <div className="bg-pastel-card p-6 rounded-xl shadow-pastel-soft">
               <form
                 onSubmit={handleSearch}
                 className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto"
@@ -198,7 +198,7 @@ export default function CommunityPage({ session, userProfile }) {
             </div>
 
             {searchResults.length > 0 && (
-              <div className="section-card p-6">
+              <div className="bg-pastel-card p-6 rounded-xl shadow-pastel-soft">
                 <h2 className="text-xl font-semibold text-pastel-primary mb-4">
                   Résultats de la recherche :
                 </h2>
@@ -240,14 +240,14 @@ export default function CommunityPage({ session, userProfile }) {
               </div>
             )}
             {searchTerm && !loadingSearch && searchResults.length === 0 && (
-              <div className="text-center py-8 section-card">
+              <div className="text-center py-8 px-6 bg-pastel-card rounded-xl shadow-pastel-soft">
                 <p className="text-lg text-pastel-muted-foreground">
                   Aucun utilisateur trouvé pour "{searchTerm}".
                 </p>
               </div>
             )}
 
-            <div className="section-card p-6">
+            <div className="bg-pastel-card p-6 rounded-xl shadow-pastel-soft">
               <h2 className="text-xl sm:text-2xl font-bold text-pastel-secondary mb-6 text-center">
                 Dernières Recettes Publiques
               </h2>

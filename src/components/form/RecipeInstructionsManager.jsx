@@ -7,7 +7,7 @@ export default function RecipeInstructionsManager({
   handleInstructionsChange,
 }) {
   return (
-    <div className="space-y-2 section-card p-5">
+    <div className="space-y-2 bg-pastel-card p-5 rounded-xl shadow-pastel-soft">
       <Label
         htmlFor="instructions"
         className="text-lg font-semibold text-pastel-secondary"

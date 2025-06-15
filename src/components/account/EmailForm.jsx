@@ -60,7 +60,7 @@ export default function EmailForm({ session, onProfileUpdate }) {
   return (
     <form
       onSubmit={handleEmailChange}
-      className="section-card space-y-5 p-6 sm:p-8"
+      className="bg-pastel-card p-6 sm:p-8 rounded-xl shadow-pastel-soft space-y-5"
     >
       <h3 className="text-xl sm:text-2xl font-semibold text-pastel-text/90 border-b border-pastel-border pb-3 mb-5">
         Adresse Email

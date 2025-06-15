@@ -159,7 +159,7 @@ export default function FriendsTab({ session, userProfile }) {
   return (
     <div className="space-y-6 mt-6">
       {friendRequests.length > 0 && (
-        <div className="section-card p-6">
+        <div className="bg-pastel-card p-6 rounded-xl shadow-pastel-soft">
           <h3 className="text-xl font-semibold text-pastel-text/80 mb-4 flex items-center">
             <MailQuestion className="w-5 h-5 mr-2 text-pastel-accent" />
             Demandes d'amis en attente ({friendRequests.length})
@@ -222,7 +222,7 @@ export default function FriendsTab({ session, userProfile }) {
       )}
 
       {friends.length > 0 && (
-        <div className="section-card p-6">
+        <div className="bg-pastel-card p-6 rounded-xl shadow-pastel-soft">
           <h3 className="text-xl font-semibold text-pastel-text/80 mb-4 flex items-center">
             <Users className="w-5 h-5 mr-2 text-pastel-tertiary" />
             Mes Amis ({friends.length})
@@ -298,7 +298,7 @@ export default function FriendsTab({ session, userProfile }) {
       )}
 
       {friendRequests.length === 0 && friends.length === 0 && (
-        <div className="text-center py-10 section-card">
+        <div className="text-center py-10 px-6 bg-pastel-card rounded-xl shadow-pastel-soft">
           <MessageSquare className="w-12 h-12 mx-auto mb-3 text-pastel-border" />
           <p className="text-xl text-pastel-muted-foreground mb-2">
             Votre cercle d'amis est vide pour le moment.

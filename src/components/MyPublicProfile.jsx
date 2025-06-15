@@ -100,7 +100,7 @@ export default function MyPublicProfile({
 
   if (!profileData && !session?.user?.id) {
     return (
-      <div className="text-center py-12 section-card">
+      <div className="text-center py-12 px-6 bg-pastel-card rounded-xl shadow-pastel-soft">
         <h1 className="text-2xl font-bold text-pastel-primary mb-4">
           Non connecté
         </h1>
@@ -113,7 +113,7 @@ export default function MyPublicProfile({
 
   if (!profileData && session?.user?.id) {
     return (
-      <div className="text-center py-12 section-card">
+      <div className="text-center py-12 px-6 bg-pastel-card rounded-xl shadow-pastel-soft">
         <h1 className="text-2xl font-bold text-pastel-primary mb-4">
           Erreur de chargement
         </h1>
@@ -127,7 +127,7 @@ export default function MyPublicProfile({
   return (
     <>
       <div className="space-y-8 mt-6">
-        <div className="section-card p-6 sm:p-8">
+        <div className="bg-pastel-card p-6 sm:p-8 rounded-xl shadow-pastel-soft">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8">
             {profileData.avatar_url ? (
               <img
@@ -182,7 +182,7 @@ export default function MyPublicProfile({
               onSelectRecipe={setSelectedRecipeForDetail}
             />
           ) : (
-            <div className="text-center py-10 section-card">
+            <div className="text-center py-10 px-6 bg-pastel-card rounded-xl shadow-pastel-soft">
               <p className="text-xl text-pastel-muted-foreground">
                 Vous n'avez pas encore partagé de recettes (ou elles sont toutes
                 privées).

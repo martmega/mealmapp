@@ -144,35 +144,6 @@
   }
 }
 
-.menu-grid {
-  @apply grid gap-3 sm:gap-4;
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 640px) {
-  .menu-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 768px) {
-  .menu-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1024px) {
-  .menu-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1366px) {
-  .menu-grid {
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-  }
-}
-
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -187,35 +158,4 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: hsla(var(--pastel-muted-foreground), 0.8);
-}
-
-.section-card {
-  @apply bg-pastel-card p-6 rounded-xl shadow-pastel-soft;
-}
-
-.modal-overlay-custom {
-  @apply fixed inset-0 z-50;
-  background-color: hsla(var(--background), 0.7);
-}
-.dark .modal-overlay-custom {
-  background-color: rgba(0, 0, 0, 0.7);
-}
-
-.modal-content-custom {
-  @apply bg-pastel-card border border-pastel-border rounded-lg;
-}
-.dark .modal-content-custom {
-  @apply bg-pastel-card border-pastel-border;
-}
-
-.recipe-detail-modal-overlay {
-  @apply fixed inset-0 flex items-center justify-center z-[60] p-4;
-  background-color: hsla(var(--background), 0.7);
-}
-.dark .recipe-detail-modal-overlay {
-  background-color: rgba(0, 0, 0, 0.7);
-}
-
-.recipe-detail-modal-content {
-  @apply rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col;
 }

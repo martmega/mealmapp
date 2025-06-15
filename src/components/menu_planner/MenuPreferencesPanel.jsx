@@ -142,7 +142,7 @@ function MenuPreferencesPanel({
       animate={{ opacity: 1, height: 'auto' }}
       exit={{ opacity: 0, height: 0 }}
       transition={{ duration: 0.3 }}
-      className="section-card mb-8 space-y-6 overflow-hidden"
+      className="bg-pastel-card p-6 rounded-xl shadow-pastel-soft mb-8 space-y-6 overflow-hidden"
     >
       <h3 className="text-xl font-semibold text-pastel-primary">
         Préférences du menu
@@ -211,7 +211,7 @@ function MenuPreferencesPanel({
                 <Info className="h-4 w-4" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="modal-content-custom">
+            <DialogContent className="bg-pastel-card border border-pastel-border rounded-lg dark:bg-pastel-card dark:border-pastel-border">
               <DialogHeader>
                 <DialogTitle>Menu Commun</DialogTitle>
                 <DialogDescription>
