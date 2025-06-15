@@ -143,7 +143,7 @@ export default function SignUpForm({ onClose, onBackToLogin }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
       <div className="w-full max-w-md bg-pastel-card p-8 rounded-xl shadow-lg relative">
         <Button
           variant="ghost"

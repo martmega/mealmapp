@@ -157,7 +157,10 @@ export default function MyPublicProfile({
               <div className="flex flex-wrap justify-center sm:justify-start gap-x-4 gap-y-2 text-sm text-pastel-muted-foreground">
                 <span className="flex items-center">
                   <Calendar className="w-4 h-4 mr-1.5" /> Membre depuis{' '}
-                  {new Date(profileData.created_at).toLocaleDateString()}
+                  {(() => {
+                    const d = profileData.created_at ? new Date(profileData.created_at) : null;
+                    return d && !isNaN(d) ? d.toLocaleDateString() : 'Date inconnue';
+                  })()}
                 </span>
               </div>
               <p className="text-xs text-pastel-muted-foreground mt-3 italic">

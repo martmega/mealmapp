@@ -20,26 +20,38 @@ export default function AccountPage({ session, userProfile, onProfileUpdate }) {
   }
 
   return (
-    <div className="space-y-8 max-w-2xl mx-auto pb-12">
+    <div className="space-y-8 max-w-3xl mx-auto px-4 pb-12">
       <h2 className="text-3xl sm:text-4xl font-bold text-pastel-primary mb-10 text-center tracking-tight">
         Mon Compte
       </h2>
 
-      <ProfileInformationForm
-        session={session}
-        userProfile={userProfile}
-        onProfileUpdate={onProfileUpdate}
-      />
+      <section className="bg-muted/10 p-6 rounded-xl space-y-6">
+        <h3 className="text-xl font-semibold text-pastel-secondary">Profil</h3>
+        <ProfileInformationForm
+          session={session}
+          userProfile={userProfile}
+          onProfileUpdate={onProfileUpdate}
+        />
+      </section>
 
-      <EmailForm session={session} onProfileUpdate={onProfileUpdate} />
+      <section className="bg-muted/10 p-6 rounded-xl space-y-6">
+        <h3 className="text-xl font-semibold text-pastel-secondary">Email</h3>
+        <EmailForm session={session} onProfileUpdate={onProfileUpdate} />
+      </section>
 
-      <PasswordChangeForm />
+      <section className="bg-muted/10 p-6 rounded-xl space-y-6">
+        <h3 className="text-xl font-semibold text-pastel-secondary">Mot de passe</h3>
+        <PasswordChangeForm />
+      </section>
 
-      <SubscriptionManagement
-        session={session}
-        userProfile={userProfile}
-        onProfileUpdate={onProfileUpdate}
-      />
+      <section className="bg-muted/10 p-6 rounded-xl space-y-6">
+        <h3 className="text-xl font-semibold text-pastel-secondary">Abonnement</h3>
+        <SubscriptionManagement
+          session={session}
+          userProfile={userProfile}
+          onProfileUpdate={onProfileUpdate}
+        />
+      </section>
     </div>
   );
 }
