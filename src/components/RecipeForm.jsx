@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { Button } from '@/components/ui/button';
 import { X, Loader2, Eye, EyeOff, Users, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -666,5 +667,36 @@ function RecipeForm({
     </AnimatePresence>
   );
 }
+
+RecipeForm.propTypes = {
+  recipe: PropTypes.shape({
+    name: PropTypes.string,
+    description: PropTypes.string,
+    servings: PropTypes.number,
+    calories: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    ingredients: PropTypes.arrayOf(
+      PropTypes.shape({
+        name: PropTypes.string,
+        quantity: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        unit: PropTypes.string,
+        suggestedUnits: PropTypes.arrayOf(PropTypes.string),
+      })
+    ),
+    instructions: PropTypes.oneOfType([
+      PropTypes.arrayOf(PropTypes.string),
+      PropTypes.string,
+    ]),
+    tags: PropTypes.arrayOf(PropTypes.string),
+    image_url: PropTypes.string,
+    meal_types: PropTypes.arrayOf(PropTypes.string),
+    visibility: PropTypes.string,
+  }),
+  onSubmit: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
+  session: PropTypes.object,
+  userProfile: PropTypes.shape({
+    subscription_tier: PropTypes.string,
+  }),
+};
 
 export default RecipeForm;
