@@ -189,16 +189,17 @@ function MenuPreferencesPanel({
           </Button>
         </div>
 
-        {(preferences.meals || []).map((meal, index) => (
-          <motion.div
-            key={meal.id || index}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-3 bg-pastel-card-alt p-4 rounded-lg shadow-pastel-card-item"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="flex flex-col">
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+          {(preferences.meals || []).map((meal, index) => (
+            <motion.div
+              key={meal.id || index}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-3 bg-pastel-card-alt p-4 rounded-lg shadow-pastel-card-item border border-pastel-border"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="flex flex-col">
                   <Button
                     type="button"
                     variant="ghost"
@@ -254,7 +255,7 @@ function MenuPreferencesPanel({
                   <Trash2 className="w-4 h-4" />{' '}
                 </Button>
               </div>
-            </div>
+              </div>
 
               <div className="pt-2 border-t border-pastel-border/70">
                 <MealTypeSelector
@@ -262,8 +263,9 @@ function MenuPreferencesPanel({
                   onToggle={(type) => toggleMealType(index, type)}
                 />
               </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))}
+        </div>
       </div>
 
         <TagPreferencesForm
