@@ -19,19 +19,15 @@ export default function RecipeMetaFields({
         <Label className="text-pastel-text/90">Types de repas</Label>
         <div className="flex flex-wrap gap-2">
           {MEAL_TYPE_OPTIONS_DATA.map((type) => {
-            const colorMap = {
-              'petit-dejeuner': 'bg-[#d9c2e9]',
-              plat: 'bg-[#e8b0a0]',
-              'encas-sucre': 'bg-[#f0c4cf]',
-            };
             const active = formData.meal_types.includes(type.id);
             return (
               <Button
                 key={type.id}
                 type="button"
-                onClick={() => handleMealTypeToggle(type.id)}
+                variant={active ? 'default' : 'outline'}
                 size="sm"
-                className={`font-semibold text-pastel-text ${colorMap[type.id] || 'bg-pastel-muted'} ${active ? 'ring-2 ring-pastel-primary' : ''}`}
+                onClick={() => handleMealTypeToggle(type.id)}
+                className="rounded-full px-3 py-1 text-xs"
               >
                 {type.label}
               </Button>
