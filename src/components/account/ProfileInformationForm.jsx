@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,7 +26,6 @@ export default function ProfileInformationForm({
 
   const [initialUsername, setInitialUsername] = useState('');
   const [initialBio, setInitialBio] = useState('');
-  const [initialAvatarUrl, setInitialAvatarUrl] = useState(null);
 
   useEffect(() => {
     if (userProfile) {
@@ -35,7 +35,6 @@ export default function ProfileInformationForm({
       setBio(userProfile.bio || '');
       setInitialBio(userProfile.bio || '');
       setAvatarPreview(userProfile.avatar_url || DEFAULT_AVATAR_URL);
-      setInitialAvatarUrl(userProfile.avatar_url || DEFAULT_AVATAR_URL);
     }
   }, [userProfile]);
 
@@ -65,7 +64,6 @@ export default function ProfileInformationForm({
     setLoading(true);
 
     let profileUpdated = false;
-    let avatarUploaded = false;
 
     try {
       const userUpdates = {};
@@ -93,7 +91,6 @@ export default function ProfileInformationForm({
         } = supabase.storage.from('avatars').getPublicUrl(uploadData.path);
         userUpdates.avatar_url = publicUrl;
         publicUserUpdates.avatar_url = publicUrl;
-        avatarUploaded = true;
       }
 
       // Update auth.users.user_metadata first
@@ -125,8 +122,6 @@ export default function ProfileInformationForm({
         setInitialBio(
           userUpdates.bio !== undefined ? userUpdates.bio : initialBio
         );
-        if (avatarUploaded && userUpdates.avatar_url)
-          setInitialAvatarUrl(userUpdates.avatar_url);
         toast({
           title: 'Profil mis à jour',
           description: 'Vos informations de profil ont été sauvegardées.',
@@ -248,3 +243,18 @@ export default function ProfileInformationForm({
     </form>
   );
 }
+
+ProfileInformationForm.propTypes = {
+  session: PropTypes.shape({
+    user: PropTypes.shape({
+      id: PropTypes.string,
+    }),
+  }),
+  userProfile: PropTypes.shape({
+    username: PropTypes.string,
+    user_tag: PropTypes.string,
+    bio: PropTypes.string,
+    avatar_url: PropTypes.string,
+  }),
+  onProfileUpdate: PropTypes.func,
+};

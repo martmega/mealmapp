@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -90,3 +91,13 @@ export default function EmailForm({ session, onProfileUpdate }) {
     </form>
   );
 }
+
+EmailForm.propTypes = {
+  session: PropTypes.shape({
+    user: PropTypes.shape({
+      id: PropTypes.string,
+      email: PropTypes.string,
+    }),
+  }),
+  onProfileUpdate: PropTypes.func,
+};
