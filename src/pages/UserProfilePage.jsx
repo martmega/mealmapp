@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import RecipeDetailModal from '@/components/RecipeDetailModal';
 import FriendActionButton from '@/components/FriendActionButton.jsx';
+import { formatRecipe } from '@/lib/formatRecipe';
 
 export default function UserProfilePage({ session, currentUserProfile }) {
   const { userId } = useParams();
@@ -97,10 +98,7 @@ export default function UserProfilePage({ session, currentUserProfile }) {
       );
       if (recipeError) throw recipeError;
 
-      const formattedRecipes = recipeData.map((r) => ({
-        ...r,
-        user: r.author,
-      }));
+      const formattedRecipes = recipeData.map((r) => formatRecipe(r));
       setRecipes(formattedRecipes || []);
     } catch (error) {
       console.error('Error fetching profile or recipes:', error);

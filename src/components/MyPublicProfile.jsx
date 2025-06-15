@@ -6,6 +6,7 @@ import { UserCircle, Calendar, ShieldCheck } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import RecipeDetailModal from '@/components/RecipeDetailModal';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { formatRecipe } from '@/lib/formatRecipe';
 
 export default function MyPublicProfile({
   session,
@@ -53,10 +54,7 @@ export default function MyPublicProfile({
 
       if (recipeError) throw recipeError;
 
-      const formattedRecipes = recipeData.map((r) => ({
-        ...r,
-        user: r.author,
-      }));
+      const formattedRecipes = recipeData.map((r) => formatRecipe(r));
       setRecipes(formattedRecipes || []);
     } catch (error) {
       console.error('Error fetching own profile or recipes:', error);
