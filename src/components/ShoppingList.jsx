@@ -97,7 +97,7 @@ function ShoppingList({ weeklyMenu, recipes, userProfile }) {
   }, [shoppingList]);
 
   return (
-    <div className="section-card">
+    <div className="bg-pastel-card p-6 rounded-xl shadow-pastel-soft">
       <h2 className="text-2xl sm:text-3xl font-bold text-pastel-primary mb-6">
         Liste de courses
       </h2>

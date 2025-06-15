@@ -106,7 +106,7 @@ function MenuPreferences({ preferences, setPreferences, availableTags }) {
   };
 
   return (
-    <div className="section-card mb-8 space-y-6">
+    <div className="bg-pastel-card p-6 rounded-xl shadow-pastel-soft mb-8 space-y-6">
       <h3 className="text-xl font-semibold text-pastel-primary">
         Préférences du menu
       </h3>

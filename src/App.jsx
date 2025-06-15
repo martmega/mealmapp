@@ -358,7 +358,7 @@ function App() {
             path="/app/recipes"
             element={
               <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 section-card">
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-pastel-card p-6 rounded-xl shadow-pastel-soft">
                   <h2 className="text-2xl sm:text-3xl font-bold text-pastel-primary">
                     {recipePageTitle}
                   </h2>

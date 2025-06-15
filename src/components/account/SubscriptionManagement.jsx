@@ -146,7 +146,7 @@ export default function SubscriptionManagement({
   const isPremium = currentSubscriptionTier === 'premium';
 
   return (
-    <div className="section-card space-y-6 p-6 sm:p-8">
+    <div className="bg-pastel-card p-6 sm:p-8 rounded-xl shadow-pastel-soft space-y-6">
       <h3 className="text-xl sm:text-2xl font-semibold text-pastel-text/90 border-b border-pastel-border pb-3 mb-5">
         Gestion de l'Abonnement
       </h3>

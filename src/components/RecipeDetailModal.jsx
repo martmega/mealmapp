@@ -45,7 +45,7 @@ function RecipeDetailModal({ recipe, onClose, userProfile }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="recipe-detail-modal-overlay"
+        className="fixed inset-0 flex items-center justify-center z-[60] p-4 bg-pastel-background/70 dark:bg-black/70"
         onClick={onClose}
       >
         <motion.div
@@ -53,7 +53,7 @@ function RecipeDetailModal({ recipe, onClose, userProfile }) {
           animate={{ y: 0, opacity: 1, scale: 1 }}
           exit={{ y: 50, opacity: 0, scale: 0.9 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          className="recipe-detail-modal-content bg-pastel-card text-pastel-text"
+          className="rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col bg-pastel-card text-pastel-text"
           onClick={(e) => e.stopPropagation()}
         >
           <header className="p-6 border-b border-pastel-border flex justify-between items-center sticky top-0 bg-pastel-card z-10">

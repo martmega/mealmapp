@@ -26,7 +26,7 @@ export default function RecipeIngredientsManager({
   };
 
   return (
-    <div className="space-y-4 section-card p-5">
+    <div className="space-y-4 bg-pastel-card p-5 rounded-xl shadow-pastel-soft">
       <Label className="text-lg font-semibold text-pastel-secondary">
         Ingrédients
       </Label>

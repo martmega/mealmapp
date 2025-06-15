@@ -598,7 +598,7 @@ function MenuPlanner({
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 section-card">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-pastel-card p-6 rounded-xl shadow-pastel-soft">
         <h2 className="text-2xl sm:text-3xl font-bold text-pastel-primary">
           Menu de la semaine
         </h2>
@@ -616,7 +616,7 @@ function MenuPlanner({
                 Préférences
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-3xl modal-content-custom">
+            <DialogContent className="max-w-3xl bg-pastel-card border border-pastel-border rounded-lg dark:bg-pastel-card dark:border-pastel-border">
               <DialogHeader>
                 <DialogTitle>Préférences du Menu</DialogTitle>
                 <DialogDescription>
@@ -663,7 +663,7 @@ function MenuPlanner({
         </div>
       </div>
 
-      <div className="menu-grid">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xxl:grid-cols-7">
         {DAYS.map((day, dayIdx) => (
           <DailyMenu
             key={day}

@@ -23,7 +23,7 @@ function ReplaceRecipeModal({
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] modal-content-custom">
+      <DialogContent className="sm:max-w-[600px] bg-pastel-card border border-pastel-border rounded-lg dark:bg-pastel-card dark:border-pastel-border">
         <DialogHeader>
           <DialogTitle className="text-pastel-primary">
             Remplacer la recette

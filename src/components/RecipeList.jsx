@@ -135,7 +135,7 @@ function RecipeList({ recipes, onEdit, onDelete, onSelectRecipe }) {
 
   if (!recipes || recipes.length === 0) {
     return (
-      <div className="text-center py-12 section-card">
+      <div className="text-center py-12 px-6 bg-pastel-card rounded-xl shadow-pastel-soft">
         <p className="text-xl text-pastel-muted-foreground">
           Aucune recette trouvée.
         </p>
