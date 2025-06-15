@@ -126,7 +126,7 @@ export default function MyPublicProfile({
     <>
       <div className="space-y-8 mt-6">
         <div className="bg-pastel-card p-6 sm:p-8 rounded-xl shadow-pastel-soft">
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8">
+          <div className="flex flex-col sm:flex-row items-center sm:items-center gap-6 mb-8">
             {profileData.avatar_url ? (
               <img
                 src={profileData.avatar_url}
@@ -159,7 +159,7 @@ export default function MyPublicProfile({
                   <Calendar className="w-4 h-4 mr-1.5" /> Membre depuis{' '}
                   {(() => {
                     const d = profileData.created_at ? new Date(profileData.created_at) : null;
-                    return d && !isNaN(d) ? d.toLocaleDateString() : 'Date inconnue';
+                    return d && !isNaN(d.getTime()) ? d.toLocaleDateString() : 'Date inconnue';
                   })()}
                 </span>
               </div>

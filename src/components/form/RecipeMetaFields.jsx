@@ -18,20 +18,25 @@ export default function RecipeMetaFields({
       <div className="space-y-3">
         <Label className="text-pastel-text/90">Types de repas</Label>
         <div className="flex flex-wrap gap-2">
-          {MEAL_TYPE_OPTIONS_DATA.map((type) => (
-            <Button
-              key={type.id}
-              type="button"
-              variant={
-                formData.meal_types.includes(type.id) ? 'secondary' : 'outline'
-              }
-              onClick={() => handleMealTypeToggle(type.id)}
-              size="sm"
-              className="transition-all duration-200 ease-in-out"
-            >
-              {type.label}
-            </Button>
-          ))}
+          {MEAL_TYPE_OPTIONS_DATA.map((type) => {
+            const colorMap = {
+              'petit-dejeuner': 'bg-[#d9c2e9]',
+              plat: 'bg-[#e8b0a0]',
+              'encas-sucre': 'bg-[#f0c4cf]',
+            };
+            const active = formData.meal_types.includes(type.id);
+            return (
+              <Button
+                key={type.id}
+                type="button"
+                onClick={() => handleMealTypeToggle(type.id)}
+                size="sm"
+                className={`font-semibold text-pastel-text ${colorMap[type.id] || 'bg-pastel-muted'} ${active ? 'ring-2 ring-pastel-primary' : ''}`}
+              >
+                {type.label}
+              </Button>
+            );
+          })}
         </div>
       </div>
 

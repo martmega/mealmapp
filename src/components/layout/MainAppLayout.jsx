@@ -45,7 +45,7 @@ export default function MainAppLayout({
 
   return (
     <>
-      <header className="border-b border-pastel-border/60 dark:border-pastel-border/30 shadow-md sticky top-0 z-40 bg-white dark:bg-pastel-card-alt backdrop-blur-md">
+      <header className="border-b border-pastel-border/50 shadow-sm sticky top-0 z-40 bg-white/95 dark:bg-pastel-card-alt/95 backdrop-blur">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl sm:text-3xl font-bold text-pastel-primary dark:text-pastel-primary-hover flex items-center">

@@ -19,7 +19,7 @@ export default function PublicRecipeFeed({ session, onSelectRecipe }) {
           onSelectRecipe={onSelectRecipe}
         />
       ) : (
-        <div className="text-center py-8">
+        <div className="flex items-center justify-center h-40 text-center">
           <p className="text-lg text-pastel-muted-foreground">
             Aucune recette publique à afficher pour le moment.
           </p>
