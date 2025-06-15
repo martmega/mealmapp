@@ -8,3 +8,11 @@ VITE_SUPABASE_ANON_KEY=<your-supabase-anon-key>
 ```
 
 These values are injected by Vite and used by the app at runtime.
+
+## Running tests
+
+Execute the following command to run the Vitest suite:
+
+```bash
+npm run test
+```
