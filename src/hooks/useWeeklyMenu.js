@@ -1,11 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
-
-const initialWeeklyMenuState = () =>
-  Array(7)
-    .fill(null)
-    .map(() => []);
+import { initialWeeklyMenuState } from '@/lib/menu';
 
 export function useWeeklyMenu(session) {
   const [weeklyMenu, setWeeklyMenu] = useState(initialWeeklyMenuState());
