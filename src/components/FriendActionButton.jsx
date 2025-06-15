@@ -3,12 +3,27 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabase';
 import { Loader2, UserPlus, UserX, UserCheck, MessageCircle } from 'lucide-react';
+import useSessionRequired from '@/hooks/useSessionRequired';
 
 export default function FriendActionButton({ session, profileUserId, initialStatus, relationshipId: initialRelId, onStatusChange }) {
   const [status, setStatus] = useState(initialStatus);
   const [relId, setRelId] = useState(initialRelId);
   const [loading, setLoading] = useState(false);
+  const [currentSession, setCurrentSession] = useState(session);
   const { toast } = useToast();
+  useSessionRequired();
+
+  React.useEffect(() => {
+    setCurrentSession(session);
+  }, [session]);
+
+  React.useEffect(() => {
+    const fetchSession = async () => {
+      const { data: { session: fresh } } = await supabase.auth.getSession();
+      setCurrentSession(fresh);
+    };
+    fetchSession();
+  }, []);
 
   const updateState = (newStatus, newId) => {
     setStatus(newStatus);
@@ -17,13 +32,13 @@ export default function FriendActionButton({ session, profileUserId, initialStat
   };
 
   const handleAction = async () => {
-    if (!session?.user?.id) return;
+    if (!currentSession?.user?.id) return;
     setLoading(true);
     try {
       if (status === 'not_friends') {
         const { data, error } = await supabase
           .from('user_relationships')
-          .insert({ requester_id: session.user.id, addressee_id: profileUserId, status: 'pending' })
+          .insert({ requester_id: currentSession.user.id, addressee_id: profileUserId, status: 'pending' })
           .select()
           .single();
         if (error) throw error;
@@ -51,7 +66,7 @@ export default function FriendActionButton({ session, profileUserId, initialStat
     }
   };
 
-  if (!session || session.user.id === profileUserId) return null;
+  if (!currentSession || currentSession.user.id === profileUserId) return null;
 
   let content;
   if (loading) {

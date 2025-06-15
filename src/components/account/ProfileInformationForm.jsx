@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Loader2, UserCircle, Info } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
+const DEFAULT_AVATAR_URL = 'https://placehold.co/100x100?text=Avatar';
+
 export default function ProfileInformationForm({
   session,
   userProfile,
@@ -32,8 +34,8 @@ export default function ProfileInformationForm({
       setUserTag(userProfile.user_tag || '');
       setBio(userProfile.bio || '');
       setInitialBio(userProfile.bio || '');
-      setAvatarPreview(userProfile.avatar_url || null);
-      setInitialAvatarUrl(userProfile.avatar_url || null);
+      setAvatarPreview(userProfile.avatar_url || DEFAULT_AVATAR_URL);
+      setInitialAvatarUrl(userProfile.avatar_url || DEFAULT_AVATAR_URL);
     }
   }, [userProfile]);
 

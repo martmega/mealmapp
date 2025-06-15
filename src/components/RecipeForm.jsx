@@ -472,27 +472,16 @@ function RecipeForm({
           ? `Génère une description courte (environ 150 caractères), engageante et appétissante pour une recette nommée "${formData.name}" avec les ingrédients: ${ingredientsList}. Instructions: ${formData.instructions.join(' ')}. Ton: chaleureux et invitant.`
           : `Photographie culinaire professionnelle, très appétissante et réaliste de "${formData.name}", un plat préparé avec: ${ingredientsList}. Style: éclairage naturel vif, couleurs riches, mise au point sélective, arrière-plan subtilement flouté. Composition artistique. Haute résolution.`;
 
-      const response = await fetch(
-        `${supabase.functions.url}/${functionName}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({ prompt: promptBase }),
-        }
-      );
+      const { data, error } = await supabase.functions.invoke(functionName, {
+        body: { prompt: promptBase },
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (error) {
         throw new Error(
-          errorData.error ||
+          error.message ||
             `La génération ${type === 'description' ? 'de la description' : "de l'image"} a échoué.`
         );
       }
-
-      const data = await response.json();
 
       if (type === 'description') {
         const generatedDescription = data.choices[0].message.content;

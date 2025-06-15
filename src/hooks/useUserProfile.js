@@ -6,6 +6,7 @@ export function useUserProfile(session) {
   const [userProfile, setUserProfile] = useState(undefined);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const DEFAULT_AVATAR_URL = 'https://placehold.co/100x100?text=Avatar';
 
   const fetchUserProfile = useCallback(async () => {
     const defaultProfileBase = {
@@ -13,7 +14,7 @@ export function useUserProfile(session) {
       username: 'Visiteur',
       user_tag: '',
       email: '',
-      avatar_url: null,
+      avatar_url: DEFAULT_AVATAR_URL,
       bio: '',
       preferences: {
         servingsPerMeal: 4,
@@ -66,7 +67,10 @@ export function useUserProfile(session) {
           profile?.user_tag ||
           userMetadata.user_tag ||
           'user_' + session.user.id.substring(0, 8),
-        avatar_url: profile?.avatar_url || userMetadata.avatar_url || null,
+        avatar_url:
+          profile?.avatar_url ||
+          userMetadata.avatar_url ||
+          DEFAULT_AVATAR_URL,
         bio: profile?.bio || userMetadata.bio || '',
         subscription_tier:
           userMetadata.subscription_tier ||
@@ -111,6 +115,7 @@ export function useUserProfile(session) {
         subscription_tier: 'standard',
         username: session.user.email?.split('@')[0] || 'Utilisateur',
         user_tag: 'user_' + session.user.id.substring(0, 8),
+        avatar_url: DEFAULT_AVATAR_URL,
       };
       setUserProfile(fallbackProfile);
       return fallbackProfile;
