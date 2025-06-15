@@ -16,8 +16,10 @@ export function useUserSearch(session) {
     try {
       let query = supabase
         .from('public_users')
-        .select('id, username, avatar_url')
-        .or(`username.ilike.*${sanitized}*,id.ilike.*${sanitized}*`)
+        .select('id, email, username, avatar_url, bio')
+        .or(
+          `username.ilike.*${sanitized}*,email.ilike.*${sanitized}*,bio.ilike.*${sanitized}*`
+        )
         .limit(10);
       if (session?.user?.id) {
         query = query.neq('id', session.user.id);
