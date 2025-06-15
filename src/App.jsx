@@ -97,8 +97,7 @@ function App() {
     return success;
   };
 
-  const openRecipeFormForAdd = () => {
-    setEditingRecipe(null);
+  const openRecipeForm = () => {
     setShowRecipeForm(true);
   };
   const closeRecipeForm = () => {
@@ -139,7 +138,7 @@ function App() {
           weeklyMenuLoading={weeklyMenuLoading}
           showRecipeForm={showRecipeForm}
           editingRecipe={editingRecipe}
-          openRecipeFormForAdd={openRecipeFormForAdd}
+          openRecipeFormForAdd={openRecipeForm}
           closeRecipeForm={closeRecipeForm}
           handleAddRecipeSubmit={handleAddRecipeSubmit}
           handleEditRecipeSubmit={handleEditRecipeSubmit}
