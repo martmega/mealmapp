@@ -1,0 +1,221 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 230 25% 96%; 
+    --foreground: 230 15% 25%; 
+    --card: 230 30% 100%; 
+    --card-foreground: 230 15% 25%;
+    --popover: 230 30% 100%;
+    --popover-foreground: 230 15% 25%;
+    --primary: 255 50% 58%; 
+    --primary-foreground: 0 0% 100%;
+    --secondary: 330 50% 65%; 
+    --secondary-foreground: 0 0% 100%;
+    --muted: 230 20% 92%; 
+    --muted-foreground: 230 15% 55%;
+    --accent: 35 60% 62%; 
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 60% 52%; 
+    --destructive-foreground: 0 0% 100%;
+    --border: 230 20% 88%; 
+    --input: 230 30% 99%; 
+    --ring: 255 50% 58%; 
+    --radius: 0.5rem;
+
+    --pastel-shadow-raw: 230 20% 30%; 
+    
+    --pastel-background: hsl(var(--background)); 
+    --pastel-text: hsl(var(--foreground));       
+    
+    --pastel-card: hsl(var(--card));      
+    --pastel-card-alt: hsl(225 25% 97%);  
+    
+    --pastel-primary-raw: var(--primary); 
+    --pastel-primary: hsl(var(--pastel-primary-raw)); 
+    --pastel-primary-hover: hsl(255 50% 53%); 
+    --pastel-primary-text: hsl(var(--primary-foreground));    
+
+    --pastel-secondary-raw: var(--secondary); 
+    --pastel-secondary: hsl(var(--pastel-secondary-raw)); 
+    --pastel-secondary-hover: hsl(330 50% 60%);
+    --pastel-secondary-text: hsl(var(--secondary-foreground)); 
+
+    --pastel-tertiary-raw: 190 45% 60%; 
+    --pastel-tertiary: hsl(var(--pastel-tertiary-raw)); 
+    --pastel-tertiary-hover: hsl(190 45% 55%);
+    --pastel-tertiary-text: hsl(0 0% 100%);   
+
+    --pastel-accent-raw: var(--accent); 
+    --pastel-accent: hsl(var(--pastel-accent-raw)); 
+    --pastel-accent-hover: hsl(35 60% 57%);
+    --pastel-accent-text: hsl(var(--accent-foreground)); 
+
+    --pastel-muted: hsl(var(--muted));         
+    --pastel-muted-foreground: hsl(var(--muted-foreground)); 
+
+    --pastel-highlight-raw: 220 40% 88%; 
+    --pastel-highlight: hsl(var(--pastel-highlight-raw));
+    --pastel-highlight-border: hsl(220 40% 80%);
+    --pastel-active-border: hsl(220 40% 70%); 
+    
+    --pastel-border: hsl(var(--border));       
+    --pastel-input: hsl(var(--input));        
+    --pastel-input-border: hsl(var(--border)); 
+    --pastel-input-focus-border: hsl(var(--pastel-primary-raw));
+    --pastel-ring: hsl(var(--ring));   
+    
+    --pastel-day-lundi-raw: 260 35% 65%;    
+    --pastel-day-mardi-raw: 340 40% 70%;    
+    --pastel-day-mercredi-raw: 30 45% 70%;  
+    --pastel-day-jeudi-raw: 160 35% 68%;   
+    --pastel-day-vendredi-raw: 200 40% 70%; 
+    --pastel-day-samedi-raw: 280 35% 70%;   
+    --pastel-day-dimanche-raw: 0 40% 72%;     
+    --pastel-day-text-raw: 230 15% 98%;
+
+    --pastel-day-lundi: hsl(var(--pastel-day-lundi-raw));    
+    --pastel-day-mardi: hsl(var(--pastel-day-mardi-raw));    
+    --pastel-day-mercredi: hsl(var(--pastel-day-mercredi-raw));  
+    --pastel-day-jeudi: hsl(var(--pastel-day-jeudi-raw));   
+    --pastel-day-vendredi: hsl(var(--pastel-day-vendredi-raw)); 
+    --pastel-day-samedi: hsl(var(--pastel-day-samedi-raw));   
+    --pastel-day-dimanche: hsl(var(--pastel-day-dimanche-raw));     
+    --pastel-day-text: hsl(var(--pastel-day-text-raw));     
+  }
+
+  .dark {
+    --background: 230 10% 18%;
+    --foreground: 230 20% 88%;
+    --card: 230 10% 22%;
+    --card-foreground: 230 20% 88%;
+    --popover: 230 10% 22%;
+    --popover-foreground: 230 20% 88%;
+    --primary: 255 45% 62%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 330 45% 68%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 230 10% 30%;
+    --muted-foreground: 230 15% 60%;
+    --accent: 35 55% 65%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 50% 58%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 230 10% 28%;
+    --input: 230 10% 21%;
+    --ring: 255 45% 62%;
+
+    --pastel-shadow-raw: 230 10% 5%;
+    
+    --pastel-card-alt: hsl(225 10% 20%);
+    
+    --pastel-primary-hover: hsl(255 45% 57%);
+    
+    --pastel-secondary-hover: hsl(330 45% 63%);
+
+    --pastel-tertiary-raw: 190 40% 65%;
+    --pastel-tertiary-hover: hsl(190 40% 60%);
+    
+    --pastel-accent-hover: hsl(35 55% 60%);
+    
+    --pastel-highlight-raw: 220 20% 35%;
+    --pastel-highlight-border: hsl(220 20% 40%);
+    --pastel-active-border: hsl(220 25% 45%);
+    
+    --pastel-input-border: hsl(230 10% 26%);
+
+    --pastel-day-lundi-raw: 260 25% 38%;
+    --pastel-day-mardi-raw: 340 30% 42%;
+    --pastel-day-mercredi-raw: 30 30% 42%;
+    --pastel-day-jeudi-raw: 160 25% 40%;
+    --pastel-day-vendredi-raw: 200 30% 42%;
+    --pastel-day-samedi-raw: 280 25% 42%;
+    --pastel-day-dimanche-raw: 0 30% 45%;
+    --pastel-day-text-raw: 230 15% 90%;
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-pastel-background text-pastel-text;
+    font-family: 'Inter', sans-serif; 
+  }
+}
+
+.menu-grid {
+  @apply grid gap-3 sm:gap-4; 
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) { 
+  .menu-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) { 
+  .menu-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) { 
+   .menu-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1366px) { 
+  .menu-grid {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: hsla(var(--pastel-card-alt), 0.7); 
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--pastel-muted));
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsla(var(--pastel-muted-foreground), 0.8);
+}
+
+.section-card {
+  @apply bg-pastel-card p-6 rounded-xl shadow-pastel-soft;
+}
+
+.modal-overlay-custom {
+  @apply fixed inset-0 z-50;
+  background-color: hsla(var(--background), 0.7);
+}
+.dark .modal-overlay-custom {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal-content-custom {
+  @apply bg-pastel-card border border-pastel-border rounded-lg;
+}
+.dark .modal-content-custom {
+  @apply bg-pastel-card border-pastel-border;
+}
+
+.recipe-detail-modal-overlay {
+  @apply fixed inset-0 flex items-center justify-center z-[60] p-4;
+  background-color: hsla(var(--background), 0.7);
+}
+.dark .recipe-detail-modal-overlay {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.recipe-detail-modal-content {
+  @apply rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col;
+}
