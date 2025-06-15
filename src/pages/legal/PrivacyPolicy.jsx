@@ -13,16 +13,10 @@ export default function PrivacyPolicy() {
             Introduction
           </h2>
           <p className="mb-3">
-            MealMapp ("nous", "notre", "nos") s'engage à protéger la vie privée
-            de ses utilisateurs ("vous", "votre"). Cette politique de
-            confidentialité explique comment nous collectons, utilisons,
-            divulguons et protégeons vos informations lorsque vous utilisez
-            notre application web MealMapp (le "Service").
+            {"MealMapp (\"nous\", \"notre\", \"nos\") s'engage à protéger la vie privée de ses utilisateurs (\"vous\", \"votre\"). Cette politique de confidentialité explique comment nous collectons, utilisons, divulguons et protégeons vos informations lorsque vous utilisez notre application web MealMapp (le \"Service\")."}
           </p>
           <p>
-            Veuillez lire attentivement cette politique de confidentialité. SI
-            VOUS N'ÊTES PAS D'ACCORD AVEC LES TERMES DE CETTE POLITIQUE DE
-            CONFIDENTIALITÉ, VEUILLEZ NE PAS ACCÉDER AU SERVICE.
+            {"Veuillez lire attentivement cette politique de confidentialité. SI VOUS N'ÊTES PAS D'ACCORD AVEC LES TERMES DE CETTE POLITIQUE DE CONFIDENTIALITÉ, VEUILLEZ NE PAS ACCÉDER AU SERVICE."}
           </p>
         </section>
 
@@ -37,25 +31,16 @@ export default function PrivacyPolicy() {
           </p>
           <ul className="list-disc list-inside space-y-1 pl-4 mb-3">
             <li>
-              <strong>Données personnelles :</strong> Informations
-              d'identification personnelle, telles que votre nom d'utilisateur
-              (pseudo), adresse e-mail, date de naissance, et informations de
-              paiement que vous nous fournissez volontairement lorsque vous vous
-              inscrivez au Service ou lorsque vous choisissez de participer à
-              diverses activités liées au Service, comme les abonnements.
+              <strong>Données personnelles :</strong>
+              {" Informations d'identification personnelle, telles que votre nom d'utilisateur (pseudo), adresse e-mail, date de naissance, et informations de paiement que vous nous fournissez volontairement lorsque vous vous inscrivez au Service ou lorsque vous choisissez de participer à diverses activités liées au Service, comme les abonnements."}
             </li>
             <li>
-              <strong>Données d'utilisation :</strong> Informations que nos
-              serveurs collectent automatiquement lorsque vous accédez au
-              Service, telles que votre adresse IP, votre type de navigateur,
-              votre système d'exploitation, vos temps d'accès et les pages que
-              vous avez consultées directement avant et après avoir accédé au
-              Service.
+              <strong>Données d&apos;utilisation :</strong>
+              {" Informations que nos serveurs collectent automatiquement lorsque vous accédez au Service, telles que votre adresse IP, votre type de navigateur, votre système d'exploitation, vos temps d'accès et les pages que vous avez consultées directement avant et après avoir accédé au Service."}
             </li>
             <li>
-              <strong>Données de recettes et de menus :</strong> Toutes les
-              informations que vous entrez concernant vos recettes, vos
-              préférences alimentaires et les menus générés.
+              <strong>Données de recettes et de menus :</strong>
+              {" Toutes les informations que vous entrez concernant vos recettes, vos préférences alimentaires et les menus générés."}
             </li>
           </ul>
         </section>
@@ -76,10 +61,9 @@ export default function PrivacyPolicy() {
             <li>
               Vous envoyer un e-mail concernant votre compte ou votre commande.
             </li>
-            <li>Améliorer l'efficacité et le fonctionnement du Service.</li>
+            <li>{"Améliorer l'efficacité et le fonctionnement du Service."}</li>
             <li>
-              Surveiller et analyser l'utilisation et les tendances pour
-              améliorer votre expérience avec le Service.
+              {"Surveiller et analyser l'utilisation et les tendances pour améliorer votre expérience avec le Service."}
             </li>
             <li>Vous informer des mises à jour du Service.</li>
             <li>
@@ -95,13 +79,7 @@ export default function PrivacyPolicy() {
             Sécurité de vos informations
           </h2>
           <p>
-            Nous utilisons des mesures de sécurité administratives, techniques
-            et physiques pour aider à protéger vos informations personnelles.
-            Bien que nous ayons pris des mesures raisonnables pour sécuriser les
-            informations personnelles que vous nous fournissez, veuillez noter
-            qu'aucune mesure de sécurité n'est parfaite ou impénétrable, et
-            aucune méthode de transmission de données ne peut être garantie
-            contre toute interception ou autre type d'utilisation abusive.
+            {"Nous utilisons des mesures de sécurité administratives, techniques et physiques pour aider à protéger vos informations personnelles. Bien que nous ayons pris des mesures raisonnables pour sécuriser les informations personnelles que vous nous fournissez, veuillez noter qu'aucune mesure de sécurité n'est parfaite ou impénétrable, et aucune méthode de transmission de données ne peut être garantie contre toute interception ou autre type d'utilisation abusive."}
           </p>
         </section>
 
