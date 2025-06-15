@@ -235,14 +235,14 @@ const RecipeFormFields = ({
               <Label className="block text-xs font-medium text-pastel-muted-foreground mb-1">
                 Suggestions
               </Label>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-2">
                 {suggestedTags.map((tag) => (
                   <Button
                     key={tag}
                     type="button"
-                    variant="tag"
+                    variant="outline"
                     size="sm"
-                    className="rounded-full px-2 py-0.5 text-xs"
+                    className="h-auto rounded-full px-2 py-1 text-xs font-medium"
                     onClick={() => handleAddTag(tag)}
                   >
                     <Plus className="w-3 h-3 mr-1" />

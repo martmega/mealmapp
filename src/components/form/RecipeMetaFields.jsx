@@ -67,7 +67,7 @@ export default function RecipeMetaFields({
           ))}
         </div>
         {suggestedTags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 pt-2">
+          <div className="flex flex-wrap gap-2 pt-2">
             <span className="text-xs text-pastel-muted-foreground mr-1 self-center">
               Suggestions:
             </span>
@@ -76,9 +76,9 @@ export default function RecipeMetaFields({
                 key={tag}
                 type="button"
                 variant="outline"
-                size="xs"
+                size="sm"
                 onClick={() => handleAddTag(tag)}
-                className="text-xs"
+                className="h-auto rounded-full px-2 py-1 text-xs font-medium"
               >
                 <Tag className="w-3 h-3 mr-1" /> {tag}
               </Button>
