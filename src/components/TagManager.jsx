@@ -166,7 +166,7 @@ function TagManager({
               Aucun tag personnalisé n'a été sauvegardé.
             </p>
           ) : (
-            <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+            <div className="flex flex-wrap gap-2 p-3 max-h-[60vh] overflow-y-auto">
               {localExistingTags.map((tag) => (
                 <motion.div
                   key={tag}
@@ -174,17 +174,16 @@ function TagManager({
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 10 }}
-                  className="flex items-center justify-between p-3 bg-pastel-card-alt rounded-lg shadow-pastel-card-item"
+                  className="flex items-center bg-pastel-card-alt rounded-full shadow-pastel-card-item px-3 py-1"
                 >
                   <span className="text-sm text-pastel-text/90">{tag}</span>
                   <Button
                     variant="destructive"
                     size="sm"
                     onClick={() => handleDeleteTag(tag)}
-                    className="px-2.5 py-1 text-xs"
+                    className="ml-2 px-2 py-0.5 text-xs"
                   >
-                    <Trash2 className="w-3.5 h-3.5 mr-1.5" />
-                    Supprimer
+                    <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </motion.div>
               ))}
