@@ -231,7 +231,7 @@ export default function ProfileInformationForm({
           onChange={(e) => setBio(e.target.value)}
           rows="3"
           placeholder="Une courte description de vous..."
-          className="flex w-full rounded-md border-2 border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 ring-offset-pastel-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pastel-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-shadow duration-150 shadow-pastel-input hover:border-pastel-muted-foreground/30 focus-visible:shadow-pastel-input-focus dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+          className="flex w-full rounded-md border-2 border-pastel-input-border bg-pastel-card px-3 py-2 text-sm text-pastel-text placeholder-pastel-muted-foreground ring-offset-pastel-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pastel-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-shadow duration-150 shadow-pastel-input hover:border-pastel-muted-foreground/30 focus-visible:shadow-pastel-input-focus dark:border-pastel-input-border dark:bg-pastel-card-alt dark:text-pastel-text dark:placeholder-pastel-muted-foreground"
         />
       </div>
       <Button

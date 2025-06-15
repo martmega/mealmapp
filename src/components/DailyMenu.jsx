@@ -55,10 +55,10 @@ const MemoizedDailyMenu = React.memo(function DailyMenu({
                   delay: dayIndex * 0.05 + mealIndex * 0.03,
                   duration: 0.2,
                 }}
-                className={`rounded-lg p-2.5 space-y-1.5 bg-white ${MEAL_BLOCK_OPACITY[mealIndex + 1] || 'bg-opacity-10'} shadow-pastel-card-item`}
+                className={`rounded-lg p-2.5 space-y-1.5 bg-pastel-card ${MEAL_BLOCK_OPACITY[mealIndex + 1] || 'bg-opacity-10'} shadow-pastel-card-item`}
               >
                 <div className="flex justify-between items-center mb-1">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-white/90">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-pastel-text/90">
                     {mealTitle}
                   </h4>
                   <div className="flex items-center">
@@ -73,7 +73,7 @@ const MemoizedDailyMenu = React.memo(function DailyMenu({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6 text-white/70 hover:text-white hover:bg-white/20"
+                          className="h-6 w-6 text-pastel-text/70 hover:text-pastel-text hover:bg-pastel-highlight/20"
                           onClick={() =>
                             onReplaceRecipe(mealIndex, recipeIndex)
                           }
@@ -83,7 +83,7 @@ const MemoizedDailyMenu = React.memo(function DailyMenu({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6 text-red-400/70 hover:text-red-400 hover:bg-red-500/20"
+                          className="h-6 w-6 text-destructive/70 hover:text-destructive hover:bg-destructive/20"
                           onClick={() => onDeleteRecipe(mealIndex, recipeIndex)}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -122,11 +122,11 @@ const MemoizedDailyMenu = React.memo(function DailyMenu({
                         <p className="text-sm font-semibold leading-tight">
                           {recipe?.name || 'Recette inconnue'}
                         </p>
-                        <div className="text-xs text-white/80">
+                        <div className="text-xs text-pastel-text/80">
                           <p>{mealTypeDisplay}</p>
                         </div>
                         <div className="flex items-center gap-1 mt-1">
-                          <Users className="w-3.5 h-3.5 text-white/70 opacity-80" />
+                          <Users className="w-3.5 h-3.5 text-pastel-text/70 opacity-80" />
                           <ServingsAdjuster
                             servings={plannedServings}
                             onDecrease={() =>
@@ -146,7 +146,7 @@ const MemoizedDailyMenu = React.memo(function DailyMenu({
                           />
                         </div>
                         {recipeIndex < safeMealRecipes.length - 1 && (
-                          <hr className="border-white/10 my-1.5" />
+                          <hr className="border-pastel-border/10 my-1.5" />
                         )}
                       </div>
                     );
@@ -161,7 +161,7 @@ const MemoizedDailyMenu = React.memo(function DailyMenu({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: dayIndex * 0.05 + 0.1, duration: 0.2 }}
-          className="rounded-lg p-3 text-center bg-white bg-opacity-10 flex-grow flex items-center justify-center min-h-[50px]"
+          className="rounded-lg p-3 text-center bg-pastel-card bg-opacity-10 flex-grow flex items-center justify-center min-h-[50px]"
         >
           <p className="text-xs opacity-70">Aucun repas prévu</p>
         </motion.div>

@@ -45,7 +45,7 @@ export default function MainAppLayout({
 
   return (
     <>
-      <header className="border-b border-pastel-border/60 dark:border-pastel-border/30 shadow-pastel-soft sticky top-0 z-40 bg-white dark:bg-slate-800 bg-opacity-90 dark:bg-opacity-80 backdrop-blur-md">
+      <header className="border-b border-pastel-border/60 dark:border-pastel-border/30 shadow-pastel-soft sticky top-0 z-40 bg-pastel-card dark:bg-pastel-card-alt bg-opacity-90 dark:bg-opacity-80 backdrop-blur-md">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl sm:text-3xl font-bold text-pastel-primary dark:text-pastel-primary-hover flex items-center">
@@ -57,8 +57,8 @@ export default function MainAppLayout({
             </h1>
             <div className="flex items-center gap-2 sm:gap-3">
               {userProfile?.subscription_tier === 'premium' && (
-                <span className="flex items-center text-sm font-medium text-yellow-500 bg-yellow-500/10 px-2.5 py-1 rounded-full">
-                  <Star className="h-4 w-4 mr-1.5 text-yellow-400" /> Premium
+                <span className="flex items-center text-sm font-medium text-pastel-accent bg-pastel-accent/10 px-2.5 py-1 rounded-full">
+                  <Star className="h-4 w-4 mr-1.5 text-pastel-accent" /> Premium
                 </span>
               )}
               <Button
