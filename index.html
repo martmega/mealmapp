@@ -9,9 +9,9 @@
           content="default-src 'self'; 
                    script-src 'self' 'unsafe-inline' https://js.stripe.com; 
                    style-src 'self' 'unsafe-inline'; 
-                   img-src 'self' data: https://*.supabase.co https://bunolnhegwzhxqxymmet.supabase.co; 
+                     img-src 'self' data: https://*.supabase.co %VITE_SUPABASE_URL%;
                    frame-src https://js.stripe.com; 
-                   connect-src 'self' https://*.supabase.co wss://*.supabase.co https://bunolnhegwzhxqxymmet.supabase.co;" />
+                     connect-src 'self' https://*.supabase.co wss://*.supabase.co %VITE_SUPABASE_URL%;" />
     <title>Mealmapp - Alpha</title>
   </head>
   <body>
@@ -40,8 +40,8 @@
             'Description : ' + desc + '.';
 
           // Appel à la fonction Supabase
-          fetch(
-            'https://bunolnhegwzhxqxymmet.supabase.co/functions/v1/generate-image',
+            fetch(
+              `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-image`,
             {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
