@@ -616,7 +616,10 @@ function MenuPlanner({
                 Préférences
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-3xl bg-pastel-card border border-pastel-border rounded-lg dark:bg-pastel-card dark:border-pastel-border">
+            <DialogContent
+              overlayClassName="backdrop-blur-sm bg-white/90"
+              className="max-w-3xl bg-white bg-opacity-95 rounded-xl shadow-lg z-50"
+            >
               <DialogHeader>
                 <DialogTitle>Préférences du Menu</DialogTitle>
                 <DialogDescription>
