@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { formatRecipes } from '@/lib/formatRecipe.js';
 import RecipeList from '@/components/RecipeList';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import {
@@ -106,10 +107,7 @@ export default function UserProfilePage({ session, currentUserProfile }) {
       );
       if (recipeError) throw recipeError;
 
-      const formattedRecipes = recipeData.map((r) => ({
-        ...r,
-        user: r.author,
-      }));
+      const formattedRecipes = formatRecipes(recipeData);
       setRecipes(formattedRecipes || []);
     } catch (error) {
       console.error('Error fetching profile or recipes:', error);

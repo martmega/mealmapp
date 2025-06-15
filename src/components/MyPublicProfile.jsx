@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
+import { formatRecipes } from '@/lib/formatRecipe.js';
 import RecipeList from '@/components/RecipeList';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import { UserCircle, Calendar, ShieldCheck } from 'lucide-react';
@@ -53,10 +54,7 @@ export default function MyPublicProfile({
 
       if (recipeError) throw recipeError;
 
-      const formattedRecipes = recipeData.map((r) => ({
-        ...r,
-        user: r.author,
-      }));
+      const formattedRecipes = formatRecipes(recipeData);
       setRecipes(formattedRecipes || []);
     } catch (error) {
       console.error('Error fetching own profile or recipes:', error);

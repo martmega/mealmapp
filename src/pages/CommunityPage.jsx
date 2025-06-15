@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
+import { formatRecipes } from '@/lib/formatRecipe.js';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Link, useNavigate } from 'react-router-dom';
@@ -100,10 +101,7 @@ export default function CommunityPage({ session, userProfile }) {
         );
       }
 
-      const formattedRecipes = data.map((recipe) => ({
-        ...recipe,
-        user: recipe.author,
-      }));
+      const formattedRecipes = formatRecipes(data);
       setPublicRecipes(formattedRecipes);
     } catch (error) {
       console.error('Error fetching public recipes (processed):', error);
