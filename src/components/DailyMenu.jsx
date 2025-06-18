@@ -146,7 +146,7 @@ const MemoizedDailyMenu = React.memo(function DailyMenu({
                           />
                         </div>
                         {recipeIndex < safeMealRecipes.length - 1 && (
-                          <hr className="border-pastel-border/10 my-1.5" />
+                          <hr className="border-pastel-border/10 dark:border-gray-600 my-1.5" />
                         )}
                       </div>
                     );

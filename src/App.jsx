@@ -24,13 +24,17 @@ function App() {
   const [selectedRecipeForDetail, setSelectedRecipeForDetail] = useState(null);
   const [darkMode, setDarkMode] = useState(() => {
     const savedMode = localStorage.getItem('darkMode');
-    if (savedMode === null) {
-      return window.matchMedia &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? true
-        : false;
+    const initialMode =
+      savedMode === null
+        ? window.matchMedia &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches
+        : JSON.parse(savedMode);
+    if (initialMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
-    return JSON.parse(savedMode);
+    return initialMode;
   });
 
   const {
@@ -116,7 +120,7 @@ function App() {
 
   return (
     <div
-      className={`min-h-screen text-pastel-text bg-pastel-background transition-colors duration-300 ${darkMode ? 'dark' : ''} flex flex-col`}
+      className="min-h-screen text-pastel-text bg-pastel-background transition-colors duration-300 flex flex-col"
     >
       <MainAppLayout
         session={session}
