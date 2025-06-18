@@ -45,9 +45,16 @@ export default function FriendsTab({ session, userProfile, onRequestsChange }) {
 
       if (error) throw error;
 
+      const uniqueMap = {};
+      for (const rel of relationships) {
+        const key = `${rel.requester_id}-${rel.addressee_id}`;
+        if (!uniqueMap[key]) uniqueMap[key] = rel;
+      }
+      const uniqueRelationships = Object.values(uniqueMap);
+
       const userIds = [
         ...new Set(
-          relationships.flatMap((rel) => [rel.requester_id, rel.addressee_id])
+          uniqueRelationships.flatMap((rel) => [rel.requester_id, rel.addressee_id])
         ),
       ];
       const { data: users } = await supabase
@@ -56,7 +63,7 @@ export default function FriendsTab({ session, userProfile, onRequestsChange }) {
         .in('id', userIds);
       const usersById = Object.fromEntries((users || []).map((u) => [u.id, u]));
 
-      const data = relationships.map((rel) => ({
+      const data = uniqueRelationships.map((rel) => ({
         ...rel,
         requester: usersById[rel.requester_id] ?? { id: rel.requester_id },
         addressee: usersById[rel.addressee_id] ?? { id: rel.addressee_id },
