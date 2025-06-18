@@ -52,6 +52,19 @@ export default function FriendActionButton({
     setLoading(true);
     try {
       if (status === 'not_friends') {
+        const { data: existing } = await supabase
+          .from('user_relationships')
+          .select('id, status')
+          .or(
+            `and(requester_id.eq.${currentSession.user.id},addressee_id.eq.${profileUserId}),and(requester_id.eq.${profileUserId},addressee_id.eq.${currentSession.user.id})`
+          )
+          .in('status', ['pending', 'accepted']);
+
+        if (existing?.length > 0) {
+          // Avoid creating duplicate relationship
+          return;
+        }
+
         const { data, error } = await supabase
           .from('user_relationships')
           .insert({

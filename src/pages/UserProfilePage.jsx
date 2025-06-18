@@ -53,25 +53,37 @@ export default function UserProfilePage({
       let relId = null;
 
       if (session?.user?.id && session.user.id !== userId) {
-        const { data: rel, error: relError } = await supabase
+        const { data: existing, error: existingError } = await supabase
           .from('user_relationships')
-          .select('id, requester_id, addressee_id, status')
-          .or(
-            `(requester_id.eq.${session.user.id},addressee_id.eq.${userId}),(requester_id.eq.${userId},addressee_id.eq.${session.user.id})`
-          )
-          .maybeSingle();
+          .select('id, status')
+          .eq('requester_id', session.user.id)
+          .eq('addressee_id', userId)
+          .single();
 
-        if (relError && relError.code !== 'PGRST116') {
-          console.warn('Error fetching relationship:', relError.message);
-        } else if (rel) {
-          relId = rel.id;
-          if (rel.status === 'accepted') {
-            currentRelationshipStatus = 'friends';
-          } else if (rel.status === 'pending') {
-            currentRelationshipStatus =
-              rel.requester_id === session.user.id
-                ? 'pending_them'
-                : 'pending_me';
+        if (!existingError && existing?.status === 'pending') {
+          currentRelationshipStatus = 'pending_them';
+          relId = existing.id;
+        } else {
+          const { data: rel, error: relError } = await supabase
+            .from('user_relationships')
+            .select('id, requester_id, addressee_id, status')
+            .or(
+              `(requester_id.eq.${session.user.id},addressee_id.eq.${userId}),(requester_id.eq.${userId},addressee_id.eq.${session.user.id})`
+            )
+            .maybeSingle();
+
+          if (relError && relError.code !== 'PGRST116') {
+            console.warn('Error fetching relationship:', relError.message);
+          } else if (rel) {
+            relId = rel.id;
+            if (rel.status === 'accepted') {
+              currentRelationshipStatus = 'friends';
+            } else if (rel.status === 'pending') {
+              currentRelationshipStatus =
+                rel.requester_id === session.user.id
+                  ? 'pending_them'
+                  : 'pending_me';
+            }
           }
         }
       }
