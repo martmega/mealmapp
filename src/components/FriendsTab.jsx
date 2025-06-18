@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
+import { acceptFriendRequest } from '@/lib/friends';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import {
@@ -23,7 +24,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog.jsx';
 
-export default function FriendsTab({ session, userProfile }) {
+export default function FriendsTab({ session, userProfile, onRequestsChange }) {
   const { toast } = useToast();
   const [friendRequests, setFriendRequests] = useState([]);
   const [friends, setFriends] = useState([]);
@@ -95,12 +96,7 @@ export default function FriendsTab({ session, userProfile }) {
     setActionLoading(true);
     try {
       if (action === 'accept') {
-        const { error } = await supabase
-          .from('user_relationships')
-          .update({ status: 'accepted', updated_at: new Date().toISOString() })
-          .eq('id', relationshipId)
-          .eq('addressee_id', session.user.id);
-        if (error) throw error;
+        await acceptFriendRequest(relationshipId, session.user.id);
         toast({
           title: 'Demande acceptée',
           description: 'Vous êtes maintenant amis !',
@@ -115,6 +111,7 @@ export default function FriendsTab({ session, userProfile }) {
         toast({ title: 'Demande refusée' });
       }
       fetchFriendsAndRequests();
+      onRequestsChange && onRequestsChange();
     } catch (error) {
       toast({
         title: 'Erreur',
@@ -137,6 +134,7 @@ export default function FriendsTab({ session, userProfile }) {
       if (error) throw error;
       toast({ title: 'Ami supprimé' });
       fetchFriendsAndRequests();
+      onRequestsChange && onRequestsChange();
     } catch (error) {
       toast({
         title: 'Erreur',

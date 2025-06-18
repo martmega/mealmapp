@@ -33,6 +33,7 @@ export default function MainAppLayout({
   setShowAuth,
   toggleDarkMode,
   darkMode,
+  pendingRequestCount = 0,
 }) {
   const location = useLocation();
   const showMainNavigation = !isLegalPage(location.pathname);
@@ -143,7 +144,13 @@ export default function MainAppLayout({
                         : 'text-pastel-text/60 dark:text-pastel-text/70 hover:bg-pastel-muted/70 dark:hover:bg-pastel-muted/30 hover:text-pastel-text dark:hover:text-pastel-text/90 border-b-2 border-transparent'
                     }`}
                 >
-                  <tab.icon className="w-3.5 h-3.5 mr-1.5 hidden sm:inline-block" />
+                  <span className="relative mr-1.5 hidden sm:inline-block">
+                    <tab.icon className="w-3.5 h-3.5" />
+                    {pendingRequestCount > 0 &&
+                      ['community', 'account'].includes(tab.id) && (
+                        <span className="absolute -top-1 -right-1 block w-2 h-2 bg-red-500 rounded-full" />
+                      )}
+                  </span>
                   {tab.label}
                 </Button>
               ))}

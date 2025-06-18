@@ -32,9 +32,14 @@ export default function AppRoutes({
   setEditingRecipe,
   setSelectedRecipeForDetail,
   handleProfileUpdated,
+  refreshPendingFriendRequests,
 }) {
   const recipePageTitle = useMemo(() => {
-    if (userProfile && userProfile.username && userProfile.username !== 'Visiteur') {
+    if (
+      userProfile &&
+      userProfile.username &&
+      userProfile.username !== 'Visiteur'
+    ) {
       return `Recettes de ${userProfile.username}`;
     }
     return 'Mes Recettes';
@@ -45,7 +50,9 @@ export default function AppRoutes({
     return !menu.some(
       (dayMeals) =>
         Array.isArray(dayMeals) &&
-        dayMeals.some((mealRecipes) => Array.isArray(mealRecipes) && mealRecipes.length > 0)
+        dayMeals.some(
+          (mealRecipes) => Array.isArray(mealRecipes) && mealRecipes.length > 0
+        )
     );
   };
 
@@ -90,7 +97,9 @@ export default function AppRoutes({
             {showRecipeForm && (
               <RecipeForm
                 recipe={editingRecipe}
-                onSubmit={editingRecipe ? handleEditRecipeSubmit : handleAddRecipeSubmit}
+                onSubmit={
+                  editingRecipe ? handleEditRecipeSubmit : handleAddRecipeSubmit
+                }
                 onClose={closeRecipeForm}
                 session={session}
                 userProfile={userProfile}
@@ -125,7 +134,11 @@ export default function AppRoutes({
           isMenuDataEmpty(weeklyMenu) ? (
             <LoadingScreen message="Chargement de la liste de courses..." />
           ) : (
-            <ShoppingList weeklyMenu={weeklyMenu} recipes={recipes} userProfile={userProfile} />
+            <ShoppingList
+              weeklyMenu={weeklyMenu}
+              recipes={recipes}
+              userProfile={userProfile}
+            />
           )
         }
       />
@@ -133,7 +146,11 @@ export default function AppRoutes({
         path="/app/community"
         element={
           session ? (
-            <CommunityPage session={session} userProfile={userProfile} />
+            <CommunityPage
+              session={session}
+              userProfile={userProfile}
+              onRequestsChange={refreshPendingFriendRequests}
+            />
           ) : (
             <Navigate to="/app/recipes" replace />
           )
@@ -141,7 +158,13 @@ export default function AppRoutes({
       />
       <Route
         path="/app/profile/:userId"
-        element={<UserProfilePage session={session} currentUserProfile={userProfile} />}
+        element={
+          <UserProfilePage
+            session={session}
+            currentUserProfile={userProfile}
+            onRequestsChange={refreshPendingFriendRequests}
+          />
+        }
       />
       <Route
         path="/app/account"

@@ -10,7 +10,11 @@ import RecipeDetailModal from '@/components/RecipeDetailModal';
 import FriendActionButton from '@/components/FriendActionButton.jsx';
 import { formatRecipe } from '@/lib/formatRecipe';
 
-export default function UserProfilePage({ session, currentUserProfile }) {
+export default function UserProfilePage({
+  session,
+  currentUserProfile,
+  onRequestsChange,
+}) {
   const { userId } = useParams();
   const [profileData, setProfileData] = useState(null);
   const [recipes, setRecipes] = useState([]);
@@ -100,9 +104,7 @@ export default function UserProfilePage({ session, currentUserProfile }) {
         .from('public_users')
         .select('id, username, avatar_url, bio')
         .in('id', userIds);
-      const usersMap = Object.fromEntries(
-        (users || []).map((u) => [u.id, u])
-      );
+      const usersMap = Object.fromEntries((users || []).map((u) => [u.id, u]));
 
       const formattedRecipes = recipeData.map((r) =>
         formatRecipe({ ...r, user: usersMap[r.user_id] ?? null })
@@ -139,7 +141,6 @@ export default function UserProfilePage({ session, currentUserProfile }) {
     }
   }, [location.search, recipes, location.pathname, navigate]);
 
-
   if (loading) {
     return <LoadingScreen message="Chargement du profil..." />;
   }
@@ -164,7 +165,6 @@ export default function UserProfilePage({ session, currentUserProfile }) {
   }
 
   const isOwnProfile = session?.user?.id === userId;
-
 
   return (
     <>
@@ -198,6 +198,7 @@ export default function UserProfilePage({ session, currentUserProfile }) {
                     setRelationshipStatus(s);
                     setRelationshipId(id);
                   }}
+                  onRequestHandled={onRequestsChange}
                 />
               )}
             </div>

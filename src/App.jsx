@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useLocation, useNavigate as useRouterNavigate } from 'react-router-dom';
+import {
+  useLocation,
+  useNavigate as useRouterNavigate,
+} from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import Auth from '@/components/Auth';
 import RecipeDetailModal from '@/components/RecipeDetailModal';
@@ -10,13 +13,21 @@ import { useRecipes } from '@/hooks/useRecipes.jsx';
 import { useWeeklyMenu } from '@/hooks/useWeeklyMenu.js';
 import { useSession } from '@/hooks/useSession.js';
 import { useUserProfile } from '@/hooks/useUserProfile.js';
+import { usePendingFriendRequests } from '@/hooks/usePendingFriendRequests.js';
 import AppRoutes from '@/components/AppRoutes.jsx';
 
 function App() {
-  const { session, loading: sessionLoading, refreshSession, handleSignOut } =
-    useSession();
-  const { userProfile, loading: profileLoading, refreshProfile } =
-    useUserProfile(session);
+  const {
+    session,
+    loading: sessionLoading,
+    refreshSession,
+    handleSignOut,
+  } = useSession();
+  const {
+    userProfile,
+    loading: profileLoading,
+    refreshProfile,
+  } = useUserProfile(session);
   const [showAuth, setShowAuth] = useState(false);
   const [activeTab, setActiveTab] = useState('recipes');
   const [showRecipeForm, setShowRecipeForm] = useState(false);
@@ -46,6 +57,9 @@ function App() {
     setWeeklyMenu: saveUserWeeklyMenuHook,
     loading: weeklyMenuLoading,
   } = useWeeklyMenu(session);
+
+  const { pendingCount, refreshPendingFriendRequests } =
+    usePendingFriendRequests(session);
 
   const location = useLocation();
   const routerNavigate = useRouterNavigate();
@@ -110,7 +124,11 @@ function App() {
     await refreshProfile();
   }, [refreshSession, refreshProfile]);
 
-  if (loadingInitialState || session === undefined || userProfile === undefined) {
+  if (
+    loadingInitialState ||
+    session === undefined ||
+    userProfile === undefined
+  ) {
     return <LoadingScreen />;
   }
 
@@ -128,6 +146,7 @@ function App() {
         setShowAuth={setShowAuth}
         toggleDarkMode={toggleDarkMode}
         darkMode={darkMode}
+        pendingRequestCount={pendingCount}
       >
         <AppRoutes
           session={session}
@@ -147,6 +166,7 @@ function App() {
           setEditingRecipe={setEditingRecipe}
           setSelectedRecipeForDetail={setSelectedRecipeForDetail}
           handleProfileUpdated={handleProfileUpdated}
+          refreshPendingFriendRequests={refreshPendingFriendRequests}
         />
       </MainAppLayout>
 
