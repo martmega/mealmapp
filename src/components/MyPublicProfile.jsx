@@ -45,7 +45,7 @@ export default function MyPublicProfile({
         .select(
           `
           id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, visibility,
-          author:public.public_users (id, username, avatar_url, bio)
+          author:public.public_users!user_id(id, username, avatar_url, bio)
         `
         )
         .eq('user_id', session.user.id)

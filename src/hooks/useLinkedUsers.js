@@ -13,7 +13,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
       try {
         const { data, error } = await supabase
           .from('recipes')
-          .select('*, author:public.public_users(id, username, avatar_url, bio)')
+          .select('*, author:public.public_users!user_id(id, username, avatar_url, bio)')
           .eq('user_id', userId)
           .or('visibility.eq.public,visibility.eq.friends_only');
 
