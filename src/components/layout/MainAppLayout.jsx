@@ -46,7 +46,7 @@ export default function MainAppLayout({
 
   return (
     <>
-      <header className="border-b border-pastel-border/50 shadow-sm sticky top-0 z-40 bg-white/95 dark:bg-pastel-card-alt/95 backdrop-blur text-black dark:text-white">
+      <header className="border-b border-pastel-border/50 shadow-sm sticky top-0 z-40 bg-white dark:bg-[#1e1e1e] text-black dark:text-white transition-colors backdrop-blur">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl sm:text-3xl font-bold text-pastel-primary dark:text-pastel-primary-hover flex items-center">
@@ -66,7 +66,7 @@ export default function MainAppLayout({
                 variant="ghost"
                 size="icon"
                 onClick={toggleDarkMode}
-                className="text-pastel-accent dark:text-pastel-accent-hover hover:bg-pastel-accent/10 dark:hover:bg-pastel-accent/20 rounded-full"
+                className="text-black dark:text-white hover:text-purple-500 transition-colors rounded-full"
               >
                 {darkMode ? (
                   <Sun className="h-5 w-5" />
@@ -75,7 +75,7 @@ export default function MainAppLayout({
                 )}
               </Button>
               {session ? (
-                <Button variant="outline" onClick={handleSignOut} size="sm">
+                <Button variant="outline" onClick={handleSignOut} size="sm" className="text-black dark:text-white transition-colors">
                   <LogOut className="w-4 h-4 mr-1.5" />
                   Déconnexion
                 </Button>
@@ -84,6 +84,7 @@ export default function MainAppLayout({
                   variant="default"
                   onClick={() => setShowAuth(true)}
                   size="sm"
+                  className="text-black dark:text-white transition-colors"
                 >
                   <LogIn className="w-4 h-4 mr-1.5" />
                   Connexion
@@ -92,7 +93,7 @@ export default function MainAppLayout({
             </div>
           </div>
           {showMainNavigation && (
-            <nav className="flex space-x-1 sm:space-x-2 mt-5 overflow-x-auto pb-1 -mb-px">
+            <nav className="flex space-x-1 sm:space-x-2 mt-5 overflow-x-auto pb-1 -mb-px transition-colors duration-300 bg-white text-black dark:bg-[#121212] dark:text-white">
               {[
                 {
                   id: 'recipes',
@@ -137,11 +138,11 @@ export default function MainAppLayout({
                   key={tab.id}
                   variant="ghost"
                   onClick={() => handleTabClick(tab)}
-                  className={`px-3 py-1.5 sm:px-4 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap
+                  className={`px-3 py-1.5 sm:px-4 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap text-black dark:text-white
                     ${
                       activeTab === tab.id
                         ? 'bg-pastel-primary/10 dark:bg-pastel-primary/20 text-pastel-primary dark:text-pastel-primary-hover border-b-2 border-pastel-primary dark:border-pastel-primary-hover'
-                        : 'text-pastel-text/60 dark:text-pastel-text/70 hover:bg-pastel-muted/70 dark:hover:bg-pastel-muted/30 hover:text-pastel-text dark:hover:text-pastel-text/90 border-b-2 border-transparent'
+                        : 'hover:bg-pastel-muted/70 dark:hover:bg-pastel-muted/30 border-b-2 border-transparent'
                     }`}
                 >
                   <span className="relative mr-1.5 hidden sm:inline-block">
@@ -159,7 +160,7 @@ export default function MainAppLayout({
         </div>
       </header>
 
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex-grow">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex-grow bg-white text-black dark:bg-[#121212] dark:text-white transition-colors duration-300">
         {children}
       </main>
     </>

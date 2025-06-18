@@ -138,7 +138,7 @@ function App() {
 
   return (
     <div
-      className="min-h-screen text-pastel-text bg-pastel-background transition-colors duration-300 flex flex-col"
+      className="min-h-screen bg-white text-black dark:bg-[#121212] dark:text-white transition-colors duration-300 flex flex-col"
     >
       <MainAppLayout
         session={session}
