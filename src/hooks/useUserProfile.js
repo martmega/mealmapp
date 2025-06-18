@@ -59,7 +59,6 @@ export function useUserProfile(session) {
         username:
           profile?.username ||
           userMetadata.username ||
-          session.user.email?.split('@')[0] ||
           'Utilisateur',
         user_tag:
           profile?.user_tag ||
@@ -110,7 +109,7 @@ export function useUserProfile(session) {
         id: session.user.id,
         ...defaultProfileBase,
         subscription_tier: 'standard',
-        username: session.user.email?.split('@')[0] || 'Utilisateur',
+        username: 'Utilisateur',
         user_tag: 'user_' + session.user.id.substring(0, 8),
         avatar_url: DEFAULT_AVATAR_URL,
       };
