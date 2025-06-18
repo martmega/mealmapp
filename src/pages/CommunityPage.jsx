@@ -13,7 +13,11 @@ import MyPublicProfile from '@/components/MyPublicProfile.jsx';
 import PublicRecipeFeed from '@/components/PublicRecipeFeed.jsx';
 import UserSearch from '@/components/UserSearch.jsx';
 
-export default function CommunityPage({ session, userProfile }) {
+export default function CommunityPage({
+  session,
+  userProfile,
+  onRequestsChange,
+}) {
   const [activeSubTab, setActiveSubTab] = useState('discover');
   const navigate = useNavigate();
 
@@ -27,7 +31,11 @@ export default function CommunityPage({ session, userProfile }) {
 
   return (
     <div className="space-y-8">
-      <Tabs value={activeSubTab} onValueChange={setActiveSubTab} className="w-full">
+      <Tabs
+        value={activeSubTab}
+        onValueChange={setActiveSubTab}
+        className="w-full"
+      >
         <TabsList className="grid w-full grid-cols-3 max-w-lg mx-auto">
           <TabsTrigger value="discover" className="flex items-center gap-2">
             <Compass className="w-4 h-4" /> Découvrir
@@ -35,7 +43,10 @@ export default function CommunityPage({ session, userProfile }) {
           <TabsTrigger value="friends" className="flex items-center gap-2">
             <Users className="w-4 h-4" /> Amis
           </TabsTrigger>
-          <TabsTrigger value="my-profile-preview" className="flex items-center gap-2">
+          <TabsTrigger
+            value="my-profile-preview"
+            className="flex items-center gap-2"
+          >
             <Eye className="w-4 h-4" /> Mon Profil Public
           </TabsTrigger>
         </TabsList>
@@ -47,14 +58,21 @@ export default function CommunityPage({ session, userProfile }) {
               <h2 className="text-xl sm:text-2xl font-bold text-pastel-secondary mb-6 text-center">
                 Dernières Recettes Publiques
               </h2>
-              <PublicRecipeFeed session={session} onSelectRecipe={handleSelectRecipe} />
+              <PublicRecipeFeed
+                session={session}
+                onSelectRecipe={handleSelectRecipe}
+              />
             </div>
           </div>
         </TabsContent>
 
         <TabsContent value="friends" className="mt-6">
           {session && userProfile ? (
-            <FriendsTab session={session} userProfile={userProfile} />
+            <FriendsTab
+              session={session}
+              userProfile={userProfile}
+              onRequestsChange={onRequestsChange}
+            />
           ) : (
             <LoadingScreen message="Chargement des informations utilisateur..." />
           )}
