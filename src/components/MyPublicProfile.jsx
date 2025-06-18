@@ -30,7 +30,7 @@ export default function MyPublicProfile({
     try {
       const { data: user, error: userError } = await supabase
         .from('public_users')
-        .select('id, username, avatar_url, bio')
+        .select('id, username, avatar_url, bio, user_tag')
         .eq('id', session.user.id)
         .single();
 
@@ -54,7 +54,7 @@ export default function MyPublicProfile({
       const userIds = [...new Set(recipeData.map((r) => r.user_id))];
       const { data: users } = await supabase
         .from('public_users')
-        .select('id, username, avatar_url, bio')
+        .select('id, username, avatar_url, bio, user_tag')
         .in('id', userIds);
       const usersMap = Object.fromEntries(
         (users || []).map((u) => [u.id, u])

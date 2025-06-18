@@ -16,7 +16,7 @@ export function useUserSearch(session) {
     try {
       let query = supabase
         .from('public_users')
-        .select('id, username, avatar_url, bio')
+        .select('id, username, avatar_url, bio, user_tag')
         .or(`username.ilike.*${sanitized}*,bio.ilike.*${sanitized}*`)
         .limit(10);
       if (session?.user?.id) {
@@ -28,6 +28,7 @@ export function useUserSearch(session) {
         data.map((u) => ({
           ...u,
           username: u.username || u.id.substring(0, 8),
+          user_tag: u.user_tag,
         }))
       );
     } catch (err) {

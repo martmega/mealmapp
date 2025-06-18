@@ -51,7 +51,7 @@ export function useRecipes(session) {
         const userIds = [...new Set(data.map((r) => r.user_id))];
         const { data: users } = await supabase
           .from('public_users')
-          .select('id, username, avatar_url, bio')
+          .select('id, username, avatar_url, bio, user_tag')
           .in('id', userIds);
 
         const usersMap = Object.fromEntries(
@@ -144,7 +144,7 @@ export function useRecipes(session) {
 
         const { data: user } = await supabase
           .from('public_users')
-          .select('id, username, avatar_url, bio')
+          .select('id, username, avatar_url, bio, user_tag')
           .eq('id', newRecipeResult.user_id)
           .single();
 
@@ -240,7 +240,7 @@ export function useRecipes(session) {
 
         const { data: user } = await supabase
           .from('public_users')
-          .select('id, username, avatar_url, bio')
+          .select('id, username, avatar_url, bio, user_tag')
           .eq('id', updatedRecipeResult.user_id)
           .single();
 
