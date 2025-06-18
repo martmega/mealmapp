@@ -8,7 +8,7 @@ export function usePublicRecipes(session) {
       let query = supabase
         .from('recipes')
         .select(
-          `id, name, description, image_url, servings, calories, tags, visibility, user_id, author:public_users(id, username, avatar_url)`
+          `id, name, description, image_url, servings, calories, tags, visibility, user_id, author:public.public_users(id, username, avatar_url, bio)`
         )
         .eq('visibility', 'public')
         .order('created_at', { ascending: false })

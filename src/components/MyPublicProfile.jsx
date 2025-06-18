@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import RecipeList from '@/components/RecipeList';
 import LoadingScreen from '@/components/layout/LoadingScreen';
-import { UserCircle, Calendar, ShieldCheck } from 'lucide-react';
+import { UserCircle, ShieldCheck } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import RecipeDetailModal from '@/components/RecipeDetailModal';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -29,8 +29,8 @@ export default function MyPublicProfile({
     setLoading(true);
     try {
       const { data: user, error: userError } = await supabase
-        .from('public_users')
-        .select('id, created_at, username, avatar_url, bio, user_tag')
+        .from('public.public_users')
+        .select('id, username, avatar_url, bio')
         .eq('id', session.user.id)
         .single();
 
@@ -45,7 +45,7 @@ export default function MyPublicProfile({
         .select(
           `
           id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, visibility,
-          author:public_users (id, username, avatar_url)
+          author:public.public_users (id, username, avatar_url, bio)
         `
         )
         .eq('user_id', session.user.id)
@@ -146,23 +146,10 @@ export default function MyPublicProfile({
                   title="Ceci est votre aperçu de profil public"
                 />
               </div>
-              {profileData.user_tag && (
-                <p className="text-sm text-pastel-muted-foreground font-mono mb-1">
-                  @{profileData.user_tag}
-                </p>
-              )}
               {profileData.bio && (
                 <p className="text-pastel-text/80 mb-3">{profileData.bio}</p>
               )}
-              <div className="flex flex-wrap justify-center sm:justify-start gap-x-4 gap-y-2 text-sm text-pastel-muted-foreground">
-                <span className="flex items-center">
-                  <Calendar className="w-4 h-4 mr-1.5" /> Membre depuis{' '}
-                  {(() => {
-                    const d = profileData.created_at ? new Date(profileData.created_at) : null;
-                    return d && !isNaN(d.getTime()) ? d.toLocaleDateString() : 'Date inconnue';
-                  })()}
-                </span>
-              </div>
+              <div className="flex flex-wrap justify-center sm:justify-start gap-x-4 gap-y-2 text-sm text-pastel-muted-foreground"></div>
               <p className="text-xs text-pastel-muted-foreground mt-3 italic">
                 C'est ainsi que les autres utilisateurs voient votre profil
                 (recettes publiques et pour amis).

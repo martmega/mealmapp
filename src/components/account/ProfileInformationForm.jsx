@@ -66,15 +66,12 @@ export default function ProfileInformationForm({
     let profileUpdated = false;
 
     try {
-      const userUpdates = {};
       const publicUserUpdates = {};
 
       if (username.trim() !== initialUsername && username.trim() !== '') {
-        userUpdates.username = username.trim();
         publicUserUpdates.username = username.trim();
       }
       if (bio !== initialBio) {
-        userUpdates.bio = bio;
         publicUserUpdates.bio = bio;
       }
 
@@ -89,38 +86,26 @@ export default function ProfileInformationForm({
         const {
           data: { publicUrl },
         } = supabase.storage.from('avatars').getPublicUrl(uploadData.path);
-        userUpdates.avatar_url = publicUrl;
         publicUserUpdates.avatar_url = publicUrl;
       }
 
-      // Update auth.users.user_metadata first
-      if (Object.keys(userUpdates).length > 0) {
-        const { error: metadataError } = await supabase.auth.updateUser({
-          data: userUpdates,
-        });
-        if (metadataError) throw metadataError;
+      if (Object.keys(publicUserUpdates).length > 0) {
+        const { error: updateError } = await supabase
+          .from('public.public_users')
+          .update(publicUserUpdates)
+          .eq('id', session.user.id);
+        if (updateError) throw updateError;
         profileUpdated = true;
       }
 
-      // Then, ensure public_users is synced by the trigger (or manually if trigger is not comprehensive)
-      // The trigger `handle_user_update` should take care of this.
-      // If direct update to public_users is needed (e.g. if trigger is not covering all cases):
-      // if (Object.keys(publicUserUpdates).length > 0) {
-      //   const { error: publicUserError } = await supabase
-      //     .from('public_users')
-      //     .update(publicUserUpdates)
-      //     .eq('id', session.user.id);
-      //   if (publicUserError) console.warn("Could not directly update public_users:", publicUserError.message);
-      // }
-
       if (profileUpdated) {
         setInitialUsername(
-          userUpdates.username !== undefined
-            ? userUpdates.username
+          publicUserUpdates.username !== undefined
+            ? publicUserUpdates.username
             : initialUsername
         );
         setInitialBio(
-          userUpdates.bio !== undefined ? userUpdates.bio : initialBio
+          publicUserUpdates.bio !== undefined ? publicUserUpdates.bio : initialBio
         );
         toast({
           title: 'Profil mis à jour',

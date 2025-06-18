@@ -13,7 +13,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
       try {
         const { data, error } = await supabase
           .from('recipes')
-          .select('*, author:public_users(id, username, avatar_url, user_tag)')
+          .select('*, author:public.public_users(id, username, avatar_url, bio)')
           .eq('user_id', userId)
           .or('visibility.eq.public,visibility.eq.friends_only');
 
@@ -22,7 +22,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
           ? data.map((r) => ({
               ...r,
               user: r.author,
-              author: r.author?.username || r.author?.user_tag || 'Ami',
+              author: r.author?.username || 'Ami',
               sourceUserId: userId,
             }))
           : [];
@@ -102,7 +102,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
       });
       return;
     }
-    if (newLinkedUserTag.trim().toLowerCase() === userProfile.user_tag?.toLowerCase()) {
+    if (newLinkedUserTag.trim().toLowerCase() === userProfile.username?.toLowerCase()) {
       toast({
         title: 'Erreur',
         description: 'Vous ne pouvez pas vous lier à vous-même.',
@@ -113,9 +113,9 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
     setIsLinkingUser(true);
     try {
       const { data: usersData, error: usersError } = await supabase
-        .from('public_users')
-        .select('id, username, user_tag')
-        .eq('user_tag', newLinkedUserTag.trim().toLowerCase())
+        .from('public.public_users')
+        .select('id, username, avatar_url, bio')
+        .ilike('username', newLinkedUserTag.trim())
         .single();
 
       if (usersError) throw usersError;
@@ -150,7 +150,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
         console.warn('Error creating/upserting relationship for menu link:', linkError);
       }
 
-      const peerUsername = peerUser.username || peerUser.user_tag || peerUser.id.substring(0, 8);
+      const peerUsername = peerUser.username || peerUser.id.substring(0, 8);
       const newLinkedUserEntry = {
         id: peerUser.id,
         name: peerUsername,
@@ -221,7 +221,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
         const { data: friendsData, error: friendsError } = await supabase
           .from('user_relationships')
           .select(
-            'requester_id, addressee_id, requester:public_users!user_relationships_requester_id_fkey(id, username, user_tag), addressee:public_users!user_relationships_addressee_id_fkey(id, username, user_tag)'
+            'requester_id, addressee_id, requester:public.public_users!user_relationships_requester_id_fkey(id, username, avatar_url, bio), addressee:public.public_users!user_relationships_addressee_id_fkey(id, username, avatar_url, bio)'
           )
           .eq('status', 'accepted')
           .or(`requester_id.eq.${userProfile.id},addressee_id.eq.${userProfile.id}`);
@@ -235,7 +235,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
             if (!friendProfile) return null;
             return {
               id: friendProfile.id,
-              name: friendProfile.username || friendProfile.user_tag || friendProfile.id.substring(0, 8),
+              name: friendProfile.username || friendProfile.id.substring(0, 8),
               ratio: 0,
               isOwner: false,
             };

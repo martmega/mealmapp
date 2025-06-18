@@ -15,7 +15,7 @@ export function useRecipes(session) {
 
   const baseRecipeSelect = `
     id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, visibility, updated_at,
-    public_users ( id, username, avatar_url, bio )
+    public.public_users ( id, username, avatar_url, bio )
   `;
 
   useEffect(() => {
