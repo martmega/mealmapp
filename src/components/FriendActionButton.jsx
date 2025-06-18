@@ -154,7 +154,7 @@ export default function FriendActionButton({
             variant="default"
             className="mt-4 w-40"
           >
-            <UserPlus className="mr-2 h-4 w-4" /> Ajouter en ami
+            <UserPlus className="mr-2 h-4 w-4" /> Demander en ami
           </Button>
         );
     }
