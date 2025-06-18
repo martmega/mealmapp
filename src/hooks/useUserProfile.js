@@ -13,7 +13,6 @@ export function useUserProfile(session) {
       subscription_tier: 'non-authenticated',
       username: 'Visiteur',
       user_tag: '',
-      email: '',
       avatar_url: DEFAULT_AVATAR_URL,
       bio: '',
       preferences: {
@@ -39,7 +38,7 @@ export function useUserProfile(session) {
     try {
       const { data: profile, error: profileError } = await supabase
         .from('public_users')
-        .select('id, email, username, avatar_url, bio, user_tag')
+        .select('id, username, avatar_url, bio, user_tag')
         .eq('id', session.user.id)
         .single();
 
@@ -57,7 +56,6 @@ export function useUserProfile(session) {
 
       let finalProfileData = {
         id: session.user.id,
-        email: profile?.email || session.user.email,
         username:
           profile?.username ||
           userMetadata.username ||
@@ -111,7 +109,6 @@ export function useUserProfile(session) {
       const fallbackProfile = {
         id: session.user.id,
         ...defaultProfileBase,
-        email: session.user.email,
         subscription_tier: 'standard',
         username: session.user.email?.split('@')[0] || 'Utilisateur',
         user_tag: 'user_' + session.user.id.substring(0, 8),

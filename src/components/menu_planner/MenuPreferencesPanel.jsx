@@ -32,8 +32,8 @@ function MenuPreferencesPanel({
   preferences,
   setPreferences,
   availableTags,
-  newLinkedUserEmail,
-  setNewLinkedUserEmail,
+  newLinkedUserTag,
+  setNewLinkedUserTag,
   isLinkingUser,
   handleAddLinkedUser,
   handleToggleCommonMenu,
@@ -164,8 +164,8 @@ function MenuPreferencesPanel({
 
         <CommonMenuSettings
           preferences={preferences}
-          newLinkedUserEmail={newLinkedUserEmail}
-          setNewLinkedUserEmail={setNewLinkedUserEmail}
+          newLinkedUserTag={newLinkedUserTag}
+          setNewLinkedUserTag={setNewLinkedUserTag}
           isLinkingUser={isLinkingUser}
           handleAddLinkedUser={handleAddLinkedUser}
           handleToggleCommonMenu={handleToggleCommonMenu}
