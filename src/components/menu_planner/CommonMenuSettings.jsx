@@ -9,8 +9,8 @@ import { Info, Link, Unlink } from 'lucide-react';
 
 function CommonMenuSettings({
   preferences,
-  newLinkedUserEmail,
-  setNewLinkedUserEmail,
+  newLinkedUserTag,
+  setNewLinkedUserTag,
   isLinkingUser,
   handleAddLinkedUser,
   handleToggleCommonMenu,
@@ -86,15 +86,15 @@ function CommonMenuSettings({
           ))}
           <div className="flex gap-2 pt-2 border-t border-pastel-border/50">
             <Input
-              type="email"
-              placeholder="Email de l'utilisateur à lier"
-              value={newLinkedUserEmail}
-              onChange={(e) => setNewLinkedUserEmail(e.target.value)}
+              type="text"
+              placeholder="Identifiant de l'utilisateur à lier"
+              value={newLinkedUserTag}
+              onChange={(e) => setNewLinkedUserTag(e.target.value)}
               className="flex-grow h-9 text-sm"
             />
             <Button
               onClick={handleAddLinkedUser}
-              disabled={isLinkingUser || !newLinkedUserEmail.trim()}
+              disabled={isLinkingUser || !newLinkedUserTag.trim()}
               size="sm"
               className="h-9"
             >

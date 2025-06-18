@@ -15,7 +15,7 @@ export function useRecipes(session) {
 
   const baseRecipeSelect = `
     id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, visibility, updated_at,
-    public_users ( id, email, username, avatar_url, bio )
+    public_users ( id, username, avatar_url, bio )
   `;
 
   useEffect(() => {
@@ -54,7 +54,6 @@ export function useRecipes(session) {
           user: recipe.public_users
             ? {
                 id: recipe.public_users.id,
-                email: recipe.public_users.email,
                 username: recipe.public_users.username,
                 avatar_url: recipe.public_users.avatar_url,
                 bio: recipe.public_users.bio,
@@ -146,7 +145,6 @@ export function useRecipes(session) {
           user: newRecipeResult.public_users
             ? {
                 id: newRecipeResult.public_users.id,
-                email: newRecipeResult.public_users.email,
                 username: newRecipeResult.public_users.username,
                 avatar_url: newRecipeResult.public_users.avatar_url,
                 bio: newRecipeResult.public_users.bio,
@@ -244,7 +242,6 @@ export function useRecipes(session) {
           user: updatedRecipeResult.public_users
             ? {
                 id: updatedRecipeResult.public_users.id,
-                email: updatedRecipeResult.public_users.email,
                 username: updatedRecipeResult.public_users.username,
                 avatar_url: updatedRecipeResult.public_users.avatar_url,
                 bio: updatedRecipeResult.public_users.bio,

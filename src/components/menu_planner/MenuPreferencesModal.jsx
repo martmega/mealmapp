@@ -23,8 +23,8 @@ function MenuPreferencesModal({
   linkedUserProps,
 }) {
   const {
-    newLinkedUserEmail,
-    setNewLinkedUserEmail,
+    newLinkedUserTag,
+    setNewLinkedUserTag,
     isLinkingUser,
     handleAddLinkedUser,
     handleToggleCommonMenu,
@@ -52,8 +52,8 @@ function MenuPreferencesModal({
             preferences={preferences}
             setPreferences={setPreferences}
             availableTags={availableTags}
-            newLinkedUserEmail={newLinkedUserEmail}
-            setNewLinkedUserEmail={setNewLinkedUserEmail}
+            newLinkedUserTag={newLinkedUserTag}
+            setNewLinkedUserTag={setNewLinkedUserTag}
             isLinkingUser={isLinkingUser}
             handleAddLinkedUser={handleAddLinkedUser}
             handleToggleCommonMenu={handleToggleCommonMenu}

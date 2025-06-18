@@ -4,7 +4,7 @@ import { useToast } from '@/components/ui/use-toast.js';
 
 export function useLinkedUsers(userProfile, preferences, setPreferences) {
   const { toast } = useToast();
-  const [newLinkedUserEmail, setNewLinkedUserEmail] = useState('');
+  const [newLinkedUserTag, setNewLinkedUserTag] = useState('');
   const [isLinkingUser, setIsLinkingUser] = useState(false);
 
   const fetchLinkedUserRecipes = useCallback(
@@ -94,15 +94,15 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
   };
 
   const handleAddLinkedUser = async () => {
-    if (!newLinkedUserEmail.trim() || !userProfile?.id) {
+    if (!newLinkedUserTag.trim() || !userProfile?.id) {
       toast({
-        title: 'Email requis',
-        description: "Veuillez entrer l'email de l'utilisateur à lier.",
+        title: 'Identifiant requis',
+        description: "Veuillez entrer l'identifiant de l'utilisateur à lier.",
         variant: 'destructive',
       });
       return;
     }
-    if (newLinkedUserEmail.trim().toLowerCase() === userProfile.email?.toLowerCase()) {
+    if (newLinkedUserTag.trim().toLowerCase() === userProfile.user_tag?.toLowerCase()) {
       toast({
         title: 'Erreur',
         description: 'Vous ne pouvez pas vous lier à vous-même.',
@@ -115,7 +115,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
       const { data: usersData, error: usersError } = await supabase
         .from('public_users')
         .select('id, username, user_tag')
-        .eq('email', newLinkedUserEmail.trim().toLowerCase())
+        .eq('user_tag', newLinkedUserTag.trim().toLowerCase())
         .single();
 
       if (usersError) throw usersError;
@@ -131,7 +131,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
           variant: 'default',
         });
         setIsLinkingUser(false);
-        setNewLinkedUserEmail('');
+        setNewLinkedUserTag('');
         return;
       }
 
@@ -173,7 +173,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
         title: 'Utilisateur lié',
         description: `${peerUsername} a été ajouté à votre menu commun.`,
       });
-      setNewLinkedUserEmail('');
+      setNewLinkedUserTag('');
     } catch (error) {
       console.error('Error linking user:', error);
       toast({
@@ -289,8 +289,8 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
   }, [userProfile?.id, userProfile?.username, preferences.commonMenuSettings.enabled, fetchLinkedUserRecipes]);
 
   return {
-    newLinkedUserEmail,
-    setNewLinkedUserEmail,
+    newLinkedUserTag,
+    setNewLinkedUserTag,
     isLinkingUser,
     handleAddLinkedUser,
     handleToggleCommonMenu,
