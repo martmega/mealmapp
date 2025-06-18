@@ -36,22 +36,31 @@ export default function FriendsTab({ session, userProfile, onRequestsChange }) {
     if (!session?.user?.id) return;
     setLoadingFriends(true);
     try {
-      const { data, error } = await supabase
+      const { data: relationships, error } = await supabase
         .from('user_relationships')
-        .select(
-          `
-          id,
-          created_at,
-          status,
-          requester:requester_id (id, username, avatar_url),
-          addressee:addressee_id (id, username, avatar_url)
-        `
-        )
+        .select('*')
         .or(
           `requester_id.eq.${session.user.id},addressee_id.eq.${session.user.id}`
         );
 
       if (error) throw error;
+
+      const userIds = [
+        ...new Set(
+          relationships.flatMap((rel) => [rel.requester_id, rel.addressee_id])
+        ),
+      ];
+      const { data: users } = await supabase
+        .from('public_users')
+        .select('id, username, avatar_url')
+        .in('id', userIds);
+      const usersById = Object.fromEntries((users || []).map((u) => [u.id, u]));
+
+      const data = relationships.map((rel) => ({
+        ...rel,
+        requester: usersById[rel.requester_id] ?? { id: rel.requester_id },
+        addressee: usersById[rel.addressee_id] ?? { id: rel.addressee_id },
+      }));
 
       const pendingReceived = data.filter(
         (r) => r.status === 'pending' && r.addressee.id === session.user.id
