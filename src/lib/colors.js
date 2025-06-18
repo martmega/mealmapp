@@ -45,43 +45,43 @@ export const MEAL_BLOCK_OPACITY = {
 
 export const RECIPE_CARD_COLORS_CLASSES = [
   {
-    bg: 'bg-pastel-day-lundi',
+    bg: 'bg-pastel-day-lundi/80',
     text: 'text-pastel-day-text',
     border: 'border-pastel-day-lundi/50',
     hover: 'hover:bg-pastel-day-lundi/90',
   },
   {
-    bg: 'bg-pastel-day-mardi',
+    bg: 'bg-pastel-day-mardi/80',
     text: 'text-pastel-day-text',
     border: 'border-pastel-day-mardi/50',
     hover: 'hover:bg-pastel-day-mardi/90',
   },
   {
-    bg: 'bg-pastel-day-mercredi',
+    bg: 'bg-pastel-day-mercredi/80',
     text: 'text-pastel-day-text',
     border: 'border-pastel-day-mercredi/50',
     hover: 'hover:bg-pastel-day-mercredi/90',
   },
   {
-    bg: 'bg-pastel-day-jeudi',
+    bg: 'bg-pastel-day-jeudi/80',
     text: 'text-pastel-day-text',
     border: 'border-pastel-day-jeudi/50',
     hover: 'hover:bg-pastel-day-jeudi/90',
   },
   {
-    bg: 'bg-pastel-day-vendredi',
+    bg: 'bg-pastel-day-vendredi/80',
     text: 'text-pastel-day-text',
     border: 'border-pastel-day-vendredi/50',
     hover: 'hover:bg-pastel-day-vendredi/90',
   },
   {
-    bg: 'bg-pastel-day-samedi',
+    bg: 'bg-pastel-day-samedi/80',
     text: 'text-pastel-day-text',
     border: 'border-pastel-day-samedi/50',
     hover: 'hover:bg-pastel-day-samedi/90',
   },
   {
-    bg: 'bg-pastel-day-dimanche',
+    bg: 'bg-pastel-day-dimanche/80',
     text: 'text-pastel-day-text',
     border: 'border-pastel-day-dimanche/50',
     hover: 'hover:bg-pastel-day-dimanche/90',

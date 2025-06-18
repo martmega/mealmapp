@@ -91,10 +91,10 @@
   }
 
   .dark {
-    --background: 230 10% 18%;
+    --background: 0 0% 7%;
     --foreground: 230 20% 88%;
-    --card: 230 10% 22%;
-    --card-foreground: 230 20% 88%;
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 88%;
     --popover: 230 10% 22%;
     --popover-foreground: 230 20% 88%;
     --primary: 255 45% 62%;
