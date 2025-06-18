@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, UserCircle, Info } from 'lucide-react';
+import { Loader2, UserCircle } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 const DEFAULT_AVATAR_URL = 'https://placehold.co/100x100?text=Avatar';
@@ -19,6 +19,8 @@ export default function ProfileInformationForm({
 
   const [username, setUsername] = useState('');
   const [userTag, setUserTag] = useState('');
+  const [desiredTag, setDesiredTag] = useState('');
+  const [availabilityMessage, setAvailabilityMessage] = useState('');
   const [bio, setBio] = useState('');
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
@@ -32,6 +34,7 @@ export default function ProfileInformationForm({
       setUsername(userProfile.username || '');
       setInitialUsername(userProfile.username || '');
       setUserTag(userProfile.user_tag || '');
+      setDesiredTag(userProfile.user_tag || '');
       setBio(userProfile.bio || '');
       setInitialBio(userProfile.bio || '');
       setAvatarPreview(userProfile.avatar_url || DEFAULT_AVATAR_URL);
@@ -56,6 +59,67 @@ export default function ProfileInformationForm({
         setAvatarPreview(reader.result);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const checkTagAvailability = async (tag) => {
+    const { data, error } = await supabase
+      .from('public_users')
+      .select('id')
+      .eq('user_tag', tag)
+      .single();
+    if (error && error.code !== 'PGRST116') {
+      console.warn('Tag availability check error:', error.message);
+    }
+    return !data;
+  };
+
+  useEffect(() => {
+    if (!desiredTag || desiredTag === userTag) {
+      setAvailabilityMessage('');
+      return;
+    }
+    const timer = setTimeout(async () => {
+      const available = await checkTagAvailability(desiredTag.toLowerCase());
+      setAvailabilityMessage(
+        available ? 'Identifiant disponible' : 'Identifiant déjà pris'
+      );
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [desiredTag, userTag]);
+
+  const handleTagChange = async () => {
+    const trimmed = desiredTag.trim().toLowerCase();
+    if (!trimmed || trimmed === userTag) return;
+    const available = await checkTagAvailability(trimmed);
+    if (!available) {
+      setAvailabilityMessage('Identifiant déjà pris.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('public_users')
+        .update({ user_tag: trimmed })
+        .eq('id', session.user.id);
+      const { error: authError } = await supabase.auth.updateUser({
+        data: { user_tag: trimmed },
+      });
+      if (error || authError) throw error || authError;
+      setUserTag(trimmed);
+      setDesiredTag(trimmed);
+      setAvailabilityMessage('Identifiant mis à jour !');
+      if (onProfileUpdate) {
+        await onProfileUpdate();
+      }
+    } catch (err) {
+      toast({
+        title: 'Erreur',
+        description: err.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -174,22 +238,23 @@ export default function ProfileInformationForm({
 
       <div className="space-y-2">
         <Label htmlFor="userTag">Identifiant Unique</Label>
-        <div className="flex items-center gap-2">
-          <Input
-            id="userTag"
-            type="text"
-            value={userTag}
-            readOnly
-            className="bg-pastel-muted/50 cursor-not-allowed"
-          />
-          <Info
-            className="w-4 h-4 text-pastel-muted-foreground"
-            title="Cet identifiant est unique et ne peut pas être modifié."
-          />
-        </div>
-        <p className="text-xs text-pastel-muted-foreground">
-          Utilisé pour vous trouver précisément. Non modifiable.
-        </p>
+        <Input
+          id="userTag"
+          type="text"
+          value={desiredTag}
+          onChange={(e) => setDesiredTag(e.target.value)}
+          placeholder="@mon-identifiant"
+        />
+        <p className="text-xs text-pastel-muted-foreground">{availabilityMessage}</p>
+        <Button
+          type="button"
+          onClick={handleTagChange}
+          variant="outline"
+          className="mt-1"
+          disabled={loading || desiredTag === userTag}
+        >
+          Modifier mon identifiant
+        </Button>
       </div>
 
       <div className="space-y-2">
