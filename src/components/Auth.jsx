@@ -7,17 +7,39 @@ import SignUpForm from '@/components/SignUpForm';
 
 export default function Auth({ onClose }) {
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState('');
+  const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showSignUp, setShowSignUp] = useState(false);
   const { toast } = useToast();
 
+  const isEmail = (input) => /\S+@\S+\.\S+/.test(input);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+    let loginEmail = emailOrUsername;
     try {
+      if (!isEmail(emailOrUsername)) {
+        const { data: userData, error: userError } = await supabase
+          .from('public_users')
+          .select('email')
+          .eq('username', emailOrUsername)
+          .single();
+
+        if (userError || !userData) {
+          toast({
+            title: 'Utilisateur introuvable',
+            description: "Aucun compte trouvé avec ce nom d'utilisateur.",
+            variant: 'destructive',
+          });
+          return;
+        }
+
+        loginEmail = userData.email;
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: loginEmail,
         password,
       });
 
@@ -79,13 +101,13 @@ export default function Auth({ onClose }) {
               htmlFor="email-login"
               className="block text-sm font-medium text-pastel-text"
             >
-              Email
+              Email ou Identifiant
             </label>
             <input
               id="email-login"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              value={emailOrUsername}
+              onChange={(e) => setEmailOrUsername(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-pastel-input-border rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary bg-pastel-card text-pastel-text"
             />
           </div>
@@ -107,7 +129,7 @@ export default function Auth({ onClose }) {
           <div className="flex flex-col space-y-4">
             <Button
               onClick={handleLogin}
-              disabled={loading || !email || !password}
+              disabled={loading || !emailOrUsername || !password}
               className="w-full"
             >
               {loading ? 'Chargement...' : 'Se connecter'}
