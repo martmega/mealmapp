@@ -118,12 +118,8 @@ export default function FriendActionButton({
         break;
       case 'pending_them':
         content = (
-          <Button
-            onClick={handleAction}
-            variant="outline"
-            className="mt-4 w-40"
-          >
-            <MessageCircle className="mr-2 h-4 w-4" /> Demande envoyée
+          <Button variant="outline" className="mt-4 w-40" disabled>
+            <MessageCircle className="mr-2 h-4 w-4" /> Demande en attente
           </Button>
         );
         break;

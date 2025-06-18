@@ -26,7 +26,8 @@ import {
 
 export default function FriendsTab({ session, userProfile, onRequestsChange }) {
   const { toast } = useToast();
-  const [friendRequests, setFriendRequests] = useState([]);
+  const [receivedRequests, setReceivedRequests] = useState([]);
+  const [sentRequests, setSentRequests] = useState([]);
   const [friends, setFriends] = useState([]);
   const [loadingFriends, setLoadingFriends] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
@@ -52,8 +53,11 @@ export default function FriendsTab({ session, userProfile, onRequestsChange }) {
 
       if (error) throw error;
 
-      const pendingRequests = data.filter(
+      const pendingReceived = data.filter(
         (r) => r.status === 'pending' && r.addressee.id === session.user.id
+      );
+      const pendingSent = data.filter(
+        (r) => r.status === 'pending' && r.requester.id === session.user.id
       );
       const acceptedFriends = data
         .filter((r) => r.status === 'accepted')
@@ -68,10 +72,17 @@ export default function FriendsTab({ session, userProfile, onRequestsChange }) {
           };
         });
 
-      setFriendRequests(
-        pendingRequests.map((r) => ({
+      setReceivedRequests(
+        pendingReceived.map((r) => ({
           ...r.requester,
           username: r.requester.username || r.requester.id.substring(0, 8),
+          relationship_id: r.id,
+        }))
+      );
+      setSentRequests(
+        pendingSent.map((r) => ({
+          ...r.addressee,
+          username: r.addressee.username || r.addressee.id.substring(0, 8),
           relationship_id: r.id,
         }))
       );
@@ -156,14 +167,14 @@ export default function FriendsTab({ session, userProfile, onRequestsChange }) {
 
   return (
     <div className="space-y-6 mt-6">
-      {friendRequests.length > 0 && (
+      {receivedRequests.length > 0 && (
         <div className="bg-pastel-card p-6 rounded-xl shadow-pastel-soft">
           <h3 className="text-xl font-semibold text-pastel-text/80 mb-4 flex items-center">
             <MailQuestion className="w-5 h-5 mr-2 text-pastel-accent" />
-            Demandes d'amis en attente ({friendRequests.length})
+            Demandes reçues ({receivedRequests.length})
           </h3>
           <ul className="space-y-3">
-            {friendRequests.map((req) => (
+            {receivedRequests.map((req) => (
               <li
                 key={req.id}
                 className="flex items-center justify-between p-3 bg-pastel-card-alt rounded-md shadow-sm gap-3"
@@ -213,6 +224,42 @@ export default function FriendsTab({ session, userProfile, onRequestsChange }) {
                     <UserX className="w-4 h-4 mr-1" /> Refuser
                   </Button>
                 </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {sentRequests.length > 0 && (
+        <div className="bg-pastel-card p-6 rounded-xl shadow-pastel-soft">
+          <h3 className="text-xl font-semibold text-pastel-text/80 mb-4 flex items-center">
+            <MailQuestion className="w-5 h-5 mr-2 text-pastel-accent" />
+            Demandes envoyées ({sentRequests.length})
+          </h3>
+          <ul className="space-y-3">
+            {sentRequests.map((req) => (
+              <li
+                key={req.id}
+                className="flex items-center justify-between p-3 bg-pastel-card-alt rounded-md shadow-sm gap-3"
+              >
+                <Link
+                  to={`/app/profile/${req.id}`}
+                  className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                >
+                  {req.avatar_url ? (
+                    <img
+                      src={req.avatar_url}
+                      alt={req.username}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <UserCircle className="w-10 h-10 text-pastel-muted-foreground" />
+                  )}
+                  <span className="font-medium">{req.username}</span>
+                </Link>
+                <Button size="sm" variant="outline" disabled>
+                  <MessageSquare className="w-4 h-4 mr-1" /> Demande en attente
+                </Button>
               </li>
             ))}
           </ul>
@@ -295,7 +342,7 @@ export default function FriendsTab({ session, userProfile, onRequestsChange }) {
         </div>
       )}
 
-      {friendRequests.length === 0 && friends.length === 0 && (
+      {receivedRequests.length === 0 && sentRequests.length === 0 && friends.length === 0 && (
         <div className="text-center py-10 px-6 bg-pastel-card rounded-xl shadow-pastel-soft">
           <MessageSquare className="w-12 h-12 mx-auto mb-3 text-pastel-border" />
           <p className="text-xl text-pastel-muted-foreground mb-2">
