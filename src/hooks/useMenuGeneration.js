@@ -312,6 +312,23 @@ export function useMenuGeneration(
       });
     }
 
+    if (process.env.NODE_ENV === 'development') {
+      days.forEach((dayName, idx) => {
+        const menuForDay = Array.isArray(newWeeklyMenu[idx])
+          ? newWeeklyMenu[idx]
+          : [];
+        console.log(`\u25B6\uFE0F ${dayName.toUpperCase()}`);
+        console.log(
+          'Repas 1 :',
+          menuForDay[0]?.[0]?.name || '\u274C manquant'
+        );
+        console.log(
+          'Repas 2 :',
+          menuForDay[1]?.[0]?.name || '\u274C manquant'
+        );
+      });
+    }
+
     setWeeklyMenu(newWeeklyMenu);
     setIsGenerating(false);
     toast({
