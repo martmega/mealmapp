@@ -14,8 +14,7 @@ export function useRecipes(session) {
   }, []);
 
   const baseRecipeSelect = `
-    id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, visibility, updated_at,
-    public.public_users!user_id ( id, username, avatar_url, bio )
+    id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, visibility, updated_at
   `;
 
   useEffect(() => {
@@ -49,16 +48,19 @@ export function useRecipes(session) {
           throw error;
         }
 
+        const userIds = [...new Set(data.map((r) => r.user_id))];
+        const { data: users } = await supabase
+          .from('public_users')
+          .select('id, username, avatar_url, bio')
+          .in('id', userIds);
+
+        const usersMap = Object.fromEntries(
+          (users || []).map((u) => [u.id, u])
+        );
+
         const formattedData = data.map((recipe) => ({
           ...recipe,
-          user: recipe.public_users
-            ? {
-                id: recipe.public_users.id,
-                username: recipe.public_users.username,
-                avatar_url: recipe.public_users.avatar_url,
-                bio: recipe.public_users.bio,
-              }
-            : null,
+          user: usersMap[recipe.user_id] ?? null,
         }));
         safeSetRecipes(formattedData);
       } catch (err) {
@@ -140,16 +142,15 @@ export function useRecipes(session) {
           throw error;
         }
 
+        const { data: user } = await supabase
+          .from('public_users')
+          .select('id, username, avatar_url, bio')
+          .eq('id', newRecipeResult.user_id)
+          .single();
+
         const newRecipe = {
           ...newRecipeResult,
-          user: newRecipeResult.public_users
-            ? {
-                id: newRecipeResult.public_users.id,
-                username: newRecipeResult.public_users.username,
-                avatar_url: newRecipeResult.public_users.avatar_url,
-                bio: newRecipeResult.public_users.bio,
-              }
-            : null,
+          user: user || null,
         };
 
         setRecipes((prevRecipes) =>
@@ -237,16 +238,15 @@ export function useRecipes(session) {
           throw error;
         }
 
+        const { data: user } = await supabase
+          .from('public_users')
+          .select('id, username, avatar_url, bio')
+          .eq('id', updatedRecipeResult.user_id)
+          .single();
+
         const updatedRecipe = {
           ...updatedRecipeResult,
-          user: updatedRecipeResult.public_users
-            ? {
-                id: updatedRecipeResult.public_users.id,
-                username: updatedRecipeResult.public_users.username,
-                avatar_url: updatedRecipeResult.public_users.avatar_url,
-                bio: updatedRecipeResult.public_users.bio,
-              }
-            : null,
+          user: user || null,
         };
 
         setRecipes((prevRecipes) =>

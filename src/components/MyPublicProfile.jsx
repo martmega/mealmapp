@@ -29,7 +29,7 @@ export default function MyPublicProfile({
     setLoading(true);
     try {
       const { data: user, error: userError } = await supabase
-        .from('public.public_users')
+        .from('public_users')
         .select('id, username, avatar_url, bio')
         .eq('id', session.user.id)
         .single();
@@ -43,10 +43,7 @@ export default function MyPublicProfile({
       const { data: recipeData, error: recipeError } = await supabase
         .from('recipes')
         .select(
-          `
-          id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, visibility,
-          author:public.public_users!user_id(id, username, avatar_url, bio)
-        `
+          'id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, visibility'
         )
         .eq('user_id', session.user.id)
         .in('visibility', ['public', 'friends_only'])
@@ -54,7 +51,18 @@ export default function MyPublicProfile({
 
       if (recipeError) throw recipeError;
 
-      const formattedRecipes = recipeData.map((r) => formatRecipe(r));
+      const userIds = [...new Set(recipeData.map((r) => r.user_id))];
+      const { data: users } = await supabase
+        .from('public_users')
+        .select('id, username, avatar_url, bio')
+        .in('id', userIds);
+      const usersMap = Object.fromEntries(
+        (users || []).map((u) => [u.id, u])
+      );
+
+      const formattedRecipes = recipeData.map((r) =>
+        formatRecipe({ ...r, user: usersMap[r.user_id] ?? null })
+      );
       setRecipes(formattedRecipes || []);
     } catch (error) {
       console.error('Error fetching own profile or recipes:', error);

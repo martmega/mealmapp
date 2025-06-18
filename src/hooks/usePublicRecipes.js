@@ -4,19 +4,37 @@ import { useSupabasePaginated } from './useSupabasePaginated';
 
 export function usePublicRecipes(session) {
   const queryFn = useCallback(
-    (limit, offset) => {
-      let query = supabase
+    async (limit, offset) => {
+      let baseQuery = supabase
         .from('recipes')
         .select(
-          `id, name, description, image_url, servings, calories, tags, visibility, user_id, author:public.public_users!user_id(id, username, avatar_url, bio)`
+          'id, name, description, image_url, servings, calories, tags, visibility, user_id'
         )
         .eq('visibility', 'public')
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
       if (session?.user?.id) {
-        query = query.neq('user_id', session.user.id);
+        baseQuery = baseQuery.neq('user_id', session.user.id);
       }
-      return query;
+
+      const { data: recipes, error } = await baseQuery;
+      if (error) {
+        return { data: [], error };
+      }
+
+      const userIds = [...new Set(recipes.map((r) => r.user_id))];
+      const { data: users } = await supabase
+        .from('public_users')
+        .select('id, username, avatar_url, bio')
+        .in('id', userIds);
+      const usersMap = Object.fromEntries((users || []).map((u) => [u.id, u]));
+
+      const merged = recipes.map((r) => ({
+        ...r,
+        user: usersMap[r.user_id] ?? null,
+      }));
+
+      return { data: merged, error: null };
     },
     [session]
   );
@@ -26,10 +44,7 @@ export function usePublicRecipes(session) {
     limit: 12,
   });
 
-  const formatted = useMemo(
-    () => data.map((r) => ({ ...r, user: r.author })),
-    [data]
-  );
+  const formatted = useMemo(() => data, [data]);
 
   return { recipes: formatted, loadMore, loading, hasMore };
 }
