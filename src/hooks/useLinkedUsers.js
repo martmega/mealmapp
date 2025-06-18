@@ -123,7 +123,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
     setIsLinkingUser(true);
     try {
       const { data: usersData, error: usersError } = await supabase
-        .from('public.public_users')
+        .from('public_users')
         .select('id, username, avatar_url, bio')
         .ilike('username', newLinkedUserTag.trim())
         .single();
