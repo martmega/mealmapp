@@ -47,7 +47,7 @@ export default function CommunityPage({
             value="my-profile-preview"
             className="flex items-center gap-2"
           >
-            <Eye className="w-4 h-4" /> Mon Profil Public
+            <Eye className="w-4 h-4" /> Profil
           </TabsTrigger>
         </TabsList>
 
