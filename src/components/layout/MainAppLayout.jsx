@@ -93,7 +93,7 @@ export default function MainAppLayout({
             </div>
           </div>
           {showMainNavigation && (
-            <nav className="flex space-x-1 sm:space-x-2 mt-5 overflow-x-auto pb-1 -mb-px transition-colors duration-300 bg-white text-black dark:bg-[#121212] dark:text-white">
+            <nav className="flex space-x-1 sm:space-x-2 mt-5 overflow-x-auto pb-1 -mb-px transition-colors duration-300 bg-white text-black dark:bg-[#1e1e1e] dark:text-white">
               {[
                 {
                   id: 'recipes',
