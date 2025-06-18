@@ -24,7 +24,7 @@ const MemoizedRecipeCard = React.memo(function RecipeCard({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -20, scale: 0.95 }}
       transition={{ duration: 0.3 }}
-      className={`${color.bg} ${color.text} bg-white dark:bg-gray-700 text-black dark:text-white rounded-xl p-5 shadow-pastel-soft hover:shadow-pastel-medium transition-shadow duration-300 ease-in-out flex flex-col h-full cursor-pointer group`}
+      className={`${color.bg} ${color.text} bg-opacity-80 dark:bg-opacity-80 rounded-xl p-5 shadow-pastel-soft hover:shadow-pastel-medium transition-shadow duration-300 ease-in-out flex flex-col h-full cursor-pointer group`}
       onClick={handleCardClick}
     >
       {recipe.image_url && (
