@@ -55,28 +55,6 @@ export default function SignUpForm({ onClose, onBackToLogin }) {
 
     setLoading(true);
     try {
-      // First, check if user_tag already exists in public_users
-      const { data: existingUserTag, error: userTagCheckError } = await supabase
-        .from('public_users')
-        .select('user_tag')
-        .eq('user_tag', userTag.toLowerCase())
-        .maybeSingle();
-
-      if (userTagCheckError) {
-        // Allow signup to proceed, auth.signUp will handle other errors like duplicate email
-        console.warn('Warning checking user_tag:', userTagCheckError.message);
-      }
-
-      if (existingUserTag) {
-        toast({
-          title: 'Identifiant Unique Déjà Pris',
-          description:
-            'Cet identifiant unique est déjà utilisé. Veuillez en choisir un autre.',
-          variant: 'destructive',
-        });
-        setLoading(false);
-        return;
-      }
 
       const { data, error } = await supabase.auth.signUp({
         email: email,

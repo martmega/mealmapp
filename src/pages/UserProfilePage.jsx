@@ -3,7 +3,7 @@ import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import UserRecipeList from '@/components/UserRecipeList.jsx';
 import LoadingScreen from '@/components/layout/LoadingScreen';
-import { UserCircle, Calendar, ArrowLeft } from 'lucide-react';
+import { UserCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import RecipeDetailModal from '@/components/RecipeDetailModal';
@@ -27,8 +27,8 @@ export default function UserProfilePage({ session, currentUserProfile }) {
     setLoading(true);
     try {
       const { data: user, error: userError } = await supabase
-        .from('public_users')
-        .select('id, created_at, username, avatar_url, bio, user_tag') // Added user_tag
+        .from('public.public_users')
+        .select('id, username, avatar_url, bio')
         .eq('id', userId)
         .single();
 
@@ -43,7 +43,7 @@ export default function UserProfilePage({ session, currentUserProfile }) {
         .select(
           `
           id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, visibility,
-          author:public_users (id, username, avatar_url)
+          author:public.public_users (id, username, avatar_url, bio)
         `
         )
         .eq('user_id', userId);
@@ -176,20 +176,10 @@ export default function UserProfilePage({ session, currentUserProfile }) {
               <h1 className="text-3xl sm:text-4xl font-bold text-pastel-primary mb-1">
                 {profileData.username}
               </h1>
-              {profileData.user_tag && (
-                <p className="text-sm text-pastel-muted-foreground font-mono mb-1">
-                  @{profileData.user_tag}
-                </p>
-              )}
               {profileData.bio && (
                 <p className="text-pastel-text/80 mb-3">{profileData.bio}</p>
               )}
-              <div className="flex flex-wrap justify-center sm:justify-start gap-x-4 gap-y-2 text-sm text-pastel-muted-foreground">
-                <span className="flex items-center">
-                  <Calendar className="w-4 h-4 mr-1.5" /> Membre depuis{' '}
-                  {new Date(profileData.created_at).toLocaleDateString()}
-                </span>
-              </div>
+              <div className="flex flex-wrap justify-center sm:justify-start gap-x-4 gap-y-2 text-sm text-pastel-muted-foreground"></div>
               {!isOwnProfile && session && (
                 <FriendActionButton
                   session={session}

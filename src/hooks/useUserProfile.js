@@ -37,8 +37,8 @@ export function useUserProfile(session) {
     setLoading(true);
     try {
       const { data: profile, error: profileError } = await supabase
-        .from('public_users')
-        .select('id, username, avatar_url, bio, user_tag')
+        .from('public.public_users')
+        .select('id, username, avatar_url, bio')
         .eq('id', session.user.id)
         .single();
 
@@ -61,7 +61,6 @@ export function useUserProfile(session) {
           userMetadata.username ||
           'Utilisateur',
         user_tag:
-          profile?.user_tag ||
           userMetadata.user_tag ||
           'user_' + session.user.id.substring(0, 8),
         avatar_url:
