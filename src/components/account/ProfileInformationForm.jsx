@@ -90,8 +90,8 @@ export default function ProfileInformationForm({
       }
 
       if (Object.keys(publicUserUpdates).length > 0) {
-        const { error: updateError } = await supabase
-          .from('public.public_users')
+          const { error: updateError } = await supabase
+            .from('public_users')
           .update(publicUserUpdates)
           .eq('id', session.user.id);
         if (updateError) throw updateError;
