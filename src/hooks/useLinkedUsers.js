@@ -11,18 +11,28 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
     async (userId, userName) => {
       if (!userId) return [];
       try {
-        const { data, error } = await supabase
+        const { data: recipes, error } = await supabase
           .from('recipes')
-          .select('*, author:public.public_users!user_id(id, username, avatar_url, bio)')
+          .select('*')
           .eq('user_id', userId)
           .or('visibility.eq.public,visibility.eq.friends_only');
 
         if (error) throw error;
-        return Array.isArray(data)
-          ? data.map((r) => ({
+
+        const userIds = [...new Set(recipes.map((r) => r.user_id))];
+        const { data: users } = await supabase
+          .from('public_users')
+          .select('id, username, avatar_url, bio')
+          .in('id', userIds);
+        const usersMap = Object.fromEntries(
+          (users || []).map((u) => [u.id, u])
+        );
+
+        return Array.isArray(recipes)
+          ? recipes.map((r) => ({
               ...r,
-              user: r.author,
-              author: r.author?.username || 'Ami',
+              user: usersMap[r.user_id] ?? null,
+              author: usersMap[r.user_id]?.username || 'Ami',
               sourceUserId: userId,
             }))
           : [];
@@ -220,18 +230,32 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
       try {
         const { data: friendsData, error: friendsError } = await supabase
           .from('user_relationships')
-          .select(
-            'requester_id, addressee_id, requester:public.public_users!user_relationships_requester_id_fkey(id, username, avatar_url, bio), addressee:public.public_users!user_relationships_addressee_id_fkey(id, username, avatar_url, bio)'
-          )
+          .select('requester_id, addressee_id')
           .eq('status', 'accepted')
           .or(`requester_id.eq.${userProfile.id},addressee_id.eq.${userProfile.id}`);
 
         if (friendsError) throw friendsError;
 
+        const userIds = [
+          ...new Set(
+            friendsData.flatMap((rel) => [rel.requester_id, rel.addressee_id])
+          ),
+        ];
+        const { data: users } = await supabase
+          .from('public_users')
+          .select('id, username, avatar_url, bio')
+          .in('id', userIds);
+        const usersMap = Object.fromEntries(
+          (users || []).map((u) => [u.id, u])
+        );
+
         const linkedUserDetails = friendsData
           .map((rel) => {
-            const friendProfile =
-              rel.requester_id === userProfile.id ? rel.addressee : rel.requester;
+            const friendId =
+              rel.requester_id === userProfile.id
+                ? rel.addressee_id
+                : rel.requester_id;
+            const friendProfile = usersMap[friendId];
             if (!friendProfile) return null;
             return {
               id: friendProfile.id,
