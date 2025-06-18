@@ -64,14 +64,14 @@ export default function ProfileInformationForm({
 
   const checkTagAvailability = async (tag) => {
     const { data, error } = await supabase
-      .from('public_users')
+      .from('user_links')
       .select('id')
-      .eq('user_tag', tag)
-      .single();
-    if (error && error.code !== 'PGRST116') {
+      .eq('user_tag', tag);
+    if (error) {
       console.warn('Tag availability check error:', error.message);
+      return false;
     }
-    return !data;
+    return !data || data.length === 0;
   };
 
   useEffect(() => {
@@ -91,21 +91,23 @@ export default function ProfileInformationForm({
   const handleTagChange = async () => {
     const trimmed = desiredTag.trim().toLowerCase();
     if (!trimmed || trimmed === userTag) return;
-    const available = await checkTagAvailability(trimmed);
-    if (!available) {
-      setAvailabilityMessage('Identifiant déjà pris.');
-      return;
-    }
     setLoading(true);
     try {
+      const { data, error: checkError } = await supabase
+        .from('user_links')
+        .select('id')
+        .eq('user_tag', trimmed);
+      if (checkError) throw checkError;
+      if (data && data.length > 0) {
+        setAvailabilityMessage('Identifiant déjà pris');
+        setLoading(false);
+        return;
+      }
       const { error } = await supabase
-        .from('public_users')
+        .from('user_links')
         .update({ user_tag: trimmed })
         .eq('id', session.user.id);
-      const { error: authError } = await supabase.auth.updateUser({
-        data: { user_tag: trimmed },
-      });
-      if (error || authError) throw error || authError;
+      if (error) throw error;
       setUserTag(trimmed);
       setDesiredTag(trimmed);
       setAvailabilityMessage('Identifiant mis à jour !');
