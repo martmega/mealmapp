@@ -1,28 +1,34 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-console.log('openai ready');
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  console.log('💬 API HIT');
-
   if (req.method !== 'POST') {
-    console.log('❌ Method not allowed:', req.method);
-    res.setHeader('Allow', ['POST']);
-    return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  console.log('🔍 Received body:', req.body);
-  console.log('🔑 OPENAI_API_KEY present:', !!process.env.OPENAI_API_KEY);
-
   try {
-    // Pas d\'appel OpenAI pour l'instant
-    return res.status(200).json({ debug: 'OK jusqu\'ici' });
+    const { recipe } = req.body;
+
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ error: 'Missing OpenAI API key' });
+    }
+
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+    const response = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: [
+        {
+          role: 'user',
+          content: `Estime le prix de cette recette pour ${recipe.servings} personnes : ${JSON.stringify(recipe.ingredients)}. Donne uniquement le prix en euros.`,
+        },
+      ],
+    });
+
+    const price = response.choices[0].message.content;
+    return res.status(200).json({ price });
   } catch (err) {
-    console.error('🔥 ERREUR :', err);
-    return res.status(500).json({ error: 'Erreur interne', details: String(err) });
+    console.error('Erreur estimation coût :', err);
+    return res.status(500).json({ error: 'Internal Server Error', details: String(err) });
   }
 }
