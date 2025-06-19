@@ -87,7 +87,7 @@ export const estimateRecipePrice = async (recipe) => {
     if (!response.ok) throw new Error('Request failed');
 
     const data = await response.json();
-    return data.estimated_price ?? null;
+    return typeof data.price === 'number' ? data.price : null;
   } catch (error) {
     console.error("Erreur lors de l'estimation du prix:", error);
     return null;
