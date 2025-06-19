@@ -132,7 +132,8 @@ export function useMenuGeneration(
           console.warn(
             `Plus de recettes disponibles pour le repas ${mealPreference.mealNumber} du jour ${days[dayIndex]}`
           );
-          break;
+          // Recharger la liste complète pour permettre les répétitions
+          availableRecipes = shuffleArray(baseRecipes);
         }
 
         let bestRecipeForMeal = null;
@@ -141,7 +142,7 @@ export function useMenuGeneration(
         let candidateRecipesForSlot = [];
         let candidateStageUsed = 0;
 
-        const mealTypeFilteredRecipes = availableRecipes.filter((r) => {
+        let mealTypeFilteredRecipes = availableRecipes.filter((r) => {
           const recipeMealTypes = Array.isArray(r.meal_types) ? r.meal_types : [];
           return mealPreference.types.some((prefType) =>
             recipeMealTypes.includes(prefType)
@@ -152,7 +153,12 @@ export function useMenuGeneration(
           console.warn(
             `Aucune recette candidate (type de repas) pour le repas ${mealPreference.mealNumber} (${mealPreference.types.join(', ')}) le ${days[dayIndex]}`
           );
-          continue;
+          const fallbackTypeRecipes = baseRecipes.filter((r) => {
+            const recipeMealTypes = Array.isArray(r.meal_types) ? r.meal_types : [];
+            return mealPreference.types.some((t) => recipeMealTypes.includes(t));
+          });
+          mealTypeFilteredRecipes =
+            fallbackTypeRecipes.length > 0 ? fallbackTypeRecipes : baseRecipes;
         }
 
         const avoidDuplicates = mealTypeFilteredRecipes.length > 1;
@@ -297,6 +303,33 @@ export function useMenuGeneration(
           console.warn(
             `Aucune recette trouvée pour le repas ${mealPreference.mealNumber} (${mealPreference.types.join(', ')}) le ${days[dayIndex]} après scoring.`
           );
+          const fallbackPool =
+            mealTypeFilteredRecipes.length > 0
+              ? mealTypeFilteredRecipes
+              : baseRecipes;
+          if (fallbackPool.length > 0) {
+            const fallbackRecipe = shuffleArray(fallbackPool)[0];
+            const baseId = fallbackRecipe.id.split('_')[0];
+            const recipeBaseServings =
+              fallbackRecipe.servings && fallbackRecipe.servings > 0
+                ? fallbackRecipe.servings
+                : 1;
+            const scaleFactorForCalorieEst =
+              defaultServingsPerMealGlobal / recipeBaseServings;
+            const scaledCalories =
+              (fallbackRecipe.calories || 0) * scaleFactorForCalorieEst;
+
+            const recipeToAdd = {
+              ...fallbackRecipe,
+              mealNumber: mealPreference.mealNumber,
+              plannedServings: defaultServingsPerMealGlobal,
+            };
+
+            newWeeklyMenu[dayIndex][mealPrefIndex].push(recipeToAdd);
+            dailyCalories += scaledCalories;
+            usedRecipeOriginalIdsThisDay.add(baseId);
+            recipeUsageCount[baseId] = (recipeUsageCount[baseId] || 0) + 1;
+          }
         }
       }
     }
