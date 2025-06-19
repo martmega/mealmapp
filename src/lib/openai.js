@@ -77,32 +77,20 @@ export const generateRecipeImage = async (recipe) => {
 };
 
 export const estimateRecipePrice = async (recipe) => {
-  if (!openaiIsAvailable) {
-    console.warn('⚠️ Pas de clé OpenAI disponible côté client');
-    return null;
-  }
   try {
-    const ingredientList = recipe.ingredients
-      .map((i) => `${i.quantity} ${i.unit} ${i.name}`)
-      .join(', ');
-    const prompt = `Estime en euros le coût total des ingrédients pour la recette suivante : ${recipe.name}. Ingrédients : ${ingredientList}. Réponds uniquement par un nombre.`;
-
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'system',
-          content:
-            "Tu es un assistant qui estime le prix total des ingrédients d'une recette en euros. Répond uniquement par un nombre.",
-        },
-        { role: 'user', content: prompt },
-      ],
-      max_tokens: 10,
+    const response = await fetch('/api/estimate-cost', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ingredients: recipe.ingredients,
+        servings: recipe.servings,
+      }),
     });
 
-    const raw = completion.choices[0].message.content;
-    const numeric = parseFloat(raw.replace(/[^0-9.,]/g, '').replace(',', '.'));
-    return isNaN(numeric) ? null : numeric;
+    if (!response.ok) throw new Error('Request failed');
+
+    const data = await response.json();
+    return data.estimated_price ?? null;
   } catch (error) {
     console.error("Erreur lors de l'estimation du prix:", error);
     return null;
