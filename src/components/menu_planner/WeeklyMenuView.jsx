@@ -1,9 +1,17 @@
 import React, { useState, useMemo } from 'react';
 import DailyMenu from '@/components/DailyMenu';
 import ReplaceRecipeModal from '@/components/menu_planner/ReplaceRecipeModal.jsx';
-import { initialWeeklyMenuState } from '@/lib/menu';
+import { initialWeeklyMenuState, calculateMenuCost } from '@/lib/menu';
 
-const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+const DAYS = [
+  'Lundi',
+  'Mardi',
+  'Mercredi',
+  'Jeudi',
+  'Vendredi',
+  'Samedi',
+  'Dimanche',
+];
 
 function WeeklyMenuView({
   weeklyMenu = initialWeeklyMenuState(),
@@ -12,7 +20,8 @@ function WeeklyMenuView({
   preferences,
   userProfile,
 }) {
-  const [isReplaceRecipeModalOpen, setIsReplaceRecipeModalOpen] = useState(false);
+  const [isReplaceRecipeModalOpen, setIsReplaceRecipeModalOpen] =
+    useState(false);
   const [recipeToReplaceInfo, setRecipeToReplaceInfo] = useState(null);
   const [searchTermModal, setSearchTermModal] = useState('');
 
@@ -53,7 +62,8 @@ function WeeklyMenuView({
         ...newRecipe,
         mealNumber:
           updatedMenu[dayIndex][mealIndex][recipeIndex]?.mealNumber ||
-          preferences.meals.find((m) => m.mealNumber === mealIndex + 1)?.mealNumber ||
+          preferences.meals.find((m) => m.mealNumber === mealIndex + 1)
+            ?.mealNumber ||
           mealIndex + 1,
         plannedServings: defaultPlannedServings,
       };
@@ -75,8 +85,12 @@ function WeeklyMenuView({
     if (!recipeToReplaceInfo) return [];
 
     const { mealIndex } = recipeToReplaceInfo;
-    const mealPreference = preferences.meals.find((m) => m.mealNumber === mealIndex + 1);
-    const allowedMealTypes = Array.isArray(mealPreference?.types) ? mealPreference.types : [];
+    const mealPreference = preferences.meals.find(
+      (m) => m.mealNumber === mealIndex + 1
+    );
+    const allowedMealTypes = Array.isArray(mealPreference?.types)
+      ? mealPreference.types
+      : [];
 
     let recipesToFilter = [...safeRecipes];
     if (
@@ -98,13 +112,36 @@ function WeeklyMenuView({
 
     return uniqueRecipes.filter((recipe) => {
       if (!recipe || !recipe.name) return false;
-      const nameMatch = recipe.name.toLowerCase().includes(searchTermModal.toLowerCase());
-      const recipeMealTypes = Array.isArray(recipe.meal_types) ? recipe.meal_types : [];
+      const nameMatch = recipe.name
+        .toLowerCase()
+        .includes(searchTermModal.toLowerCase());
+      const recipeMealTypes = Array.isArray(recipe.meal_types)
+        ? recipe.meal_types
+        : [];
       const typeMatch =
-        allowedMealTypes.length === 0 || recipeMealTypes.some((rt) => allowedMealTypes.includes(rt));
+        allowedMealTypes.length === 0 ||
+        recipeMealTypes.some((rt) => allowedMealTypes.includes(rt));
       return nameMatch && typeMatch;
     });
-  }, [safeRecipes, recipeToReplaceInfo, searchTermModal, preferences.meals, preferences.commonMenuSettings]);
+  }, [
+    safeRecipes,
+    recipeToReplaceInfo,
+    searchTermModal,
+    preferences.meals,
+    preferences.commonMenuSettings,
+  ]);
+
+  const totalMenuCost = useMemo(
+    () => calculateMenuCost(weeklyMenu),
+    [weeklyMenu]
+  );
+
+  const weeklyBudget =
+    userProfile?.preferences?.weeklyBudget ?? preferences.weeklyBudget ?? 0;
+  const tolerance =
+    userProfile?.preferences?.tolerance ?? preferences.tolerance ?? 0;
+  const maxBudget = weeklyBudget * (1 + tolerance);
+  const overBudget = totalMenuCost > maxBudget && weeklyBudget > 0;
 
   return (
     <div>
@@ -114,12 +151,23 @@ function WeeklyMenuView({
             key={day}
             day={day}
             dayIndex={dayIdx}
-            menuForDay={Array.isArray(weeklyMenu) && weeklyMenu[dayIdx] ? weeklyMenu[dayIdx] : []}
+            menuForDay={
+              Array.isArray(weeklyMenu) && weeklyMenu[dayIdx]
+                ? weeklyMenu[dayIdx]
+                : []
+            }
             userProfile={userProfile}
             onPlannedServingsChange={(mealIdx, recipeIdx, newServings) =>
-              handlePlannedServingsChange(dayIdx, mealIdx, recipeIdx, newServings)
+              handlePlannedServingsChange(
+                dayIdx,
+                mealIdx,
+                recipeIdx,
+                newServings
+              )
             }
-            onReplaceRecipe={(mealIdx, recipeIdx) => openReplaceRecipeModal(dayIdx, mealIdx, recipeIdx)}
+            onReplaceRecipe={(mealIdx, recipeIdx) =>
+              openReplaceRecipeModal(dayIdx, mealIdx, recipeIdx)
+            }
             onDeleteRecipe={(mealIdx, recipeIdx) =>
               handleDeleteRecipeFromMeal(dayIdx, mealIdx, recipeIdx)
             }
@@ -135,6 +183,21 @@ function WeeklyMenuView({
         onSelectRecipe={handleSelectRecipeForReplacement}
         userProfile={userProfile}
       />
+      <div className="mt-6 text-center font-medium">
+        {weeklyBudget > 0 && (
+          <p className={overBudget ? 'text-red-600' : 'text-green-600'}>
+            {`Total estimé : ${totalMenuCost.toFixed(2)} € / Budget : ${weeklyBudget.toFixed(2)} € `}
+            {overBudget
+              ? `❌ (dépassement de +${(totalMenuCost - weeklyBudget).toFixed(2)} €)`
+              : '✅'}
+          </p>
+        )}
+        {weeklyBudget === 0 && (
+          <p className="text-pastel-text/80">
+            {`Total estimé : ${totalMenuCost.toFixed(2)} €`}
+          </p>
+        )}
+      </div>
     </div>
   );
 }

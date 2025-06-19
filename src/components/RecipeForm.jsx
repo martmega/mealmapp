@@ -14,6 +14,7 @@ import RecipeCoreFields from '@/components/form/RecipeCoreFields';
 import RecipeIngredientsManager from '@/components/form/RecipeIngredientsManager';
 import RecipeInstructionsManager from '@/components/form/RecipeInstructionsManager';
 import RecipeMetaFields from '@/components/form/RecipeMetaFields';
+import { estimateRecipePrice } from '@/lib/openai';
 import {
   Select,
   SelectContent,
@@ -399,6 +400,13 @@ function RecipeForm({
         : [],
       visibility: formData.visibility,
     };
+
+    if (!recipeDataToSubmit.estimated_price) {
+      const estimated = await estimateRecipePrice(recipeDataToSubmit);
+      if (estimated !== null) {
+        recipeDataToSubmit.estimated_price = estimated;
+      }
+    }
 
     const success = await onSubmit(recipeDataToSubmit);
     if (success) {

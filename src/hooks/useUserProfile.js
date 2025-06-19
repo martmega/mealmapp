@@ -18,6 +18,8 @@ export function useUserProfile(session) {
       preferences: {
         servingsPerMeal: 4,
         maxCalories: 2200,
+        weeklyBudget: 35,
+        tolerance: 0.1,
         meals: [],
         tagPreferences: [],
         commonMenuSettings: { enabled: false, linkedUsers: [] },
@@ -56,18 +58,13 @@ export function useUserProfile(session) {
 
       let finalProfileData = {
         id: session.user.id,
-        username:
-          profile?.username ||
-          userMetadata.username ||
-          'Utilisateur',
+        username: profile?.username || userMetadata.username || 'Utilisateur',
         user_tag:
           profile?.user_tag ||
           userMetadata.user_tag ||
           'user_' + session.user.id.substring(0, 8),
         avatar_url:
-          profile?.avatar_url ||
-          userMetadata.avatar_url ||
-          DEFAULT_AVATAR_URL,
+          profile?.avatar_url || userMetadata.avatar_url || DEFAULT_AVATAR_URL,
         bio: profile?.bio || userMetadata.bio || '',
         subscription_tier:
           userMetadata.subscription_tier ||
@@ -78,6 +75,8 @@ export function useUserProfile(session) {
       const defaultPreferences = {
         servingsPerMeal: 4,
         maxCalories: 2200,
+        weeklyBudget: 35,
+        tolerance: 0.1,
         meals: [],
         tagPreferences: [],
         commonMenuSettings: { enabled: false, linkedUsers: [] },
