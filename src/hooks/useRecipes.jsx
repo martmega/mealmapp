@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast.js';
 import { ToastAction } from '@/components/ui/toast.jsx';
+import { estimateRecipePrice } from '@/lib/openai';
 
 export function useRecipes(session) {
   const [recipes, setRecipes] = useState([]);
@@ -83,6 +84,46 @@ export function useRecipes(session) {
     if (!session?.user?.id) {
       localStorage.setItem('localRecipes', JSON.stringify(recipes));
     }
+  }, [recipes, session]);
+
+  useEffect(() => {
+    const estimateMissingPrices = async () => {
+      for (const recipe of Array.isArray(recipes) ? recipes : []) {
+        if (
+          recipe &&
+          (recipe.estimated_price === undefined ||
+            recipe.estimated_price === null)
+        ) {
+          const estimated = await estimateRecipePrice({
+            ingredients: Array.isArray(recipe.ingredients)
+              ? recipe.ingredients.filter((ing) => ing.name?.trim() !== '')
+              : [],
+            servings: parseInt(recipe.servings, 10) || 1,
+          });
+
+          if (estimated !== null) {
+            setRecipes((prev) =>
+              (Array.isArray(prev) ? prev : []).map((r) =>
+                r.id === recipe.id ? { ...r, estimated_price: estimated } : r
+              )
+            );
+
+            if (
+              session?.user?.id &&
+              !recipe.id.toString().startsWith('local_')
+            ) {
+              await supabase
+                .from('recipes')
+                .update({ estimated_price: estimated })
+                .eq('id', recipe.id)
+                .eq('user_id', session.user.id);
+            }
+          }
+        }
+      }
+    };
+
+    estimateMissingPrices();
   }, [recipes, session]);
 
   const ensureArray = (value) => {
