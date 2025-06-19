@@ -1,11 +1,26 @@
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.VITE_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true,
-});
+const apiKey =
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_OPENAI_API_KEY) ||
+  process.env.VITE_OPENAI_API_KEY;
+
+export const openaiIsAvailable = !!apiKey;
+
+let openai = null;
+if (openaiIsAvailable) {
+  openai = new OpenAI({
+    apiKey,
+    dangerouslyAllowBrowser: true,
+  });
+} else {
+  console.warn('⚠️ Pas de clé OpenAI disponible côté client');
+}
 
 export const generateRecipeDescription = async (recipe) => {
+  if (!openaiIsAvailable) {
+    console.warn('⚠️ Pas de clé OpenAI disponible côté client');
+    return null;
+  }
   try {
     const prompt = `Génère une description détaillée et attrayante pour la recette suivante:
     Nom: ${recipe.name}
@@ -38,6 +53,10 @@ export const generateRecipeDescription = async (recipe) => {
 };
 
 export const generateRecipeImage = async (recipe) => {
+  if (!openaiIsAvailable) {
+    console.warn('⚠️ Pas de clé OpenAI disponible côté client');
+    return null;
+  }
   try {
     const prompt = `Une photo appétissante de ${recipe.name}, style photographie culinaire professionnelle`;
 
@@ -58,6 +77,10 @@ export const generateRecipeImage = async (recipe) => {
 };
 
 export const estimateRecipePrice = async (recipe) => {
+  if (!openaiIsAvailable) {
+    console.warn('⚠️ Pas de clé OpenAI disponible côté client');
+    return null;
+  }
   try {
     const ingredientList = recipe.ingredients
       .map((i) => `${i.quantity} ${i.unit} ${i.name}`)
