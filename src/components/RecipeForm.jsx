@@ -14,7 +14,7 @@ import RecipeCoreFields from '@/components/form/RecipeCoreFields';
 import RecipeIngredientsManager from '@/components/form/RecipeIngredientsManager';
 import RecipeInstructionsManager from '@/components/form/RecipeInstructionsManager';
 import RecipeMetaFields from '@/components/form/RecipeMetaFields';
-import { estimateRecipePrice } from '@/lib/openai';
+import { estimateRecipePrice, openaiIsAvailable } from '@/lib/openai';
 import {
   Select,
   SelectContent,
@@ -661,6 +661,12 @@ function RecipeForm({
               </Button>
             </div>
           </form>
+
+          {!openaiIsAvailable && (
+            <p className="mt-2 text-red-500">
+              Estimation automatique désactivée (clé manquante).
+            </p>
+          )}
 
           {showTagManager && (
             <TagManager
