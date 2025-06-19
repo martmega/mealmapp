@@ -372,6 +372,11 @@ function RecipeForm({
       return;
     }
 
+    const estimated = await estimateRecipePrice({
+      ingredients: formData.ingredients.filter((ing) => ing.name.trim() !== ''),
+      servings: parseInt(formData.servings, 10) || 1,
+    });
+
     let finalImageUrl = formData.image_url;
     if (selectedFile) {
       const uploadedUrl = await uploadImage();
@@ -399,14 +404,8 @@ function RecipeForm({
         ? formData.instructions.filter((line) => line.trim() !== '')
         : [],
       visibility: formData.visibility,
+      estimated_price: estimated !== null ? estimated : undefined,
     };
-
-    if (!recipeDataToSubmit.estimated_price) {
-      const estimated = await estimateRecipePrice(recipeDataToSubmit);
-      if (estimated !== null) {
-        recipeDataToSubmit.estimated_price = estimated;
-      }
-    }
 
     const success = await onSubmit(recipeDataToSubmit);
     if (success) {
