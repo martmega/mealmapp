@@ -86,10 +86,12 @@ function RecipeDetailModal({ recipe, onClose, userProfile }) {
                 <p className="text-pastel-text leading-relaxed">
                   {recipe.description}
                 </p>
-                {recipe.estimated_price !== undefined && (
+                {typeof recipe.estimated_price === 'number' ? (
                   <p className="text-sm text-gray-500 mt-2">
                     💰 Estimé : {recipe.estimated_price.toFixed(2)} €
                   </p>
+                ) : (
+                  <p className="text-sm text-gray-400 mt-2">💰 Estimation indisponible</p>
                 )}
               </div>
             )}
