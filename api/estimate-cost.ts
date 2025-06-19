@@ -25,7 +25,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ],
     });
 
-    const price = response.choices[0].message.content;
+    const priceText = response.choices[0].message.content;
+    const price = parseFloat(priceText.replace(/[^0-9.]/g, ''));
     return res.status(200).json({ price });
   } catch (err) {
     console.error('Erreur estimation coût :', err);
