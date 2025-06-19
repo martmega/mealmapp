@@ -66,6 +66,8 @@ function MenuPlanner({
         },
       ],
       maxCalories: 2200,
+      weeklyBudget: 35,
+      tolerance: 0.1,
       tagPreferences: [],
       servingsPerMeal: 4,
       commonMenuSettings: {
@@ -87,6 +89,12 @@ function MenuPlanner({
           userProfile.preferences.maxCalories ||
           initialPrefs.maxCalories ||
           2200,
+        weeklyBudget:
+          userProfile.preferences.weeklyBudget ||
+          initialPrefs.weeklyBudget ||
+          35,
+        tolerance:
+          userProfile.preferences.tolerance || initialPrefs.tolerance || 0.1,
         meals: userProfile.preferences.meals?.length
           ? userProfile.preferences.meals
           : initialPrefs.meals,
@@ -104,7 +112,6 @@ function MenuPlanner({
     }
     return initialPrefs;
   });
-
 
   useEffect(() => {
     localStorage.setItem('menuPreferences', JSON.stringify(preferences));
@@ -133,12 +140,15 @@ function MenuPlanner({
     userProfile
   );
 
-  const linkedUserProps = useLinkedUsers(userProfile, preferences, setPreferences);
+  const linkedUserProps = useLinkedUsers(
+    userProfile,
+    preferences,
+    setPreferences
+  );
 
   const handleGenerateMenu = useCallback(() => {
     generateMenu();
   }, [generateMenu]);
-
 
   return (
     <div className="space-y-8">

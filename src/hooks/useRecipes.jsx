@@ -14,7 +14,7 @@ export function useRecipes(session) {
   }, []);
 
   const baseRecipeSelect = `
-    id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, visibility, updated_at
+    id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, visibility, updated_at, estimated_price
   `;
 
   useEffect(() => {
@@ -364,7 +364,11 @@ export function useRecipes(session) {
       delete pendingDeletions.current[recipeId];
     }, 5000);
 
-    pendingDeletions.current[recipeId] = { recipe: recipeToDelete, timer, dismiss };
+    pendingDeletions.current[recipeId] = {
+      recipe: recipeToDelete,
+      timer,
+      dismiss,
+    };
     setLoading(false);
   };
 

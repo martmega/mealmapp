@@ -101,7 +101,6 @@ function MenuPreferencesPanel({
     setPreferences({ ...preferences, meals: renumberedMeals });
   };
 
-
   const handleServingsPerMealChange = (e) => {
     const value = parseInt(e.target.value, 10);
     setPreferences({ ...preferences, servingsPerMeal: value > 0 ? value : 1 });
@@ -160,18 +159,63 @@ function MenuPreferencesPanel({
             className="max-w-xs"
           />
         </div>
+        <div className="space-y-2">
+          <Label
+            htmlFor="weeklyBudget"
+            className="block text-base font-medium mb-1.5"
+          >
+            Budget hebdomadaire (€)
+          </Label>
+          <Input
+            id="weeklyBudget"
+            type="number"
+            value={preferences.weeklyBudget || 35}
+            onChange={(e) =>
+              setPreferences({
+                ...preferences,
+                weeklyBudget: parseFloat(e.target.value) || 0,
+              })
+            }
+            min="0"
+            step="0.5"
+            className="max-w-xs"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label
+            htmlFor="tolerance"
+            className="block text-base font-medium mb-1.5"
+          >
+            Tolérance dépassement (%)
+          </Label>
+          <Input
+            id="tolerance"
+            type="number"
+            value={Math.round((preferences.tolerance || 0) * 100)}
+            onChange={(e) =>
+              setPreferences({
+                ...preferences,
+                tolerance: Math.max(0, parseFloat(e.target.value) || 0) / 100,
+              })
+            }
+            min="0"
+            max="100"
+            step="1"
+            className="max-w-xs"
+          />
+        </div>
       </div>
 
-        <CommonMenuSettings
-          preferences={preferences}
-          newLinkedUserTag={newLinkedUserTag}
-          setNewLinkedUserTag={setNewLinkedUserTag}
-          isLinkingUser={isLinkingUser}
-          handleAddLinkedUser={handleAddLinkedUser}
-          handleToggleCommonMenu={handleToggleCommonMenu}
-          handleLinkedUserRatioChange={handleLinkedUserRatioChange}
-          handleRemoveLinkedUser={handleRemoveLinkedUser}
-        />
+      <CommonMenuSettings
+        preferences={preferences}
+        newLinkedUserTag={newLinkedUserTag}
+        setNewLinkedUserTag={setNewLinkedUserTag}
+        isLinkingUser={isLinkingUser}
+        handleAddLinkedUser={handleAddLinkedUser}
+        handleToggleCommonMenu={handleToggleCommonMenu}
+        handleLinkedUserRatioChange={handleLinkedUserRatioChange}
+        handleRemoveLinkedUser={handleRemoveLinkedUser}
+      />
 
       <div className="space-y-4 pt-4 border-t border-pastel-border/70">
         <div className="flex justify-between items-center">
@@ -200,61 +244,61 @@ function MenuPreferencesPanel({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="flex flex-col">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => moveMeal(index, 'up')}
+                      disabled={index === 0}
+                      className="h-7 w-7"
+                    >
+                      {' '}
+                      <ChevronUp className="w-4 h-4" />{' '}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => moveMeal(index, 'down')}
+                      disabled={index === (preferences.meals || []).length - 1}
+                      className="h-7 w-7"
+                    >
+                      {' '}
+                      <ChevronDown className="w-4 h-4" />{' '}
+                    </Button>
+                  </div>
+                  <Label className="font-medium text-pastel-text/90">
+                    Repas {meal.mealNumber}
+                  </Label>
+                </div>
+                <div className="flex items-center gap-2">
                   <Button
                     type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => moveMeal(index, 'up')}
-                    disabled={index === 0}
-                    className="h-7 w-7"
+                    variant={meal.enabled ? 'secondary' : 'outline'}
+                    size="sm"
+                    onClick={() => {
+                      const newMeals = [...(preferences.meals || [])];
+                      newMeals[index] = {
+                        ...newMeals[index],
+                        enabled: !meal.enabled,
+                      };
+                      setPreferences({ ...preferences, meals: newMeals });
+                    }}
+                    className="min-w-[90px]"
                   >
-                    {' '}
-                    <ChevronUp className="w-4 h-4" />{' '}
+                    {meal.enabled ? 'Activé' : 'Désactivé'}
                   </Button>
                   <Button
                     type="button"
                     variant="ghost"
                     size="icon"
-                    onClick={() => moveMeal(index, 'down')}
-                    disabled={index === (preferences.meals || []).length - 1}
-                    className="h-7 w-7"
+                    onClick={() => removeMeal(index)}
+                    className="text-red-500 hover:bg-red-500/10 hover:text-red-600 h-8 w-8"
                   >
                     {' '}
-                    <ChevronDown className="w-4 h-4" />{' '}
+                    <Trash2 className="w-4 h-4" />{' '}
                   </Button>
                 </div>
-                <Label className="font-medium text-pastel-text/90">
-                  Repas {meal.mealNumber}
-                </Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant={meal.enabled ? 'secondary' : 'outline'}
-                  size="sm"
-                  onClick={() => {
-                    const newMeals = [...(preferences.meals || [])];
-                    newMeals[index] = {
-                      ...newMeals[index],
-                      enabled: !meal.enabled,
-                    };
-                    setPreferences({ ...preferences, meals: newMeals });
-                  }}
-                  className="min-w-[90px]"
-                >
-                  {meal.enabled ? 'Activé' : 'Désactivé'}
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeMeal(index)}
-                  className="text-red-500 hover:bg-red-500/10 hover:text-red-600 h-8 w-8"
-                >
-                  {' '}
-                  <Trash2 className="w-4 h-4" />{' '}
-                </Button>
-              </div>
               </div>
 
               <div className="pt-2 border-t border-pastel-border/70">
@@ -268,11 +312,11 @@ function MenuPreferencesPanel({
         </div>
       </div>
 
-        <TagPreferencesForm
-          preferences={preferences}
-          setPreferences={setPreferences}
-          availableTags={availableTags}
-        />
+      <TagPreferencesForm
+        preferences={preferences}
+        setPreferences={setPreferences}
+        availableTags={availableTags}
+      />
     </motion.div>
   );
 }
