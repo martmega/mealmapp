@@ -81,10 +81,7 @@ export const estimateRecipePrice = async (recipe) => {
     const response = await fetch('/api/estimate-cost', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ingredients: recipe.ingredients,
-        servings: recipe.servings,
-      }),
+      body: JSON.stringify({ recipe }),
     });
 
     if (!response.ok) throw new Error('Request failed');
