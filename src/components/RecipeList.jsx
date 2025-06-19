@@ -119,6 +119,11 @@ const MemoizedRecipeCard = React.memo(function RecipeCard({
             {recipe.calories || 'N/A'} calories
           </span>
         </div>
+        {recipe.estimated_price !== undefined && (
+          <div className="text-xs text-gray-500 mt-1">
+            💰 Estimé : {recipe.estimated_price.toFixed(2)} €
+          </div>
+        )}
       </div>
     </motion.div>
   );
