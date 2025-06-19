@@ -141,35 +141,45 @@ export function useMenuGeneration(
         let candidateRecipesForSlot = [];
         let candidateStageUsed = 0;
 
+        const mealTypeFilteredRecipes = availableRecipes.filter((r) => {
+          const recipeMealTypes = Array.isArray(r.meal_types) ? r.meal_types : [];
+          return mealPreference.types.some((prefType) =>
+            recipeMealTypes.includes(prefType)
+          );
+        });
+
+        if (mealTypeFilteredRecipes.length === 0) {
+          console.warn(
+            `Aucune recette candidate (type de repas) pour le repas ${mealPreference.mealNumber} (${mealPreference.types.join(', ')}) le ${days[dayIndex]}`
+          );
+          continue;
+        }
+
+        const avoidDuplicates = mealTypeFilteredRecipes.length > 1;
+
         const candidateStages = [
-          (r, baseId, matchesMealType) =>
-            !usedRecipeOriginalIdsThisDay.has(baseId) &&
-            recipeUsageCount[baseId] < 3 &&
-            matchesMealType,
-          (r, baseId, matchesMealType) =>
-            !usedRecipeOriginalIdsThisDay.has(baseId) && matchesMealType,
-          (r, baseId, matchesMealType) => matchesMealType,
-          (r, baseId) => !usedRecipeOriginalIdsThisDay.has(baseId),
+          (r, baseId) =>
+            !avoidDuplicates ||
+            (!usedRecipeOriginalIdsThisDay.has(baseId) &&
+              recipeUsageCount[baseId] < 3),
+          (r, baseId) => !avoidDuplicates || !usedRecipeOriginalIdsThisDay.has(baseId),
           () => true,
         ];
 
         for (let stage = 0; stage < candidateStages.length; stage++) {
           const filterFn = candidateStages[stage];
           candidateRecipesForSlot = [];
-          if (availableRecipes.length === 0) {
-            availableRecipes = shuffleArray(baseRecipes);
-          }
-          for (let i = 0; i < availableRecipes.length; i++) {
-            const recipe = availableRecipes[i];
+          if (mealTypeFilteredRecipes.length === 0) break;
+          for (let i = 0; i < mealTypeFilteredRecipes.length; i++) {
+            const recipe = mealTypeFilteredRecipes[i];
             const baseId = recipe.id.split('_')[0];
-            const recipeMealTypes = recipe.meal_types || [];
-            const matchesMealType = mealPreference.types.some((prefType) =>
-              recipeMealTypes.includes(prefType)
-            );
-            if (filterFn(recipe, baseId, matchesMealType)) {
+            if (filterFn(recipe, baseId)) {
+              const originalIndexInAvailable = availableRecipes.findIndex(
+                (r) => r.id === recipe.id
+              );
               candidateRecipesForSlot.push({
                 recipe,
-                originalIndexInAvailable: i,
+                originalIndexInAvailable,
               });
             }
           }
@@ -177,13 +187,6 @@ export function useMenuGeneration(
             candidateStageUsed = stage;
             break;
           }
-        }
-
-        if (candidateRecipesForSlot.length === 0) {
-          console.warn(
-            `Aucune recette candidate (type de repas) pour le repas ${mealPreference.mealNumber} (${mealPreference.types.join(', ')}) le ${days[dayIndex]}`
-          );
-          continue;
         }
 
         for (const candidate of candidateRecipesForSlot) {
