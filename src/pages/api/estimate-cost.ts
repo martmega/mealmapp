@@ -1,25 +1,26 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { generateRecipeCostEstimation } from '@/api/estimate-cost';
+import OpenAI from 'openai';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Méthode non autorisée' });
-  }
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-  const { recipe } = req.body;
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') return res.status(405).end();
 
-  if (!recipe || !Array.isArray(recipe.ingredients)) {
-    return res.status(400).json({ error: 'Recette invalide' });
-  }
+  const recipe = req.body.recipe;
+  if (!recipe) return res.status(400).json({ error: 'Missing recipe' });
 
   try {
-    const estimatedPrice = await generateRecipeCostEstimation(recipe);
+    const response = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: [
+        { role: 'user', content: `Estime le coût de cette recette : ${recipe.name}` },
+      ],
+    });
+
+    const estimatedPrice = parseFloat(response.choices[0].message.content ?? '');
     res.status(200).json({ estimated_price: estimatedPrice });
   } catch (error) {
-    console.error('Erreur OpenAI', error);
-    res.status(500).json({ error: "Erreur lors de l'estimation" });
+    console.error(error);
+    res.status(500).json({ error: 'OpenAI error' });
   }
 }
