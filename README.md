@@ -42,3 +42,6 @@ La clé `OPENAI_API_KEY` doit être fournie uniquement aux fonctions côté serv
 
 Cette clé ne doit jamais être exposée au client ; n'utilisez donc pas de préfixe `VITE_`.
 
+# ENV
+OPENAI_API_KEY=sk-...
+

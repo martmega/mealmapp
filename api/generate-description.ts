@@ -23,12 +23,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(403).json({ error: 'Premium only' });
   }
 
-  if (!process.env.OPENAI_API_KEY) {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
     return res.status(500).json({ error: 'Missing OpenAI API key' });
   }
 
   try {
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const openai = new OpenAI({ apiKey });
 
     const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
