@@ -78,7 +78,8 @@ function RecipeForm({
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
-  const isPremiumUser = userProfile?.subscription_tier === 'premium';
+  const subscriptionTier = userProfile?.subscription_tier;
+  const isPremiumUser = subscriptionTier === 'premium';
 
   useEffect(() => {
     if (recipe) {
@@ -399,7 +400,7 @@ function RecipeForm({
       servingsChanged;
 
     let estimated = recipe?.estimated_price ?? null;
-    if (shouldEstimate && isPremiumUser) {
+    if (shouldEstimate && subscriptionTier === 'premium') {
       estimated = await estimateRecipePrice(
         {
           ingredients: cleanedNewIngredients,
@@ -481,7 +482,7 @@ function RecipeForm({
       return;
     }
 
-    if (!isPremiumUser) {
+    if (subscriptionTier !== 'premium') {
       handlePremiumFeatureClick(
         type === 'description' ? 'de description' : "d'images"
       );
@@ -650,7 +651,7 @@ function RecipeForm({
             />
 
             <RecipeFormAIFeatures
-              isPremiumUser={isPremiumUser}
+              subscription_tier={subscriptionTier}
               generateWithAI={generateWithAI}
               isGeneratingDescription={isGeneratingDescription}
               isGeneratingImage={isGeneratingImage}
@@ -665,6 +666,9 @@ function RecipeForm({
               selectedFile={selectedFile}
               previewImage={previewImage}
               formDataName={formData.name}
+              subscription_tier={subscriptionTier}
+              generateWithAI={generateWithAI}
+              isGeneratingImage={isGeneratingImage}
             />
 
             <div className="flex justify-end gap-3 pt-4 border-t border-pastel-border/60">

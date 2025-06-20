@@ -1,13 +1,15 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import OpenAI from 'openai';
+import { getUserFromRequest } from '@/utils/auth';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  if (req.headers['x-subscription-tier'] !== 'premium') {
-    return res.status(403).json({ error: 'Forbidden' });
+  const user = await getUserFromRequest(req);
+  if (!user || user.user_metadata?.subscription_tier !== 'premium') {
+    return res.status(403).json({ error: 'Premium only' });
   }
 
   try {

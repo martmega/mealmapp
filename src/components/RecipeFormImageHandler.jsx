@@ -17,10 +17,11 @@ const RecipeFormImageHandler = ({
   selectedFile,
   previewImage,
   formDataName,
-  isPremiumUser,
+  subscription_tier,
   generateWithAI,
   isGeneratingImage,
 }) => {
+  console.log('RecipeFormImageHandler subscription tier:', subscription_tier);
   return (
     <div className="space-y-3">
       <Label className="text-sm font-medium text-pastel-text/90">
@@ -55,21 +56,21 @@ const RecipeFormImageHandler = ({
 
         <Button
           type="button"
-          variant={isPremiumUser ? 'premium' : 'accent'}
+          variant={subscription_tier === 'premium' ? 'premium' : 'accent'}
           onClick={() => generateWithAI('image')}
           disabled={isGeneratingImage || !session}
           className="h-auto py-3"
         >
           {isGeneratingImage ? (
             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-          ) : !isPremiumUser ? (
+          ) : subscription_tier !== 'premium' ? (
             <Star className="w-4 h-4 mr-2 text-yellow-400" />
           ) : (
             <ImageIconLucide className="w-4 h-4 mr-2" />
           )}
           {isGeneratingImage
             ? 'Génération...'
-            : isPremiumUser
+            : subscription_tier === 'premium'
               ? 'IA Image'
               : 'Premium Image'}
         </Button>
