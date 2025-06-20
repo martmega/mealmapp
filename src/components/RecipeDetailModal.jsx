@@ -94,7 +94,7 @@ function RecipeDetailModal({ recipe, onClose, userProfile }) {
                         const planned = recipe.plannedServings || base;
                         const pricePerPortion = recipe.estimated_price / base;
                         const adjusted = pricePerPortion * planned;
-                        return `Estimé : ${adjusted.toFixed(2)} €`;
+                        return `${adjusted.toFixed(2)} €`;
                       })()
                     }
                   </p>
