@@ -87,19 +87,19 @@ function RecipeDetailModal({ recipe, onClose, userProfile }) {
                   {recipe.description}
                 </p>
                 {typeof recipe.estimated_price === 'number' ? (
-                  <p className="text-sm text-gray-500 mt-2">
+                  <p className="text-base text-gray-500 mt-2 text-center">
                     {
                       (() => {
                         const base = recipe.servings && recipe.servings > 0 ? recipe.servings : 1;
                         const planned = recipe.plannedServings || base;
                         const pricePerPortion = recipe.estimated_price / base;
                         const adjusted = pricePerPortion * planned;
-                        return `💰 Estimé : ${adjusted.toFixed(2)} €`;
+                        return `Estimé : ${adjusted.toFixed(2)} €`;
                       })()
                     }
                   </p>
                 ) : (
-                  <p className="text-sm text-gray-400 mt-2">💰 Estimation indisponible</p>
+                  <p className="text-base text-gray-400 mt-2 text-center">Estimation indisponible</p>
                 )}
               </div>
             )}
@@ -109,10 +109,7 @@ function RecipeDetailModal({ recipe, onClose, userProfile }) {
                 <h3 className="text-lg font-semibold text-pastel-secondary dark:text-pastel-secondary-hover flex items-center">
                   <Users className="w-5 h-5 mr-2" /> Portions
                 </h3>
-                <p className="text-pastel-text">
-                  {displayServings} (Recette de base: {recipe.servings || 'N/A'}
-                  )
-                </p>
+                <p className="text-pastel-text">{recipe.servings || 'N/A'}</p>
               </div>
               <div className="space-y-2 p-4 bg-pastel-card-alt rounded-lg">
                 <h3 className="text-lg font-semibold text-pastel-secondary dark:text-pastel-secondary-hover flex items-center">
