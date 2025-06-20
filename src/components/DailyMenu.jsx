@@ -156,7 +156,7 @@ const MemoizedDailyMenu = React.memo(function DailyMenu({
                                 const pricePerPortion =
                                   recipe.estimated_price / base;
                                 const adjusted = pricePerPortion * plannedServings;
-                                return `💰 Estimé : ${adjusted.toFixed(2)} €`;
+                                return `${adjusted.toFixed(2)} €`;
                               })()
                             }
                           </p>
