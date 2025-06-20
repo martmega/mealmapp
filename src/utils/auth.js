@@ -14,5 +14,9 @@ export async function getUserFromRequest(req) {
     console.warn('Error fetching user from token:', error.message);
     return null;
   }
-  return data.user || null;
+  const user = data.user || null;
+  if (user && !user.raw_user_meta_data && user.user_metadata) {
+    user.raw_user_meta_data = user.user_metadata;
+  }
+  return user;
 }

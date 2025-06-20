@@ -56,7 +56,8 @@ export function useUserProfile(session) {
       }
 
       const appMetadata = session.user.app_metadata || {};
-      const userMetadata = session.user.user_metadata || {};
+      const userMetadata =
+        session.user.raw_user_meta_data || session.user.user_metadata || {};
 
       let finalProfileData = {
         id: session.user.id,

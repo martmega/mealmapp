@@ -8,7 +8,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const user = await getUserFromRequest(req);
-  if (!user || user.user_metadata?.subscription_tier !== 'premium') {
+  if (!user || user.raw_user_meta_data?.subscription_tier !== 'premium') {
     return res.status(403).json({ error: 'Premium only' });
   }
 
