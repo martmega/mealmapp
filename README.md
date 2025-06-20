@@ -32,3 +32,13 @@ npm run test
 Recipe prices are estimated with OpenAI only when required. A new estimate is
 requested when a recipe is created or when its ingredients or base servings
 change during editing. Existing estimates are reused otherwise.
+
+## 🔐 Configuration des variables d'environnement
+
+La clé `OPENAI_API_KEY` doit être fournie uniquement aux fonctions côté serveur.
+
+- **Vercel** : ajoutez `OPENAI_API_KEY` dans les variables d'environnement du projet pour les routes API Node.js.
+- **Supabase** : renseignez `OPENAI_API_KEY` dans *Project Settings > Functions > Environment Variables* pour les fonctions Deno.
+
+Cette clé ne doit jamais être exposée au client ; n'utilisez donc pas de préfixe `VITE_`.
+
