@@ -87,7 +87,8 @@ export const estimateRecipePrice = async (recipe) => {
     if (!response.ok) throw new Error('Request failed');
 
     const { price } = await response.json();
-    const value = parseFloat(price);
+    const normalized = String(price).replace(',', '.');
+    const value = parseFloat(normalized);
     console.log('Price estimate:', value);
     return isNaN(value) ? null : value;
   } catch (error) {
