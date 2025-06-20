@@ -79,6 +79,10 @@ export function useUserProfile(session) {
           : [],
       };
 
+      if (!finalProfileData.user_tag) {
+        console.warn('user_tag is NULL for user', session.user.id);
+      }
+
       const defaultPreferences = {
         servingsPerMeal: 4,
         maxCalories: 2200,
