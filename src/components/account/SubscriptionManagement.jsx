@@ -152,6 +152,9 @@ export default function SubscriptionManagement({
       <h3 className="text-xl sm:text-2xl font-semibold text-pastel-text/90 border-b border-pastel-border pb-3 mb-5">
         Gestion de l&apos;Abonnement
       </h3>
+      <p className="text-sm text-pastel-muted-foreground">
+        Statut actuel : {currentSubscriptionTier === 'premium' ? 'Premium' : 'Standard'}
+      </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div

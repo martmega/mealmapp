@@ -79,7 +79,6 @@ function RecipeForm({
   const navigate = useNavigate();
 
   const subscriptionTier = userProfile?.subscription_tier;
-  const isPremiumUser = subscriptionTier === 'premium';
 
   useEffect(() => {
     if (recipe) {
@@ -502,30 +501,24 @@ function RecipeForm({
     if (type === 'image') setIsGeneratingImage(true);
 
     try {
-      const ingredientsList = formData.ingredients
-        .filter((i) => i.name)
-        .map((i) => `${i.quantity || ''} ${i.unit || ''} ${i.name}`.trim())
-        .join(', ');
-      const functionName =
-        type === 'description' ? 'generate-recipe' : 'generate-image';
-      const promptBase =
-        type === 'description'
-          ? `Génère une description courte (environ 150 caractères), engageante et appétissante pour une recette nommée "${formData.name}" avec les ingrédients: ${ingredientsList}. Instructions: ${formData.instructions.join(' ')}. Ton: chaleureux et invitant.`
-          : `Photographie culinaire professionnelle, très appétissante et réaliste de "${formData.name}", un plat préparé avec: ${ingredientsList}. Style: éclairage naturel vif, couleurs riches, mise au point sélective, arrière-plan subtilement flouté. Composition artistique. Haute résolution.`;
+      const endpoint =
+        type === 'description' ? '/api/generate-description' : '/api/generate-image';
 
-      const { data, error } = await supabase.functions.invoke(functionName, {
-        body: { prompt: promptBase },
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ recipe: { name: formData.name, ingredients: formData.ingredients, instructions: formData.instructions } }),
       });
 
-      if (error) {
-        throw new Error(
-          error.message ||
-            `La génération ${type === 'description' ? 'de la description' : "de l'image"} a échoué.`
-        );
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || 'Request failed');
       }
 
+      const data = await response.json();
+
       if (type === 'description') {
-        const generatedDescription = data.choices[0].message.content;
+        const generatedDescription = data.description;
         setFormData((prev) => ({ ...prev, description: generatedDescription }));
         if (descriptionRef.current)
           descriptionRef.current.value = generatedDescription;
