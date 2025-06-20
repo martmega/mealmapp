@@ -69,44 +69,33 @@ export default function ProfileInformationForm({
 
     setLoading(true);
     try {
-      const { data: keyData, error: keyError } = await supabase
-        .from('access_keys')
-        .select('grants, used_by')
-        .eq('key', trimmed)
-        .maybeSingle();
+      const response = await fetch('/api/access-key', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ key: trimmed }),
+      });
+      const result = await response.json();
 
-      if (keyError || !keyData) {
+      if (!response.ok) {
         toast({
           title: 'Clé invalide',
-          description: "Cette clé n'est pas reconnue.",
-          variant: 'destructive',
-        });
-        return;
-      }
-
-      if (keyData.used_by) {
-        toast({
-          title: 'Clé déjà utilisée',
-          description: 'Cette clé a déjà été utilisée.',
+          description: result.error || 'Cette clé est incorrecte.',
           variant: 'destructive',
         });
         return;
       }
 
       const { error: updateError } = await supabase.auth.updateUser({
-        data: { subscription_tier: keyData.grants },
+        data: { subscription_tier: result.grants },
       });
       if (updateError) throw updateError;
 
-      const { error: usageError } = await supabase
-        .from('access_keys')
-        .update({ used_by: userProfile.id, used_at: new Date().toISOString() })
-        .eq('key', trimmed);
-      if (usageError) console.warn('access_keys update error:', usageError);
-
       toast({
         title: 'Clé appliquée',
-        description: `Accès ${keyData.grants} activé !`,
+        description: `Accès ${result.grants} activé !`,
       });
       setAccessKeyInput('');
       if (onProfileUpdate) {
@@ -217,11 +206,16 @@ export default function ProfileInformationForm({
       }
 
       if (Object.keys(publicUserUpdates).length > 0) {
-        const { error: updateError } = await supabase
-          .from('public_users')
-          .update(publicUserUpdates)
-          .eq('id', session.user.id);
-        if (updateError) throw updateError;
+        const response = await fetch('/api/update-profile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ id: session.user.id, ...publicUserUpdates }),
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Update failed');
         profileUpdated = true;
       }
 
