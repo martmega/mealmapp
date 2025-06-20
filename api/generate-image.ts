@@ -17,12 +17,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Missing recipe' });
   }
 
-  if (!process.env.OPENAI_API_KEY) {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
     return res.status(500).json({ error: 'Missing OpenAI API key' });
   }
 
   try {
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const openai = new OpenAI({ apiKey });
     const prompt = `Photographie culinaire professionnelle de ${recipe.name} pr\u00e9par\u00e9 avec ${recipe.ingredients?.map((i:any)=>`${i.quantity||''} ${i.unit||''} ${i.name}`).join(', ')}.`;
     const response = await openai.images.generate({
       model: 'dall-e-3',
