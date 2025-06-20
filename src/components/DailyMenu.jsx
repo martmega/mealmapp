@@ -146,7 +146,7 @@ const MemoizedDailyMenu = React.memo(function DailyMenu({
                           />
                         </div>
                         {typeof recipe.estimated_price === 'number' && (
-                          <p className="text-xs text-pastel-text/70 mt-0.5">
+                          <p className="text-sm text-pastel-text/70 mt-0.5 text-center">
                             {
                               (() => {
                                 const base =
@@ -156,7 +156,7 @@ const MemoizedDailyMenu = React.memo(function DailyMenu({
                                 const pricePerPortion =
                                   recipe.estimated_price / base;
                                 const adjusted = pricePerPortion * plannedServings;
-                                return `💰 Estimé : ${adjusted.toFixed(2)} €`;
+                                return `Estimé : ${adjusted.toFixed(2)} €`;
                               })()
                             }
                           </p>
