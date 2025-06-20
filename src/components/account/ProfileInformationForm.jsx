@@ -66,28 +66,48 @@ export default function ProfileInformationForm({
   const handleApplyAccessKey = async () => {
     const trimmed = accessKeyInput.trim();
     if (!trimmed) return;
-    const allowed = (import.meta.env.VITE_ACCESS_KEYS || '')
-      .split(',')
-      .map((k) => k.trim())
-      .filter(Boolean);
-    if (!allowed.includes(trimmed)) {
-      toast({
-        title: 'Clé invalide',
-        description: "Cette clé n'est pas reconnue.",
-        variant: 'destructive',
-      });
-      return;
-    }
+
     setLoading(true);
     try {
-      const { error } = await supabase.auth.updateUser({
-        data: {
-          subscription_tier: 'premium',
-          access_keys: [...(userProfile.access_keys || []), trimmed],
-        },
+      const { data: keyData, error: keyError } = await supabase
+        .from('access_keys')
+        .select('grants, used_by')
+        .eq('key', trimmed)
+        .maybeSingle();
+
+      if (keyError || !keyData) {
+        toast({
+          title: 'Clé invalide',
+          description: "Cette clé n'est pas reconnue.",
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      if (keyData.used_by) {
+        toast({
+          title: 'Clé déjà utilisée',
+          description: 'Cette clé a déjà été utilisée.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: { subscription_tier: keyData.grants },
       });
-      if (error) throw error;
-      toast({ title: 'Clé appliquée', description: 'Accès premium activé !' });
+      if (updateError) throw updateError;
+
+      const { error: usageError } = await supabase
+        .from('access_keys')
+        .update({ used_by: userProfile.id, used_at: new Date().toISOString() })
+        .eq('key', trimmed);
+      if (usageError) console.warn('access_keys update error:', usageError);
+
+      toast({
+        title: 'Clé appliquée',
+        description: `Accès ${keyData.grants} activé !`,
+      });
       setAccessKeyInput('');
       if (onProfileUpdate) {
         await onProfileUpdate();
