@@ -67,7 +67,6 @@ function MenuPlanner({
       ],
       maxCalories: 2200,
       weeklyBudget: 35,
-      tolerance: 0.1,
       tagPreferences: [],
       servingsPerMeal: 4,
       commonMenuSettings: {
@@ -78,6 +77,9 @@ function MenuPlanner({
     };
 
     let initialPrefs = saved ? JSON.parse(saved) : defaultPreferences;
+    if (initialPrefs.tolerance !== undefined) {
+      delete initialPrefs.tolerance;
+    }
     if (userProfile?.preferences) {
       initialPrefs = {
         ...initialPrefs,
@@ -93,8 +95,6 @@ function MenuPlanner({
           userProfile.preferences.weeklyBudget ||
           initialPrefs.weeklyBudget ||
           35,
-        tolerance:
-          userProfile.preferences.tolerance || initialPrefs.tolerance || 0.1,
         meals: userProfile.preferences.meals?.length
           ? userProfile.preferences.meals
           : initialPrefs.meals,
@@ -109,6 +109,9 @@ function MenuPlanner({
           linkedUserRecipes: [],
         },
       };
+      if (initialPrefs.tolerance !== undefined) {
+        delete initialPrefs.tolerance;
+      }
     }
     return initialPrefs;
   });

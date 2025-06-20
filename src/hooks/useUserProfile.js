@@ -19,7 +19,6 @@ export function useUserProfile(session) {
         servingsPerMeal: 4,
         maxCalories: 2200,
         weeklyBudget: 35,
-        tolerance: 0.1,
         meals: [],
         tagPreferences: [],
         commonMenuSettings: { enabled: false, linkedUsers: [] },
@@ -76,7 +75,6 @@ export function useUserProfile(session) {
         servingsPerMeal: 4,
         maxCalories: 2200,
         weeklyBudget: 35,
-        tolerance: 0.1,
         meals: [],
         tagPreferences: [],
         commonMenuSettings: { enabled: false, linkedUsers: [] },
@@ -85,6 +83,7 @@ export function useUserProfile(session) {
         ...defaultPreferences,
         ...(userMetadata.preferences || {}),
       };
+      delete finalProfileData.preferences.tolerance;
       finalProfileData.preferences.commonMenuSettings = {
         ...defaultPreferences.commonMenuSettings,
         ...(userMetadata.preferences?.commonMenuSettings || {}),
