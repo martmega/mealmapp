@@ -181,29 +181,6 @@ function MenuPreferencesPanel({
             className="max-w-xs"
           />
         </div>
-        <div className="space-y-2">
-          <Label
-            htmlFor="tolerance"
-            className="block text-base font-medium mb-1.5"
-          >
-            Tolérance dépassement (%)
-          </Label>
-          <Input
-            id="tolerance"
-            type="number"
-            value={Math.round((preferences.tolerance || 0) * 100)}
-            onChange={(e) =>
-              setPreferences({
-                ...preferences,
-                tolerance: Math.max(0, parseFloat(e.target.value) || 0) / 100,
-              })
-            }
-            min="0"
-            max="100"
-            step="1"
-            className="max-w-xs"
-          />
-        </div>
       </div>
 
       <CommonMenuSettings
