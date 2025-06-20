@@ -1,7 +1,8 @@
 import OpenAI from 'openai';
 
 const apiKey =
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_OPENAI_API_KEY) ||
+  (typeof import.meta !== 'undefined' &&
+    import.meta.env?.VITE_OPENAI_API_KEY) ||
   process.env.VITE_OPENAI_API_KEY;
 
 export const openaiIsAvailable = !!apiKey;
@@ -76,11 +77,17 @@ export const generateRecipeImage = async (recipe) => {
   }
 };
 
-export const estimateRecipePrice = async (recipe) => {
+export const estimateRecipePrice = async (
+  recipe,
+  subscriptionTier = 'standard'
+) => {
   try {
     const response = await fetch('/api/estimate-cost', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-subscription-tier': subscriptionTier,
+      },
       body: JSON.stringify({ recipe }),
     });
 

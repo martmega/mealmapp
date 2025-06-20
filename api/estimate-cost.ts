@@ -6,6 +6,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  if (req.headers['x-subscription-tier'] !== 'premium') {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
   try {
     const { recipe } = req.body;
 

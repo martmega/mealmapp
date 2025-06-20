@@ -54,7 +54,7 @@ function App() {
     updateRecipe: updateRecipeHook,
     deleteRecipe: deleteRecipeHook,
     loading: recipesLoading,
-  } = useRecipes(session);
+  } = useRecipes(session, userProfile?.subscription_tier);
 
   const {
     weeklyMenu,
@@ -137,9 +137,7 @@ function App() {
   }
 
   return (
-    <div
-      className="min-h-screen bg-white text-black dark:bg-[#121212] dark:text-white transition-colors duration-300 flex flex-col"
-    >
+    <div className="min-h-screen bg-white text-black dark:bg-[#121212] dark:text-white transition-colors duration-300 flex flex-col">
       <MainAppLayout
         session={session}
         userProfile={userProfile}

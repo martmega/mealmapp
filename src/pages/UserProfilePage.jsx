@@ -32,7 +32,7 @@ export default function UserProfilePage({
     try {
       const { data: user, error: userError } = await supabase
         .from('public_users')
-        .select('id, username, avatar_url, bio, user_tag')
+        .select('id, username, avatar_url, bio, user_tag, subscription_tier')
         .eq('id', userId)
         .single();
 
@@ -114,7 +114,7 @@ export default function UserProfilePage({
       const userIds = [...new Set(recipeData.map((r) => r.user_id))];
       const { data: users } = await supabase
         .from('public_users')
-        .select('id, username, avatar_url, bio, user_tag')
+        .select('id, username, avatar_url, bio, user_tag, subscription_tier')
         .in('id', userIds);
       const usersMap = Object.fromEntries((users || []).map((u) => [u.id, u]));
 

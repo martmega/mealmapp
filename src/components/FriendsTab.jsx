@@ -54,12 +54,15 @@ export default function FriendsTab({ session, userProfile, onRequestsChange }) {
 
       const userIds = [
         ...new Set(
-          uniqueRelationships.flatMap((rel) => [rel.requester_id, rel.addressee_id])
+          uniqueRelationships.flatMap((rel) => [
+            rel.requester_id,
+            rel.addressee_id,
+          ])
         ),
       ];
       const { data: users } = await supabase
         .from('public_users')
-        .select('id, username, avatar_url')
+        .select('id, username, avatar_url, subscription_tier')
         .in('id', userIds);
       const usersById = Object.fromEntries((users || []).map((u) => [u.id, u]));
 
@@ -358,18 +361,20 @@ export default function FriendsTab({ session, userProfile, onRequestsChange }) {
         </div>
       )}
 
-      {receivedRequests.length === 0 && sentRequests.length === 0 && friends.length === 0 && (
-        <div className="text-center py-10 px-6 bg-pastel-card rounded-xl shadow-pastel-soft">
-          <MessageSquare className="w-12 h-12 mx-auto mb-3 text-pastel-border" />
-          <p className="text-xl text-pastel-muted-foreground mb-2">
-            Votre cercle d'amis est vide pour le moment.
-          </p>
-          <p className="text-pastel-text/70">
-            Utilisez l'onglet "Découvrir" pour rechercher des utilisateurs et
-            envoyer des demandes d'amis !
-          </p>
-        </div>
-      )}
+      {receivedRequests.length === 0 &&
+        sentRequests.length === 0 &&
+        friends.length === 0 && (
+          <div className="text-center py-10 px-6 bg-pastel-card rounded-xl shadow-pastel-soft">
+            <MessageSquare className="w-12 h-12 mx-auto mb-3 text-pastel-border" />
+            <p className="text-xl text-pastel-muted-foreground mb-2">
+              Votre cercle d'amis est vide pour le moment.
+            </p>
+            <p className="text-pastel-text/70">
+              Utilisez l'onglet "Découvrir" pour rechercher des utilisateurs et
+              envoyer des demandes d'amis !
+            </p>
+          </div>
+        )}
     </div>
   );
 }

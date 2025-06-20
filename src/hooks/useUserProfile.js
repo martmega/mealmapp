@@ -15,6 +15,7 @@ export function useUserProfile(session) {
       user_tag: '',
       avatar_url: DEFAULT_AVATAR_URL,
       bio: '',
+      access_keys: [],
       preferences: {
         servingsPerMeal: 4,
         maxCalories: 2200,
@@ -39,7 +40,7 @@ export function useUserProfile(session) {
     try {
       const { data: profile, error: profileError } = await supabase
         .from('public_users')
-        .select('id, username, avatar_url, bio, user_tag')
+        .select('id, username, avatar_url, bio, user_tag, subscription_tier')
         .eq('id', session.user.id)
         .single();
 
@@ -66,9 +67,13 @@ export function useUserProfile(session) {
           profile?.avatar_url || userMetadata.avatar_url || DEFAULT_AVATAR_URL,
         bio: profile?.bio || userMetadata.bio || '',
         subscription_tier:
+          profile?.subscription_tier ||
           userMetadata.subscription_tier ||
           appMetadata.subscription_tier ||
           'standard',
+        access_keys: Array.isArray(userMetadata.access_keys)
+          ? userMetadata.access_keys
+          : [],
       };
 
       const defaultPreferences = {
@@ -110,6 +115,7 @@ export function useUserProfile(session) {
         username: 'Utilisateur',
         user_tag: 'user_' + session.user.id.substring(0, 8),
         avatar_url: DEFAULT_AVATAR_URL,
+        access_keys: [],
       };
       setUserProfile(fallbackProfile);
       return fallbackProfile;

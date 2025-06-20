@@ -4,7 +4,7 @@ import { useToast } from '@/components/ui/use-toast.js';
 import { ToastAction } from '@/components/ui/toast.jsx';
 import { estimateRecipePrice } from '@/lib/openai';
 
-export function useRecipes(session) {
+export function useRecipes(session, subscriptionTier) {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -52,7 +52,7 @@ export function useRecipes(session) {
         const userIds = [...new Set(data.map((r) => r.user_id))];
         const { data: users } = await supabase
           .from('public_users')
-          .select('id, username, avatar_url, bio, user_tag')
+          .select('id, username, avatar_url, bio, user_tag, subscription_tier')
           .in('id', userIds);
 
         const usersMap = Object.fromEntries(
@@ -84,22 +84,26 @@ export function useRecipes(session) {
     if (!session?.user?.id) {
       localStorage.setItem('localRecipes', JSON.stringify(recipes));
     }
-  }, [recipes, session]);
+  }, [recipes, session, subscriptionTier]);
 
   useEffect(() => {
     const estimateMissingPrices = async () => {
+      if (subscriptionTier !== 'premium') return;
       for (const recipe of Array.isArray(recipes) ? recipes : []) {
         if (
           recipe &&
           (recipe.estimated_price === undefined ||
             recipe.estimated_price === null)
         ) {
-          const estimated = await estimateRecipePrice({
-            ingredients: Array.isArray(recipe.ingredients)
-              ? recipe.ingredients.filter((ing) => ing.name?.trim() !== '')
-              : [],
-            servings: parseInt(recipe.servings, 10) || 1,
-          });
+          const estimated = await estimateRecipePrice(
+            {
+              ingredients: Array.isArray(recipe.ingredients)
+                ? recipe.ingredients.filter((ing) => ing.name?.trim() !== '')
+                : [],
+              servings: parseInt(recipe.servings, 10) || 1,
+            },
+            subscriptionTier
+          );
 
           if (estimated !== null) {
             setRecipes((prev) =>
@@ -185,7 +189,7 @@ export function useRecipes(session) {
 
         const { data: user } = await supabase
           .from('public_users')
-          .select('id, username, avatar_url, bio, user_tag')
+          .select('id, username, avatar_url, bio, user_tag, subscription_tier')
           .eq('id', newRecipeResult.user_id)
           .single();
 
@@ -281,7 +285,7 @@ export function useRecipes(session) {
 
         const { data: user } = await supabase
           .from('public_users')
-          .select('id, username, avatar_url, bio, user_tag')
+          .select('id, username, avatar_url, bio, user_tag, subscription_tier')
           .eq('id', updatedRecipeResult.user_id)
           .single();
 
