@@ -372,10 +372,39 @@ function RecipeForm({
       return;
     }
 
-    const estimated = await estimateRecipePrice({
-      ingredients: formData.ingredients.filter((ing) => ing.name.trim() !== ''),
-      servings: parseInt(formData.servings, 10) || 1,
-    });
+    const cleanedNewIngredients = formData.ingredients
+      .filter((ing) => ing.name.trim() !== '')
+      .map(({ name, quantity, unit }) => ({ name, quantity, unit }));
+
+    const cleanedPrevIngredients = Array.isArray(recipe?.ingredients)
+      ? recipe.ingredients
+          .filter((ing) => ing.name?.trim() !== '')
+          .map(({ name, quantity, unit }) => ({ name, quantity, unit }))
+      : [];
+
+    const ingredientsChanged =
+      JSON.stringify(cleanedPrevIngredients) !==
+      JSON.stringify(cleanedNewIngredients);
+    const servingsChanged = recipe
+      ? parseInt(formData.servings, 10) !== parseInt(recipe.servings, 10)
+      : false;
+
+    // Trigger a new price estimate only when necessary: on creation or when
+    // the ingredient list or base servings differ from the original recipe.
+    const shouldEstimate =
+      !recipe ||
+      recipe.estimated_price === undefined ||
+      recipe.estimated_price === null ||
+      ingredientsChanged ||
+      servingsChanged;
+
+    let estimated = recipe?.estimated_price ?? null;
+    if (shouldEstimate) {
+      estimated = await estimateRecipePrice({
+        ingredients: cleanedNewIngredients,
+        servings: parseInt(formData.servings, 10) || 1,
+      });
+    }
 
     let finalImageUrl = formData.image_url;
     if (selectedFile) {
