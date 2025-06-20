@@ -16,3 +16,9 @@ Execute the following command to run the Vitest suite:
 ```bash
 npm run test
 ```
+
+## Price estimation
+
+Recipe prices are estimated with OpenAI only when required. A new estimate is
+requested when a recipe is created or when its ingredients or base servings
+change during editing. Existing estimates are reused otherwise.
