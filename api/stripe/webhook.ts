@@ -1,78 +1,51 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
-import Stripe from 'stripe';
-import { createClient } from '@supabase/supabase-js';
-import { Readable } from 'stream';
+import { serve } from "https://deno.land/std@0.192.0/http/server.ts";
+import Stripe from "https://esm.sh/stripe@12.0.0?target=deno";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-04-10',
-});
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-);
+const stripeSecret = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
+const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET") ?? "";
+const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+const stripe = new Stripe(stripeSecret, { apiVersion: "2024-04-10" });
 
-async function readBuffer(readable: Readable): Promise<Buffer> {
-  const chunks: Buffer[] = [];
-  for await (const chunk of readable) {
-    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
-  }
-  return Buffer.concat(chunks);
-}
+console.log("Stripe webhook handler initialized");
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+serve(async (req) => {
+  console.log("Webhook request received");
+  const signature = req.headers.get("stripe-signature") ?? "";
 
-  const sig = req.headers['stripe-signature'] as string;
   let event: Stripe.Event;
-
   try {
-    const buf = await readBuffer(req);
-    event = stripe.webhooks.constructEvent(
-      buf,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET || ''
-    );
+    const body = await req.text();
+    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+    console.log(`Event validated: ${event.type}`);
   } catch (err) {
-    console.error('Stripe signature verification failed:', err);
-    return res.status(400).json({ error: 'Invalid signature' });
+    console.error("Invalid Stripe signature", err);
+    return new Response("Invalid signature", { status: 400 });
   }
 
   if (
-    event.type === 'checkout.session.completed' ||
-    event.type === 'invoice.paid'
+    event.type === "checkout.session.completed" ||
+    event.type === "invoice.paid"
   ) {
-    try {
-      const session = event.data.object;
-      const userId = session.client_reference_id;
-      const email = session.customer_email || session.customer_details?.email;
-      if (userId || email) {
-        let id = userId;
-        if (!id && email) {
-          const { data } = await supabase
-            .from('public_users')
-            .select('id')
-            .eq('email', email)
-            .maybeSingle();
-          id = data?.id;
-        }
-        if (id) {
-          await supabase.auth.admin.updateUserById(id, {
-            app_metadata: { subscription_tier: 'premium' },
-          });
-        }
+    const session: any = event.data.object;
+    const email = session.customer_email;
+    console.log(`Processing session for ${email}`);
+    if (email) {
+      const supabase = createClient(supabaseUrl, supabaseServiceKey);
+      const { error } = await supabase.auth.admin.updateUserByEmail(email, {
+        user_metadata: { subscription_tier: "premium", is_premium: true },
+      });
+      if (error) {
+        console.error("Supabase update error", error.message);
+        return new Response("Supabase error", { status: 500 });
       }
-    } catch (err) {
-      console.error('Stripe webhook error:', err);
+      console.log("User updated successfully");
+    } else {
+      console.log("No email found in session");
     }
   }
 
-  res.status(200).json({ received: true });
-}
+  return new Response("OK", { status: 200 });
+});
