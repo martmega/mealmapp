@@ -145,6 +145,22 @@ const MemoizedDailyMenu = React.memo(function DailyMenu({
                             }
                           />
                         </div>
+                        {typeof recipe.estimated_price === 'number' && (
+                          <p className="text-xs text-pastel-text/70 mt-0.5">
+                            {
+                              (() => {
+                                const base =
+                                  recipe.servings && recipe.servings > 0
+                                    ? recipe.servings
+                                    : 1;
+                                const pricePerPortion =
+                                  recipe.estimated_price / base;
+                                const adjusted = pricePerPortion * plannedServings;
+                                return `💰 Estimé : ${adjusted.toFixed(2)} €`;
+                              })()
+                            }
+                          </p>
+                        )}
                         {recipeIndex < safeMealRecipes.length - 1 && (
                           <hr className="border-pastel-border/10 dark:border-gray-600 my-1.5" />
                         )}

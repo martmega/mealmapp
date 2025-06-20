@@ -17,8 +17,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const ingredientsList = Array.isArray(recipe.ingredients)
       ? recipe.ingredients
-          .map((ing) => `${ing.quantity} ${ing.unit || ''} ${ing.name}`.trim())
-          .join(', ')
+          .map(
+            (ing) =>
+              `- ${ing.quantity} ${ing.unit ? ing.unit + ' ' : ''}${ing.name}`.trim()
+          )
+          .join('\n')
       : '';
 
     const response = await openai.chat.completions.create({
@@ -26,7 +29,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       messages: [
         {
           role: 'user',
-          content: `Estime le coût total pour préparer cette recette destinée à ${recipe.servings} personnes. Ingrédients : ${ingredientsList}. Réponds uniquement par le montant arrondi à deux décimales (ex: 4.80) sans unité ni texte.`,
+          content: `Tu es un assistant culinaire. Estime le coût total d'une recette pour les quantités ci-dessous. Donne uniquement le prix en euros, sans explication ni unité. Par exemple : "4.70".\n\nRecette : ${recipe.name}\nNombre de portions : ${recipe.servings}\n\nIngrédients :\n${ingredientsList}`,
         },
       ],
     });
