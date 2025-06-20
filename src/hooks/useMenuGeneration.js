@@ -103,6 +103,15 @@ export function useMenuGeneration(
       mealCount > 0 ? dailyCalorieTarget / mealCount : dailyCalorieTarget;
 
     let totalSlotsToFill = days.length * activeMealsPreferences.length;
+    const weeklyBudget =
+      preferences.weeklyBudget !== undefined
+        ? preferences.weeklyBudget
+        : userProfile?.preferences?.weeklyBudget ?? 0;
+    let budgetUsed = 0;
+    const avgBudgetPerSlot =
+      weeklyBudget > 0 && totalSlotsToFill > 0
+        ? weeklyBudget / totalSlotsToFill
+        : 0;
     let recipesUsedCount = 0;
 
     for (let dayIndex = 0; dayIndex < days.length; dayIndex++) {
@@ -195,6 +204,19 @@ export function useMenuGeneration(
           }
         }
 
+        if (weeklyBudget > 0) {
+          const remaining = weeklyBudget - budgetUsed;
+          const withinBudget = candidateRecipesForSlot.filter(({ recipe }) => {
+            if (typeof recipe.estimated_price !== 'number') return false;
+            const base = recipe.servings && recipe.servings > 0 ? recipe.servings : 1;
+            const mealCost = (recipe.estimated_price / base) * defaultServingsPerMealGlobal;
+            return mealCost <= remaining;
+          });
+          if (withinBudget.length > 0) {
+            candidateRecipesForSlot = withinBudget;
+          }
+        }
+
         for (const candidate of candidateRecipesForSlot) {
           const recipe = candidate.recipe;
           const baseId = recipe.id.split('_')[0];
@@ -235,6 +257,19 @@ export function useMenuGeneration(
             mealPreference.mealNumber > 1
           ) {
             score *= 0.7;
+          }
+
+          const mealCost =
+            typeof recipe.estimated_price === 'number'
+              ? (recipe.estimated_price / recipeBaseServings) *
+                defaultServingsPerMealGlobal
+              : Infinity;
+          if (weeklyBudget > 0) {
+            if (mealCost > weeklyBudget - budgetUsed) {
+              score *= 0.5;
+            } else {
+              score *= 1 + Math.max(0, avgBudgetPerSlot - mealCost) / avgBudgetPerSlot;
+            }
           }
 
           if (
@@ -285,6 +320,10 @@ export function useMenuGeneration(
           };
 
           newWeeklyMenu[dayIndex][mealPrefIndex].push(recipeToAdd);
+          if (weeklyBudget > 0 && typeof bestRecipeForMeal.estimated_price === 'number') {
+            const costPerPortion = bestRecipeForMeal.estimated_price / recipeBaseServings;
+            budgetUsed += costPerPortion * defaultServingsPerMealGlobal;
+          }
           dailyCalories += scaledCalories;
           const baseId = bestRecipeForMeal.id.split('_')[0];
           usedRecipeOriginalIdsThisDay.add(baseId);
@@ -326,6 +365,10 @@ export function useMenuGeneration(
             };
 
             newWeeklyMenu[dayIndex][mealPrefIndex].push(recipeToAdd);
+            if (weeklyBudget > 0 && typeof fallbackRecipe.estimated_price === 'number') {
+              const costPerPortion = fallbackRecipe.estimated_price / recipeBaseServings;
+              budgetUsed += costPerPortion * defaultServingsPerMealGlobal;
+            }
             dailyCalories += scaledCalories;
             usedRecipeOriginalIdsThisDay.add(baseId);
             recipeUsageCount[baseId] = (recipeUsageCount[baseId] || 0) + 1;
