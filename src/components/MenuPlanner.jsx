@@ -76,43 +76,40 @@ function MenuPlanner({
       },
     };
 
-    let initialPrefs = saved ? JSON.parse(saved) : defaultPreferences;
+    const profilePrefs = userProfile?.preferences || {};
+
+    let initialPrefs = {
+      ...defaultPreferences,
+      ...profilePrefs,
+    };
+
+    if (saved) {
+      try {
+        const savedPrefs = JSON.parse(saved);
+        initialPrefs = {
+          ...initialPrefs,
+          ...savedPrefs,
+          commonMenuSettings: {
+            ...initialPrefs.commonMenuSettings,
+            ...(savedPrefs.commonMenuSettings || {}),
+          },
+        };
+      } catch (e) {
+        console.error('Error parsing saved menu preferences', e);
+      }
+    }
+
     if (initialPrefs.tolerance !== undefined) {
       delete initialPrefs.tolerance;
     }
-    if (userProfile?.preferences) {
-      initialPrefs = {
-        ...initialPrefs,
-        servingsPerMeal:
-          userProfile.preferences.servingsPerMeal ||
-          initialPrefs.servingsPerMeal ||
-          4,
-        maxCalories:
-          userProfile.preferences.maxCalories ||
-          initialPrefs.maxCalories ||
-          2200,
-        weeklyBudget:
-          userProfile.preferences.weeklyBudget ||
-          initialPrefs.weeklyBudget ||
-          35,
-        meals: userProfile.preferences.meals?.length
-          ? userProfile.preferences.meals
-          : initialPrefs.meals,
-        tagPreferences: userProfile.preferences.tagPreferences?.length
-          ? userProfile.preferences.tagPreferences
-          : initialPrefs.tagPreferences,
-        commonMenuSettings: {
-          ...defaultPreferences.commonMenuSettings,
-          ...(userProfile.preferences.commonMenuSettings || {}),
-          linkedUsers:
-            userProfile.preferences.commonMenuSettings?.linkedUsers || [],
-          linkedUserRecipes: [],
-        },
-      };
-      if (initialPrefs.tolerance !== undefined) {
-        delete initialPrefs.tolerance;
-      }
-    }
+
+    initialPrefs.commonMenuSettings = {
+      ...defaultPreferences.commonMenuSettings,
+      ...(profilePrefs.commonMenuSettings || {}),
+      ...(initialPrefs.commonMenuSettings || {}),
+      linkedUserRecipes: [],
+    };
+
     return initialPrefs;
   });
 
