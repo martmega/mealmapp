@@ -506,8 +506,19 @@ function RecipeForm({
 
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
-        body: JSON.stringify({ recipe: { name: formData.name, ingredients: formData.ingredients, instructions: formData.instructions } }),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+          'x-subscription-tier': subscriptionTier,
+        },
+        body: JSON.stringify({
+          recipe: {
+            name: formData.name,
+            ingredients: formData.ingredients,
+            instructions: formData.instructions,
+          },
+        }),
       });
 
       if (!response.ok) {
