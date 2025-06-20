@@ -557,7 +557,7 @@ function RecipeForm({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 flex items-center justify-center z-50 p-4 backdrop-blur-sm bg-black/30"
+        className="fixed inset-0 flex items-center justify-center z-50 p-4 backdrop-blur-sm bg-black/30 dark:bg-black/60"
         onClick={onClose}
       >
         <motion.div
@@ -565,7 +565,7 @@ function RecipeForm({
           animate={{ y: 0, opacity: 1, scale: 1 }}
           exit={{ y: 30, opacity: 0, scale: 0.95 }}
           transition={{ type: 'spring', stiffness: 280, damping: 28 }}
-          className="bg-[#fcfbf9] text-pastel-text rounded-xl p-6 sm:p-8 w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-lg"
+          className="bg-white dark:bg-zinc-900 text-pastel-text dark:text-neutral-100 rounded-xl p-6 sm:p-8 w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-lg"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex justify-between items-center mb-6 pb-4 border-b border-pastel-border/60">

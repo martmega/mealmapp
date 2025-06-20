@@ -45,7 +45,7 @@ function RecipeDetailModal({ recipe, onClose, userProfile }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 flex items-center justify-center z-[60] p-4 backdrop-blur-sm bg-black/20"
+        className="fixed inset-0 flex items-center justify-center z-[60] p-4 backdrop-blur-sm bg-black/20 dark:bg-black/60"
         onClick={onClose}
       >
         <motion.div
@@ -53,10 +53,10 @@ function RecipeDetailModal({ recipe, onClose, userProfile }) {
           animate={{ y: 0, opacity: 1, scale: 1 }}
           exit={{ y: 50, opacity: 0, scale: 0.9 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          className="rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] flex flex-col bg-[#fcfbf9] text-pastel-text"
+          className="rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] flex flex-col bg-white dark:bg-zinc-900 text-pastel-text dark:text-neutral-100"
           onClick={(e) => e.stopPropagation()}
         >
-          <header className="p-6 border-b border-pastel-border flex justify-between items-center sticky top-0 bg-[#fcfbf9] z-10">
+          <header className="p-6 border-b border-pastel-border flex justify-between items-center sticky top-0 bg-white dark:bg-zinc-900 z-10">
             <h2 className="text-2xl sm:text-3xl font-bold text-pastel-primary dark:text-pastel-primary-hover">
               {recipe.name}
             </h2>
@@ -193,7 +193,7 @@ function RecipeDetailModal({ recipe, onClose, userProfile }) {
             )}
           </div>
 
-          <footer className="p-4 border-t border-pastel-border flex justify-end sticky bottom-0 bg-[#fcfbf9] z-10">
+          <footer className="p-4 border-t border-pastel-border flex justify-end sticky bottom-0 bg-white dark:bg-zinc-900 z-10">
             <Button variant="outline" onClick={onClose}>
               Fermer
             </Button>

@@ -40,7 +40,10 @@ function MenuPreferencesModal({
           Préférences
         </Button>
       </DialogTrigger>
-      <DialogContent overlayClassName="backdrop-blur-sm bg-white/90" className="max-w-3xl bg-white bg-opacity-95 rounded-xl shadow-lg z-50">
+      <DialogContent
+        overlayClassName="backdrop-blur-sm bg-black/30 dark:bg-black/60"
+        className="max-w-3xl bg-white dark:bg-zinc-900 text-black dark:text-neutral-100 rounded-xl shadow-lg z-50"
+      >
         <DialogHeader>
           <DialogTitle>Préférences du Menu</DialogTitle>
           <DialogDescription>
