@@ -23,18 +23,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+    const ingredientsList = Array.isArray(recipe.ingredients)
+      ? recipe.ingredients
+          .map((ing) => `${ing.quantity} ${ing.unit || ''} ${ing.name}`.trim())
+          .join(', ')
+      : '';
+
     const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
         {
           role: 'user',
-          content: `Estime le prix de cette recette pour ${recipe.servings} personnes : ${JSON.stringify(recipe.ingredients)}. Donne uniquement le prix en euros.`,
+          content: `Estime le coût total pour préparer cette recette destinée à ${recipe.servings} personnes. Ingrédients : ${ingredientsList}. Réponds uniquement par le montant arrondi à deux décimales (ex: 4.80) sans unité ni texte.`,
         },
       ],
     });
 
-    const priceText = response.choices[0].message.content;
-    const price = parseFloat(priceText.replace(/[^0-9.]/g, ''));
+    const priceText = response.choices[0].message.content || '';
+    const normalized = priceText.replace(',', '.').replace(/[^0-9.]/g, '');
+    const price = parseFloat(normalized);
     return res.status(200).json({ price });
   } catch (err) {
     console.error('Erreur estimation coût :', err);
