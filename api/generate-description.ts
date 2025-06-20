@@ -1,5 +1,4 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import OpenAI from 'openai';
 import { getUserFromRequest } from '@/utils/auth';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -22,13 +21,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const prompt = `G\u00e9n\u00e8re une description courte (environ 150 caract\u00e8res), engageante et app\u00e9tissante pour ${recipe.name}. Ingr\u00e9dients: ${recipe.ingredients?.map((i:any)=>`${i.quantity||''} ${i.unit||''} ${i.name}`).join(', ')}. Instructions: ${Array.isArray(recipe.instructions)?recipe.instructions.join(' '):''}.`;
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: prompt }],
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages: [{ role: 'user', content: prompt }],
+      }),
     });
-    const description = response.choices[0].message.content || '';
+
+    const result = await response.json();
+    const description = result.choices?.[0]?.message?.content || '';
     return res.status(200).json({ description });
   } catch (err) {
     console.error('OpenAI error:', err);
