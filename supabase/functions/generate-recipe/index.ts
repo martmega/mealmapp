@@ -37,7 +37,15 @@ serve(async (req) => {
 
   const { prompt } = await req.json();
 
-  const openai = new OpenAI({ apiKey: Deno.env.get("OPENAI_API_KEY") });
+  const key = Deno.env.get("OPENAI_API_KEY");
+  if (!key) {
+    return new Response(
+      JSON.stringify({ error: "Missing OpenAI API key" }),
+      { status: 500, headers: corsHeaders },
+    );
+  }
+
+  const openai = new OpenAI({ apiKey: key });
 
   const result = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",

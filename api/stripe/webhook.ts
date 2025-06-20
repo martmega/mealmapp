@@ -13,6 +13,12 @@ console.log("Stripe webhook handler initialized");
 
 serve(async (req) => {
   console.log("Webhook request received");
+
+  const key = Deno.env.get("OPENAI_API_KEY");
+  if (!key) {
+    return new Response("Missing OpenAI API key", { status: 500 });
+  }
+
   const signature = req.headers.get("stripe-signature") ?? "";
 
   let event: Stripe.Event;
