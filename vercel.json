@@ -5,7 +5,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' https://js.stripe.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.openai.com https://js.stripe.com https://bunolhgehzwxhzqymmet.supabase.co https://mealmapp.vercel.app; frame-src https://js.stripe.com; img-src 'self' https://bunolhgehzwxhzqymmet.supabase.co https://placehold.co data:; object-src 'none'; base-uri 'self';"
+          "value": "default-src 'self'; script-src 'self' https://js.stripe.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.openai.com https://js.stripe.com https://bunolhgehzwxhzqymmet.supabase.co https://mealmapp.vercel.app; img-src 'self' https://bunolhgehzwxhzqymmet.supabase.co https://placehold.co data:; frame-src https://js.stripe.com; object-src 'none'; base-uri 'self';"
         }
       ]
     }
