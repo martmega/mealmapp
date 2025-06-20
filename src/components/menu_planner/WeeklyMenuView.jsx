@@ -138,8 +138,7 @@ function WeeklyMenuView({
 
   const weeklyBudget =
     userProfile?.preferences?.weeklyBudget ?? preferences.weeklyBudget ?? 0;
-  const tolerance =
-    userProfile?.preferences?.tolerance ?? preferences.tolerance ?? 0;
+  const tolerance = 0.1;
   const maxBudget = weeklyBudget * (1 + tolerance);
   const overBudget = totalMenuCost > maxBudget && weeklyBudget > 0;
 
