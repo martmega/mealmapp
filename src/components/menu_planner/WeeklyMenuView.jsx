@@ -137,7 +137,9 @@ function WeeklyMenuView({
   );
 
   const weeklyBudget =
-    userProfile?.preferences?.weeklyBudget ?? preferences.weeklyBudget ?? 0;
+    preferences.weeklyBudget !== undefined
+      ? preferences.weeklyBudget
+      : userProfile?.preferences?.weeklyBudget ?? 0;
   const tolerance =
     userProfile?.preferences?.tolerance ?? preferences.tolerance ?? 0;
   const maxBudget = weeklyBudget * (1 + tolerance);
