@@ -101,10 +101,14 @@ const RecipeFormFields = ({
             />
             <Input
               type="text"
+              inputMode="decimal"
               value={ingredient.quantity}
-              onChange={(e) =>
-                handleIngredientChange(index, 'quantity', e.target.value)
-              }
+              onChange={(e) => {
+                const value = e.target.value.replace(',', '.');
+                if (value === '' || /^\d*(\.\d*)?$/.test(value)) {
+                  handleIngredientChange(index, 'quantity', value);
+                }
+              }}
               placeholder="Qté"
               className="w-full sm:w-20"
             />

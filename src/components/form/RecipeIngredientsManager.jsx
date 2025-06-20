@@ -59,14 +59,17 @@ export default function RecipeIngredientsManager({
             </Label>
             <Input
               id={`ingredient-quantity-${index}`}
-              type="number"
+              type="text"
+              inputMode="decimal"
               value={ing.quantity}
-              onChange={(e) =>
-                handleIngredientChange(index, 'quantity', e.target.value)
-              }
+              onChange={(e) => {
+                const value = e.target.value.replace(',', '.');
+                if (value === '' || /^\d*(\.\d*)?$/.test(value)) {
+                  handleIngredientChange(index, 'quantity', value);
+                }
+              }}
               placeholder="Ex: 100"
               className="bg-pastel-input border-pastel-input-border focus:border-pastel-input-focus-border w-full sm:w-24"
-              min="0"
             />
           </div>
           <div className="space-y-1">
