@@ -13,6 +13,12 @@ STRIPE_WEBHOOK_SECRET=<your-stripe-webhook-secret>
 
 These values are injected by Vite and used by the app at runtime.
 
+## Database
+
+The `supabase/functions` directory contains SQL scripts used to configure
+the database. In particular, `handle_new_user_signup.sql` defines a function
+that assigns the default `standard` subscription tier to new users.
+
 ## Running tests
 
 Execute the following command to run the Vitest suite:
