@@ -399,11 +399,14 @@ function RecipeForm({
       servingsChanged;
 
     let estimated = recipe?.estimated_price ?? null;
-    if (shouldEstimate) {
-      estimated = await estimateRecipePrice({
-        ingredients: cleanedNewIngredients,
-        servings: parseInt(formData.servings, 10) || 1,
-      });
+    if (shouldEstimate && isPremiumUser) {
+      estimated = await estimateRecipePrice(
+        {
+          ingredients: cleanedNewIngredients,
+          servings: parseInt(formData.servings, 10) || 1,
+        },
+        userProfile.subscription_tier
+      );
     }
 
     let finalImageUrl = formData.image_url;
@@ -689,7 +692,6 @@ function RecipeForm({
               </Button>
             </div>
           </form>
-
 
           {showTagManager && (
             <TagManager

@@ -5,6 +5,10 @@ This project uses Supabase as a backend. To run the app locally, create a `.env`
 ```
 VITE_SUPABASE_URL=<your-supabase-url>
 VITE_SUPABASE_ANON_KEY=<your-supabase-anon-key>
+VITE_ACCESS_KEYS=BETA2025
+SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
+STRIPE_SECRET_KEY=<your-stripe-secret-key>
+STRIPE_WEBHOOK_SECRET=<your-stripe-webhook-secret>
 ```
 
 These values are injected by Vite and used by the app at runtime.

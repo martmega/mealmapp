@@ -28,6 +28,7 @@ export default function ProfileInformationForm({
 
   const [initialUsername, setInitialUsername] = useState('');
   const [initialBio, setInitialBio] = useState('');
+  const [accessKeyInput, setAccessKeyInput] = useState('');
 
   useEffect(() => {
     if (userProfile) {
@@ -59,6 +60,46 @@ export default function ProfileInformationForm({
         setAvatarPreview(reader.result);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleApplyAccessKey = async () => {
+    const trimmed = accessKeyInput.trim();
+    if (!trimmed) return;
+    const allowed = (import.meta.env.VITE_ACCESS_KEYS || '')
+      .split(',')
+      .map((k) => k.trim())
+      .filter(Boolean);
+    if (!allowed.includes(trimmed)) {
+      toast({
+        title: 'Clé invalide',
+        description: "Cette clé n'est pas reconnue.",
+        variant: 'destructive',
+      });
+      return;
+    }
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          subscription_tier: 'premium',
+          access_keys: [...(userProfile.access_keys || []), trimmed],
+        },
+      });
+      if (error) throw error;
+      toast({ title: 'Clé appliquée', description: 'Accès premium activé !' });
+      setAccessKeyInput('');
+      if (onProfileUpdate) {
+        await onProfileUpdate();
+      }
+    } catch (err) {
+      toast({
+        title: 'Erreur',
+        description: err.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -156,8 +197,8 @@ export default function ProfileInformationForm({
       }
 
       if (Object.keys(publicUserUpdates).length > 0) {
-          const { error: updateError } = await supabase
-            .from('public_users')
+        const { error: updateError } = await supabase
+          .from('public_users')
           .update(publicUserUpdates)
           .eq('id', session.user.id);
         if (updateError) throw updateError;
@@ -171,7 +212,9 @@ export default function ProfileInformationForm({
             : initialUsername
         );
         setInitialBio(
-          publicUserUpdates.bio !== undefined ? publicUserUpdates.bio : initialBio
+          publicUserUpdates.bio !== undefined
+            ? publicUserUpdates.bio
+            : initialBio
         );
         toast({
           title: 'Profil mis à jour',
@@ -247,7 +290,9 @@ export default function ProfileInformationForm({
           onChange={(e) => setDesiredTag(e.target.value)}
           placeholder="@mon-identifiant"
         />
-        <p className="text-xs text-pastel-muted-foreground">{availabilityMessage}</p>
+        <p className="text-xs text-pastel-muted-foreground">
+          {availabilityMessage}
+        </p>
         <Button
           type="button"
           onClick={handleTagChange}
@@ -282,6 +327,24 @@ export default function ProfileInformationForm({
           placeholder="Une courte description de vous..."
           className="flex w-full rounded-md border-2 border-pastel-input-border bg-pastel-card px-3 py-2 text-sm text-pastel-text placeholder-pastel-muted-foreground ring-offset-pastel-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pastel-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-shadow duration-150 shadow-pastel-input hover:border-pastel-muted-foreground/30 focus-visible:shadow-pastel-input-focus dark:border-pastel-input-border dark:bg-pastel-card-alt dark:text-pastel-text dark:placeholder-pastel-muted-foreground"
         />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="accessKey">Clé d'accès</Label>
+        <Input
+          id="accessKey"
+          type="text"
+          value={accessKeyInput}
+          onChange={(e) => setAccessKeyInput(e.target.value)}
+          placeholder="Entrez une clé de promotion"
+        />
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleApplyAccessKey}
+          disabled={loading || !accessKeyInput.trim()}
+        >
+          Utiliser la clé
+        </Button>
       </div>
       <Button
         type="submit"
