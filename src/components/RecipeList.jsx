@@ -121,7 +121,15 @@ const MemoizedRecipeCard = React.memo(function RecipeCard({
         </div>
         {typeof recipe.estimated_price === 'number' ? (
           <div className="text-xs text-gray-500 mt-1">
-            💰 Estimé : {recipe.estimated_price.toFixed(2)} €
+            {
+              (() => {
+                const base = recipe.servings && recipe.servings > 0 ? recipe.servings : 1;
+                const planned = recipe.plannedServings || base;
+                const pricePerPortion = recipe.estimated_price / base;
+                const adjusted = pricePerPortion * planned;
+                return `💰 Estimé : ${adjusted.toFixed(2)} €`;
+              })()
+            }
           </div>
         ) : (
           <p className="text-xs text-gray-400 mt-1">💰 Estimation indisponible</p>

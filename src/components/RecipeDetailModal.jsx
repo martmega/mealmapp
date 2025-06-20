@@ -88,7 +88,15 @@ function RecipeDetailModal({ recipe, onClose, userProfile }) {
                 </p>
                 {typeof recipe.estimated_price === 'number' ? (
                   <p className="text-sm text-gray-500 mt-2">
-                    💰 Estimé : {recipe.estimated_price.toFixed(2)} €
+                    {
+                      (() => {
+                        const base = recipe.servings && recipe.servings > 0 ? recipe.servings : 1;
+                        const planned = recipe.plannedServings || base;
+                        const pricePerPortion = recipe.estimated_price / base;
+                        const adjusted = pricePerPortion * planned;
+                        return `💰 Estimé : ${adjusted.toFixed(2)} €`;
+                      })()
+                    }
                   </p>
                 ) : (
                   <p className="text-sm text-gray-400 mt-2">💰 Estimation indisponible</p>
