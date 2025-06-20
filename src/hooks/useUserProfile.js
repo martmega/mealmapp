@@ -44,6 +44,8 @@ export function useUserProfile(session) {
         .eq('id', session.user.id)
         .single();
 
+      console.log('Subscription tier:', profile?.subscription_tier);
+
       if (profileError && profileError.code !== 'PGRST116') {
         console.warn(
           'Warning fetching public_users profile:',

@@ -25,6 +25,7 @@ export default function SubscriptionManagement({
   onProfileUpdate,
 }) {
   const { toast } = useToast();
+  console.log('SubscriptionManagement subscription tier:', userProfile?.subscription_tier);
   const [loadingSubscriptionAction, setLoadingSubscriptionAction] =
     useState(null);
   const [currentSubscriptionTier, setCurrentSubscriptionTier] =
