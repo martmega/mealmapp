@@ -42,8 +42,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const openai = new OpenAI({ apiKey });
 
-    const prompt = `R\u00e9dige une courte description pour la recette "${parsed.title ||
-      'Recette'}" avec les ingr\u00e9dients suivants : ${parsed.ingredients.join(', ')}. Instructions : ${parsed.instructions}`;
+    const prompt = `
+Tu es un assistant culinaire. 
+\u00c9cris une courte description attrayante (2 \u00e0 3 phrases max) pour un plat appel\u00e9 "${parsed.title || 'Recette'}". 
+Voici ses ingr\u00e9dients : ${parsed.ingredients.join(', ')}.
+Voici les instructions de pr\u00e9paration : ${parsed.instructions}.
+Ne recopie pas les instructions. Utilise-les uniquement pour savoir de quoi il s'agit.
+Fais une description app\u00e9tissante du plat final, comme on le lirait dans une carte de restaurant ou sur une fiche recette pour donner envie de le cuisiner.
+`;
 
     const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
