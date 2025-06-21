@@ -22,7 +22,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
         const userIds = [...new Set(recipes.map((r) => r.user_id))];
         const { data: users } = await supabase
           .from('public_users')
-          .select('id, username, avatar_url, bio, user_tag')
+          .select('id, username, avatar_url, bio, subscription_tier')
           .in('id', userIds);
         const usersMap = Object.fromEntries(
           (users || []).map((u) => [u.id, u])
@@ -124,7 +124,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
     try {
       const { data: usersData, error: usersError } = await supabase
         .from('public_users')
-        .select('id, username, avatar_url, bio, user_tag')
+        .select('id, username, avatar_url, bio, subscription_tier')
         .ilike('username', newLinkedUserTag.trim())
         .single();
 
@@ -243,7 +243,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
         ];
         const { data: users } = await supabase
           .from('public_users')
-          .select('id, username, avatar_url, bio, user_tag')
+          .select('id, username, avatar_url, bio, subscription_tier')
           .in('id', userIds);
         const usersMap = Object.fromEntries(
           (users || []).map((u) => [u.id, u])
