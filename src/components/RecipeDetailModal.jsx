@@ -71,16 +71,6 @@ function RecipeDetailModal({ recipe, onClose, userProfile }) {
           </header>
 
           <div className="p-6 space-y-6 overflow-y-auto flex-grow">
-            {recipe.image_url && (
-              <div className="aspect-video rounded-lg overflow-hidden border border-pastel-border bg-pastel-muted/50">
-                <img
-                  className="w-full h-full object-cover"
-                  alt={`Image de ${recipe.name}`}
-                  src={recipe.image_url}
-                />
-              </div>
-            )}
-
             {recipe.description && (
               <div className="p-4 bg-pastel-card-alt rounded-lg">
                 <p className="text-pastel-text leading-relaxed">
@@ -101,6 +91,16 @@ function RecipeDetailModal({ recipe, onClose, userProfile }) {
                 ) : (
                   <p className="text-base text-gray-400 mt-2 text-center">Estimation indisponible</p>
                 )}
+              </div>
+            )}
+
+            {recipe.image_url && (
+              <div className="aspect-video rounded-lg overflow-hidden border border-pastel-border bg-pastel-muted/50">
+                <img
+                  className="w-full h-full object-cover"
+                  alt={`Image de ${recipe.name}`}
+                  src={recipe.image_url}
+                />
               </div>
             )}
 
