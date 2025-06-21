@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { generateRecipeEstimate } from '../../api/generateEstimate';
+import { generateRecipeEstimate } from '@/api/generateEstimate';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
