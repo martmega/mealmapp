@@ -4,8 +4,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const stripeSecret = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
 const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET") ?? "";
-const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
-const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? undefined;
+if (!supabaseUrl) throw new Error("SUPABASE_URL is not defined");
+const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? undefined;
+if (!supabaseServiceKey)
+  throw new Error("SUPABASE_SERVICE_ROLE_KEY is not defined");
 
 const stripe = new Stripe(stripeSecret, { apiVersion: "2024-04-10" });
 
