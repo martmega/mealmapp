@@ -27,6 +27,15 @@ Execute the following command to run the Vitest suite:
 npm run test
 ```
 
+## Zod example script
+
+Run the following command to execute `scripts/test-zod.ts`:
+
+```bash
+npx ts-node scripts/test-zod.ts
+```
+
+
 ## Price estimation
 
 Recipe prices are estimated with OpenAI only when required. A new estimate is
