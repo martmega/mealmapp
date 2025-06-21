@@ -5,9 +5,9 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview",
-  "test": "vitest run",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
     "lint": "eslint . --ext .js,.jsx",
     "format": "prettier --write \"src/**/*.{js,jsx,json,css}\""
   },
@@ -38,7 +38,8 @@
     "react-router-dom": "^6.16.0",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.25.67"
+    "zod": "^3.25.67",
+    "next": "^13.x"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
