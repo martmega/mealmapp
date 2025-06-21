@@ -45,7 +45,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
-    const prompt = `Rédige une courte description pour la recette "${parsed.title || 'Recette'}" avec les ingrédients suivants : ${parsed.ingredients.join(', ')}. Instructions : ${parsed.instructions}`;
+    const safeTitle = parsed.title?.trim() || 'cette recette';
+    const safeIngredients = parsed.ingredients.length
+      ? parsed.ingredients.filter(i => i.trim()).join(', ')
+      : 'divers ingrédients';
+    const safeInstructions = parsed.instructions?.trim() || 'Aucune instruction disponible';
+
+    const prompt = `Rédige une courte description appétissante d'une recette nommée "${safeTitle}", à base de ${safeIngredients}. Voici les instructions : ${safeInstructions}. Sois engageant mais concis (1 à 2 phrases).`;
 
     const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
