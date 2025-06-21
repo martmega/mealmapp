@@ -1,7 +1,7 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import OpenAI from 'openai';
 import { z } from 'zod';
-import { getUserFromRequest } from '../src/utils/auth';
+import { getUserFromRequest } from '../src/utils/auth.js';
 
 const RecipeSchema = z.object({
   title: z.string().optional(),
