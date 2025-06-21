@@ -1,6 +1,13 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import OpenAI from 'openai';
+import { z } from 'zod';
 import { getUserFromRequest } from '@/utils/auth';
+
+const RecipeSchema = z.object({
+  title: z.string().optional(),
+  ingredients: z.array(z.string()),
+  instructions: z.string().min(10),
+});
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -13,9 +20,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .json({ error: 'Content-Type must be application/json' });
   }
 
-  const { prompt } = req.body || {};
-  if (!prompt || typeof prompt !== 'string') {
-    return res.status(400).json({ error: 'Invalid or missing prompt' });
+  let parsed;
+  try {
+    parsed = RecipeSchema.parse(req.body);
+    console.log('Valid payload:', parsed);
+  } catch (error) {
+    console.error('Payload error:', error);
+    return res.status(400).json({ error: 'Invalid request payload' });
   }
 
   const user = await getUserFromRequest(req);
@@ -30,6 +41,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const openai = new OpenAI({ apiKey });
+
+    const prompt = `R\u00e9dige une courte description pour la recette "${parsed.title ||
+      'Recette'}" avec les ingr\u00e9dients suivants : ${parsed.ingredients.join(', ')}. Instructions : ${parsed.instructions}`;
 
     const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
