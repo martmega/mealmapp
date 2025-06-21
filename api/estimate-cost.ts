@@ -1,6 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import OpenAI from 'openai';
-import { getUserFromRequest } from '@/utils/auth';
+import { getUserFromRequest } from '../src/utils/auth';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
