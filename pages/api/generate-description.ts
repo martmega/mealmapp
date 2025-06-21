@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
 import { z } from 'zod';
-import { getUserFromRequest } from '@/utils/auth';
+import { getUserFromRequest } from '../../src/utils/auth';
 
 const RecipeSchema = z.object({
   title: z.string().optional(),
