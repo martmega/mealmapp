@@ -514,9 +514,13 @@ function RecipeForm({
         },
         body: JSON.stringify({
           recipe: {
-            name: formData.name,
-            ingredients: formData.ingredients,
-            instructions: formData.instructions,
+            title: formData.name,
+            ingredients: formData.ingredients
+              .filter((ing) => ing.name)
+              .map((ing) => ing.name),
+            instructions: Array.isArray(formData.instructions)
+              ? formData.instructions.join(' ')
+              : formData.instructions,
           },
         }),
       });

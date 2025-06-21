@@ -22,11 +22,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   let parsed;
   try {
-    parsed = RecipeSchema.parse(req.body);
+    parsed = RecipeSchema.parse(req.body.recipe);
     console.log('Valid payload:', parsed);
   } catch (error) {
-    console.error('Payload error:', error);
-    return res.status(400).json({ error: 'Invalid request payload' });
+    console.error('Invalid recipe payload:', error);
+    const message =
+      error instanceof z.ZodError ? error.errors.map(e => e.message).join(', ') : String(error);
+    return res.status(400).json({ error: 'Invalid recipe payload', details: message });
   }
 
   const user = await getUserFromRequest(req);
