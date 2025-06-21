@@ -599,8 +599,6 @@ function RecipeForm({
               <RecipeCoreFields
                 formData={formData}
                 handleInputChange={handleInputChange}
-                descriptionRef={descriptionRef}
-                handleDescriptionChange={handleDescriptionChange}
               />
               <div className="space-y-6">
                 <RecipeMetaFields
@@ -664,6 +662,9 @@ function RecipeForm({
               isGeneratingDescription={isGeneratingDescription}
               isGeneratingImage={isGeneratingImage}
               session={session}
+              formData={formData}
+              handleDescriptionChange={handleDescriptionChange}
+              descriptionRef={descriptionRef}
             />
 
             <RecipeFormImageHandler

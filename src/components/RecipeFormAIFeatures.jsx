@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Wand2, Loader2, Star } from 'lucide-react';
 
 const RecipeFormAIFeatures = ({
@@ -8,6 +9,9 @@ const RecipeFormAIFeatures = ({
   generateWithAI,
   isGeneratingDescription,
   session,
+  formData,
+  handleDescriptionChange,
+  descriptionRef,
 }) => {
   console.log('RecipeFormAIFeatures subscription tier:', subscription_tier);
   return (
@@ -41,7 +45,15 @@ const RecipeFormAIFeatures = ({
               : 'Premium Description'}
         </Button>
       </div>
-      {/* Textarea for description is now in RecipeFormFields */}
+      <Textarea
+        id="description-ai-features"
+        ref={descriptionRef}
+        name="description"
+        value={formData.description}
+        onChange={handleDescriptionChange}
+        className="min-h-[100px] bg-pastel-input border-pastel-input-border focus:border-pastel-input-focus-border"
+        placeholder="Décrivez votre recette ici..."
+      />
     </div>
   );
 };
