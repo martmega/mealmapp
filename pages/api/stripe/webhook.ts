@@ -6,10 +6,13 @@ import { Readable } from 'stream';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2024-04-10',
 });
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-);
+const supabaseUrl = process.env.SUPABASE_URL;
+if (!supabaseUrl) throw new Error('SUPABASE_URL is not defined');
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!serviceRoleKey)
+  throw new Error('SUPABASE_SERVICE_ROLE_KEY is not defined');
+
+const supabase = createClient(supabaseUrl, serviceRoleKey);
 
 export const config = {
   api: {

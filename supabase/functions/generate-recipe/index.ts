@@ -16,9 +16,14 @@ serve(async (req) => {
     );
   }
 
+  const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? undefined;
+  if (!supabaseUrl) throw new Error("SUPABASE_URL is not defined");
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? undefined;
+  if (!anonKey) throw new Error("SUPABASE_ANON_KEY is not defined");
+
   const supabase = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+    supabaseUrl,
+    anonKey,
     {
       global: { headers: { Authorization: req.headers.get("Authorization")! } },
     }
