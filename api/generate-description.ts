@@ -2,6 +2,14 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 import OpenAI from 'openai';
 import { z } from 'zod';
 import { getUserFromRequest } from '../src/utils/auth.js';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.VITE_SUPABASE_URL;
+if (!supabaseUrl) throw new Error('VITE_SUPABASE_URL is not defined');
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!serviceRoleKey) throw new Error('SUPABASE_SERVICE_ROLE_KEY is not defined');
+
+const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
 const RecipeSchema = z.object({
   title: z.string().optional(),
@@ -30,8 +38,56 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const user = await getUserFromRequest(req);
-  if (!user || user.raw_user_meta_data?.subscription_tier !== 'premium') {
-    return res.status(403).json({ error: 'Premium only' });
+  if (!user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const { data: profile, error: profileError } = await supabaseAdmin
+    .from('public_users')
+    .select('subscription_tier')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (profileError) {
+    console.error('Subscription fetch error:', profileError.message);
+  }
+
+  const subscriptionTier = profile?.subscription_tier || 'standard';
+
+  let quotaExceeded = false;
+  if (subscriptionTier === 'vip') {
+    const month = new Date().toISOString().slice(0, 7);
+    const { data: usage, error: usageError } = await supabaseAdmin
+      .from('ia_usage')
+      .select('text_requests')
+      .eq('user_id', user.id)
+      .eq('month', month)
+      .maybeSingle();
+
+    if (usageError) {
+      console.error('ia_usage fetch error:', usageError.message);
+    }
+
+    const count = usage?.text_requests ?? 0;
+    if (count >= 20) {
+      quotaExceeded = true;
+    } else {
+      const { error: upsertError } = await supabaseAdmin.from('ia_usage').upsert(
+        { user_id: user.id, month, text_requests: count + 1 },
+        { onConflict: 'user_id,month' }
+      );
+      if (upsertError) {
+        console.error('ia_usage upsert error:', upsertError.message);
+      }
+    }
+  } else if (subscriptionTier !== 'premium' && subscriptionTier !== 'standard') {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  if (quotaExceeded) {
+    return res
+      .status(429)
+      .json({ error: 'Quota IA (description) atteint pour ce mois.' });
   }
 
   const apiKey = process.env.OPENAI_API_KEY;
