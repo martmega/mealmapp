@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
 
 export function useMenus() {
   const [menus, setMenus] = useState([]);
@@ -46,7 +47,28 @@ export function useMenus() {
     return newMenu;
   };
 
+  const renameMenu = async (menuId, newName) => {
+    setMenus((prev) =>
+      prev.map((m) => (m.id === menuId ? { ...m, name: newName } : m))
+    );
+    try {
+      await supabase
+        .from('weekly_menus')
+        .update({ name: newName })
+        .eq('id', menuId);
+    } catch (error) {
+      console.error('Failed to rename menu:', error);
+    }
+  };
+
   const activeMenu = menus.find((m) => m.id === activeMenuId) || null;
 
-  return { menus, activeMenu, activeMenuId, setActiveMenuId, createMenu };
+  return {
+    menus,
+    activeMenu,
+    activeMenuId,
+    setActiveMenuId,
+    createMenu,
+    renameMenu,
+  };
 }

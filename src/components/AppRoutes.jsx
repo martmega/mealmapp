@@ -24,6 +24,7 @@ export default function AppRoutes({
   activeMenuId,
   setActiveMenuId,
   createMenu,
+  renameMenu,
   weeklyMenu,
   weeklyMenuLoading,
   showRecipeForm,
@@ -133,6 +134,7 @@ export default function AppRoutes({
               activeMenuId={activeMenuId}
               setActiveMenuId={setActiveMenuId}
               createMenu={createMenu}
+              renameMenu={renameMenu}
               weeklyMenu={weeklyMenu}
               setWeeklyMenu={saveUserWeeklyMenuHook}
             />

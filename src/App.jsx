@@ -62,6 +62,7 @@ function App() {
     activeMenuId,
     setActiveMenuId,
     createMenu,
+    renameMenu,
   } = useMenus();
 
   const {
@@ -167,6 +168,7 @@ function App() {
           activeMenuId={activeMenuId}
           setActiveMenuId={setActiveMenuId}
           createMenu={createMenu}
+          renameMenu={renameMenu}
           weeklyMenu={weeklyMenu}
           weeklyMenuLoading={weeklyMenuLoading}
           saveUserWeeklyMenuHook={saveUserWeeklyMenuHook}
