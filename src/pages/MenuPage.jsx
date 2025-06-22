@@ -27,14 +27,14 @@ export default function MenuPage({ session, userProfile, recipes }) {
     }
   };
 
-  const handleCreate = async () => {
+  const handleCreate = async ({ name } = {}) => {
     const userId = session?.user?.id;
     if (!userId) return;
     const { data, error } = await supabase
       .from('weekly_menus')
       .insert({
         user_id: userId,
-        name: 'Menu sans titre',
+        name: name || 'Menu sans titre',
         menu_data: initialWeeklyMenuState(),
       })
       .select('id')
