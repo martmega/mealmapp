@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabase';
@@ -28,16 +28,16 @@ export default function FriendActionButton({
   const { toast } = useToast();
   useSessionRequired();
 
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentSession(session);
   }, [session]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setStatus(initialStatus);
     setRelId(initialRelId);
   }, [initialStatus, initialRelId]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchSession = async () => {
       const {
         data: { session: fresh },
