@@ -7,6 +7,8 @@ export default function MenuPage({
   recipes,
   weeklyMenu,
   setWeeklyMenu,
+  menuName,
+  updateMenuName,
 }) {
   return (
     <div className="p-6">
@@ -15,6 +17,8 @@ export default function MenuPage({
         weeklyMenu={weeklyMenu}
         setWeeklyMenu={setWeeklyMenu}
         userProfile={userProfile}
+        menuName={menuName}
+        onUpdateMenuName={updateMenuName}
       />
     </div>
   );

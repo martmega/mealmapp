@@ -58,7 +58,9 @@ function App() {
 
   const {
     weeklyMenu,
+    menuName,
     setWeeklyMenu: saveUserWeeklyMenuHook,
+    updateMenuName,
     loading: weeklyMenuLoading,
   } = useWeeklyMenu(session);
 
@@ -156,8 +158,10 @@ function App() {
           recipes={recipes}
           recipesLoading={recipesLoading}
           weeklyMenu={weeklyMenu}
+          menuName={menuName}
           weeklyMenuLoading={weeklyMenuLoading}
           saveUserWeeklyMenuHook={saveUserWeeklyMenuHook}
+          updateMenuName={updateMenuName}
           showRecipeForm={showRecipeForm}
           editingRecipe={editingRecipe}
           openRecipeFormForAdd={openRecipeForm}
