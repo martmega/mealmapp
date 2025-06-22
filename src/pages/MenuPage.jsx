@@ -1,6 +1,8 @@
 import React from 'react';
 import MenuPlanner from '@/components/MenuPlanner';
 import MenuTabs from '@/components/MenuTabs.jsx';
+import { supabase } from '@/lib/supabase';
+import { initialWeeklyMenuState } from '@/lib/menu';
 import { useMenus } from '@/hooks/useMenus.js';
 import { useWeeklyMenu } from '@/hooks/useWeeklyMenu.js';
 
@@ -25,6 +27,26 @@ export default function MenuPage({ session, userProfile, recipes }) {
     }
   };
 
+  const handleCreate = async () => {
+    const userId = session?.user?.id;
+    if (!userId) return;
+    const { data, error } = await supabase
+      .from('weekly_menus')
+      .insert({
+        user_id: userId,
+        name: 'Menu sans titre',
+        menu_data: initialWeeklyMenuState(),
+      })
+      .select('id')
+      .single();
+    if (error) {
+      console.error('Erreur creation menu:', error);
+      return;
+    }
+    await refreshMenus();
+    if (data?.id) setSelectedMenuId(data.id);
+  };
+
   return (
     <div className="p-6 space-y-4">
       <MenuTabs
@@ -32,8 +54,8 @@ export default function MenuPage({ session, userProfile, recipes }) {
         activeMenuId={selectedMenuId}
         onSelect={setSelectedMenuId}
         currentUserId={session?.user?.id}
-        onRename={handleRename}
         onDelete={handleDelete}
+        onCreate={handleCreate}
       />
       <MenuPlanner
         recipes={recipes}

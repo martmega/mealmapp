@@ -13,14 +13,17 @@ function Wrapper() {
   const [menus, setMenus] = useState(sampleMenus);
   const [activeId, setActiveId] = useState(sampleMenus[0].id);
 
-  const handleRename = (id, name) => {
-    setMenus((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, name } : m))
-    );
-  };
-
   const handleDelete = (id) => {
     setMenus((prev) => prev.filter((m) => m.id !== id));
+  };
+
+  const handleCreate = () => {
+    const newId = String(menus.length + 1);
+    setMenus((prev) => [
+      ...prev,
+      { id: newId, user_id: 'user1', name: 'Menu sans titre' },
+    ]);
+    setActiveId(newId);
   };
 
   return (
@@ -29,8 +32,8 @@ function Wrapper() {
       activeMenuId={activeId}
       onSelect={setActiveId}
       currentUserId="user1"
-      onRename={handleRename}
       onDelete={handleDelete}
+      onCreate={handleCreate}
     />
   );
 }
@@ -66,25 +69,26 @@ describe('MenuTabs', () => {
     expect(onSelect).toHaveBeenCalledWith('2');
   });
 
-  it('suppression et renommage modifient le state', () => {
+  it('supprime un menu au clic sur la croix', () => {
     render(<Wrapper />);
-
-    vi.spyOn(window, 'prompt').mockReturnValue('Menu Renommé');
-    const tab1 = screen.getByRole('tab', { name: 'Menu 1' });
-    const renameBtn = within(tab1).getByLabelText('Renommer');
-    fireEvent.click(renameBtn);
-    expect(
-      screen.getByRole('tab', { name: 'Menu Renommé' })
-    ).toBeInTheDocument();
 
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     const deleteBtn = within(
-      screen.getByRole('tab', { name: 'Menu Renommé' })
+      screen.getByRole('tab', { name: 'Menu 1' })
     ).getByLabelText('Supprimer');
     fireEvent.click(deleteBtn);
     expect(
-      screen.queryByRole('tab', { name: 'Menu Renommé' })
+      screen.queryByRole('tab', { name: 'Menu 1' })
     ).not.toBeInTheDocument();
+  });
+
+  it('cree un nouveau menu via le bouton', () => {
+    render(<Wrapper />);
+    const createBtn = screen.getByRole('button', { name: '+ Nouveau menu' });
+    fireEvent.click(createBtn);
+    expect(
+      screen.getByRole('tab', { name: 'Menu sans titre' })
+    ).toBeInTheDocument();
   });
 
   it('affiche un message et un bouton quand la liste est vide', () => {
@@ -93,6 +97,8 @@ describe('MenuTabs', () => {
     expect(
       screen.getByText('Aucun menu disponible pour le moment')
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Créer un menu' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Créer un menu' })
+    ).toBeInTheDocument();
   });
 });

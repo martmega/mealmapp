@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button.jsx';
-import { RotateCw, Pencil, X } from 'lucide-react';
+import { RotateCw, Pencil } from 'lucide-react';
 import MenuPreferencesModal from '@/components/menu_planner/MenuPreferencesModal.jsx';
 import WeeklyMenuView from '@/components/menu_planner/WeeklyMenuView.jsx';
 import { useMenuGeneration } from '@/hooks/useMenuGeneration.js';
@@ -132,7 +132,6 @@ function MenuPlanner({
     userProfile
   );
 
-
   const handleGenerateMenu = useCallback(() => {
     generateMenu();
   }, [generateMenu]);
@@ -161,7 +160,7 @@ function MenuPlanner({
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-pastel-card p-6 rounded-xl shadow-pastel-soft">
-        <h2 className="text-2xl sm:text-3xl font-bold text-pastel-primary flex items-center gap-2">
+        <h2 className="group text-2xl sm:text-3xl font-bold text-pastel-primary flex items-center gap-2">
           {isEditingName ? (
             <input
               value={tempName}
@@ -181,16 +180,9 @@ function MenuPlanner({
               <span>{menuName || 'Menu de la semaine'}</span>
               <button
                 onClick={() => setIsEditingName(true)}
-                className="text-pastel-muted-foreground hover:text-pastel-primary"
+                className="ml-1 opacity-0 group-hover:opacity-100 text-pastel-muted-foreground hover:text-pastel-primary"
               >
                 <Pencil className="w-4 h-4" />
-              </button>
-              <button
-                onClick={handleDeleteMenu}
-                className="text-destructive/70 hover:text-destructive hover:bg-destructive/20 rounded-full p-1"
-                title="Supprimer le menu"
-              >
-                <X className="w-4 h-4" />
               </button>
             </>
           )}

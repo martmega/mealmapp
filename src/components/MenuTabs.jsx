@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.jsx';
-import { Pencil, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import NewMenuModal from '@/components/NewMenuModal.jsx';
 
 export default function MenuTabs({
@@ -8,7 +8,6 @@ export default function MenuTabs({
   activeMenuId,
   onSelect,
   currentUserId,
-  onRename,
   onDelete,
   onCreate,
 }) {
@@ -28,43 +27,37 @@ export default function MenuTabs({
       onValueChange={onSelect}
       className="w-full"
     >
-      <TabsList className="flex overflow-x-auto">
+      <TabsList className="flex overflow-x-auto items-center gap-2">
         {menus.map((menu) => (
           <TabsTrigger
             key={menu.id}
             value={menu.id}
-            className="flex items-center gap-2 whitespace-nowrap"
+            className="relative group whitespace-nowrap border border-pastel-primary-light rounded-md px-3 py-1 text-sm data-[state=active]:bg-pastel-primary data-[state=active]:text-white data-[state=active]:font-bold"
           >
-            <span>{menu.name || 'Menu'}</span>
+            {menu.name || 'Menu'}
             {menu.user_id === currentUserId && (
-              <>
-                <button
-                  aria-label="Renommer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const newName = window.prompt('Nouveau nom', menu.name);
-                    if (newName && onRename) onRename(menu.id, newName);
-                  }}
-                  className="text-pastel-muted-foreground hover:text-pastel-primary"
-                >
-                  <Pencil className="w-3 h-3" />
-                </button>
-                <button
-                  aria-label="Supprimer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (window.confirm('Supprimer ce menu ?')) {
-                      onDelete && onDelete(menu.id);
-                    }
-                  }}
-                  className="text-destructive/70 hover:text-destructive hover:bg-destructive/20 rounded-full p-0.5"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </>
+              <button
+                aria-label="Supprimer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (window.confirm('Supprimer ce menu ?')) {
+                    onDelete && onDelete(menu.id);
+                  }
+                }}
+                className="absolute -top-1 -right-1 hidden group-hover:block text-destructive/70 hover:text-destructive bg-white rounded-full p-0.5"
+              >
+                <X className="w-3 h-3" />
+              </button>
             )}
           </TabsTrigger>
         ))}
+        <button
+          type="button"
+          onClick={() => onCreate && onCreate()}
+          className="ml-2 px-3 py-1 text-sm border-2 border-dashed border-pastel-primary rounded-md whitespace-nowrap hover:bg-pastel-primary hover:text-white"
+        >
+          + Nouveau menu
+        </button>
       </TabsList>
     </Tabs>
   );
