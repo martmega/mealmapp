@@ -6,14 +6,17 @@ import { initialWeeklyMenuState } from '@/lib/menu';
 function isValidUUID(value) {
   return (
     typeof value === 'string' &&
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      value
+    )
   );
 }
 
-export function useWeeklyMenu(session, menuId) {
+export function useWeeklyMenu(session) {
   const [weeklyMenu, setWeeklyMenu] = useState(initialWeeklyMenuState());
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const userId = session?.user?.id;
 
   const safeSetWeeklyMenu = useCallback((data) => {
     if (
@@ -37,7 +40,9 @@ export function useWeeklyMenu(session, menuId) {
 
   useEffect(() => {
     const loadLocalMenu = () => {
-      const saved = localStorage.getItem(`localWeeklyMenu-${menuId}`);
+      const saved = localStorage.getItem(
+        `localWeeklyMenu-${userId || 'guest'}`
+      );
       try {
         const parsed = saved ? JSON.parse(saved) : null;
         safeSetWeeklyMenu(parsed);
@@ -47,12 +52,7 @@ export function useWeeklyMenu(session, menuId) {
       setLoading(false);
     };
 
-    if (!menuId) {
-      safeSetWeeklyMenu(null);
-      return;
-    }
-
-    if (!session?.user?.id || !isValidUUID(menuId)) {
+    if (!userId) {
       loadLocalMenu();
       return;
     }
@@ -62,9 +62,8 @@ export function useWeeklyMenu(session, menuId) {
       try {
         const { data, error } = await supabase
           .from('weekly_menus')
-          .select('id, user_id, menu_id, menu_data, created_at, updated_at')
-          .eq('user_id', session.user.id)
-          .eq('menu_id', menuId)
+          .select('id, user_id, menu_data, created_at, updated_at')
+          .eq('user_id', userId)
           .maybeSingle();
 
         if (error && error.code !== 'PGRST116') {
@@ -87,17 +86,17 @@ export function useWeeklyMenu(session, menuId) {
     };
 
     fetchUserWeeklyMenu();
-  }, [session, menuId, toast, safeSetWeeklyMenu]);
+  }, [session, userId, toast, safeSetWeeklyMenu]);
 
   useEffect(() => {
-    if (!menuId) return;
-    if (!session?.user?.id || !isValidUUID(menuId)) {
+    if (!userId) {
       localStorage.setItem(
-        `localWeeklyMenu-${menuId}`,
+        `localWeeklyMenu-${userId || 'guest'}`,
         JSON.stringify(weeklyMenu)
       );
+      return;
     }
-  }, [weeklyMenu, session, menuId]);
+  }, [weeklyMenu, session, userId]);
 
   const saveWeeklyMenuToSupabase = async (newMenu) => {
     const validatedMenu =
@@ -118,14 +117,13 @@ export function useWeeklyMenu(session, menuId) {
 
     setWeeklyMenu(validatedMenu);
 
-    if (session?.user?.id && isValidUUID(menuId)) {
+    if (userId) {
       setLoading(true);
       try {
         const { data: existingMenu, error: fetchError } = await supabase
           .from('weekly_menus')
           .select('id')
-          .eq('user_id', session.user.id)
-          .eq('menu_id', menuId)
+          .eq('user_id', userId)
           .maybeSingle();
 
         if (fetchError && fetchError.code !== 'PGRST116') {
@@ -133,8 +131,7 @@ export function useWeeklyMenu(session, menuId) {
         }
 
         const upsertData = {
-          user_id: session.user.id,
-          menu_id: menuId,
+          user_id: userId,
           menu_data: validatedMenu,
         };
 
@@ -144,8 +141,8 @@ export function useWeeklyMenu(session, menuId) {
 
         const { error: upsertError } = await supabase
           .from('weekly_menus')
-          .upsert(upsertData, { onConflict: 'user_id,menu_id' })
-          .select('id, user_id, menu_id, menu_data, created_at, updated_at');
+          .upsert(upsertData, { onConflict: 'user_id' })
+          .select('id, user_id, menu_data, created_at, updated_at');
 
         if (upsertError) throw upsertError;
         toast({
@@ -163,7 +160,10 @@ export function useWeeklyMenu(session, menuId) {
         setLoading(false);
       }
     } else {
-      localStorage.setItem(`localWeeklyMenu-${menuId}`, JSON.stringify(validatedMenu));
+      localStorage.setItem(
+        `localWeeklyMenu-${userId || 'guest'}`,
+        JSON.stringify(validatedMenu)
+      );
     }
   };
 
