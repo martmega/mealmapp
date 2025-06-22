@@ -20,9 +20,17 @@ export default function MenuPage({
   return (
     <div className="p-6 space-y-4">
       <Tabs value={activeMenuId} onValueChange={setActiveMenuId}>
-        <TabsList className="flex flex-wrap gap-2 overflow-x-auto">
+        <TabsList className="flex flex-wrap gap-2 overflow-x-auto mt-4 bg-transparent p-0 text-current">
           {menus.map((m) => (
-            <TabsTrigger key={m.id} value={m.id} className="whitespace-nowrap">
+            <TabsTrigger
+              key={m.id}
+              value={m.id}
+              className={`cursor-pointer px-3 py-1 rounded border transition-all whitespace-nowrap ${
+                activeMenuId === m.id
+                  ? 'bg-purple-600 text-white font-bold border-purple-600'
+                  : 'border-purple-600 text-purple-600 hover:bg-purple-100'
+              }`}
+            >
               {m.name}
               {m.isShared && ' (commun)'}
             </TabsTrigger>
@@ -30,7 +38,14 @@ export default function MenuPage({
           <NewMenuModal
             onCreate={createMenu}
             friends={friends}
-            trigger={<TabsTrigger value="new">+ Nouveau menu</TabsTrigger>}
+            trigger={
+              <TabsTrigger
+                value="new"
+                className="cursor-pointer px-3 py-1 rounded border border-dashed border-purple-600 text-purple-600 hover:bg-purple-100"
+              >
+                + Nouveau menu
+              </TabsTrigger>
+            }
           />
         </TabsList>
         {menus.map((m) => (
