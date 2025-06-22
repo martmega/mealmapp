@@ -20,6 +20,10 @@ export function useWeeklyMenu(session, currentMenuId = null) {
   const { toast } = useToast();
   const userId = session?.user?.id;
 
+  useEffect(() => {
+    setMenuId(currentMenuId);
+  }, [currentMenuId]);
+
   const safeSetWeeklyMenu = useCallback((data) => {
     if (
       Array.isArray(data) &&
