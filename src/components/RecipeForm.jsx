@@ -144,6 +144,42 @@ function RecipeForm({
     setSelectedFile(null);
   }, [recipe]);
 
+  // Restore draft on mount when creating a new recipe
+  useEffect(() => {
+    if (!recipe) {
+      const savedDraft = localStorage.getItem('draft_recipe');
+      if (savedDraft) {
+        try {
+          const parsed = JSON.parse(savedDraft);
+          const confirmRestore = window.confirm(
+            'Un brouillon de recette a été trouvé. Voulez-vous le restaurer ?'
+          );
+          if (confirmRestore) {
+            setFormData({ ...initialFormData, ...parsed });
+            if (descriptionRef.current && parsed.description) {
+              descriptionRef.current.value = parsed.description;
+            }
+            if (parsed.image_url) {
+              setPreviewImage(parsed.image_url);
+            }
+          } else {
+            localStorage.removeItem('draft_recipe');
+          }
+        } catch (e) {
+          console.error('Erreur lors de la restauration du brouillon', e);
+          localStorage.removeItem('draft_recipe');
+        }
+      }
+    }
+  }, [recipe]);
+
+  // Autosave draft whenever form data changes (for new recipe)
+  useEffect(() => {
+    if (!recipe) {
+      localStorage.setItem('draft_recipe', JSON.stringify(formData));
+    }
+  }, [formData, recipe]);
+
   const updateSuggestedTags = useCallback(async () => {
     const localExistingTags = JSON.parse(
       localStorage.getItem('existingTags') || '[]'
@@ -468,6 +504,9 @@ function RecipeForm({
     if (success) {
       setSelectedFile(null);
       setPreviewImage(null);
+      if (!recipe) {
+        localStorage.removeItem('draft_recipe');
+      }
     }
     setIsSubmitting(false);
   };
