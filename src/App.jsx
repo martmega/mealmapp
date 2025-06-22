@@ -78,7 +78,7 @@ function App() {
 
   useEffect(() => {
     const currentPathTab = location.pathname.split('/app/')[1]?.split('/')[0];
-    const validTabs = ['recipes', 'menu', 'shopping', 'community', 'account'];
+    const validTabs = ['recipes', 'menus', 'menu', 'shopping', 'community', 'account'];
     if (validTabs.includes(currentPathTab)) {
       if (activeTab !== currentPathTab) {
         setActiveTab(currentPathTab);
