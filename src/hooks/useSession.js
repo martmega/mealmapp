@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase, initializeSupabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast.js';
 
 export function useSession() {
@@ -13,8 +13,10 @@ export function useSession() {
       const {
         data: { session: currentSession },
       } = await supabase.auth.getSession();
+      initializeSupabase(currentSession);
       setSession(currentSession);
     } catch (error) {
+      initializeSupabase(null);
       setSession(null);
     } finally {
       setLoading(false);
@@ -30,6 +32,7 @@ export function useSession() {
         title: 'Déconnexion réussie',
         description: 'Vous avez été déconnecté.',
       });
+      initializeSupabase(null);
       setSession(null);
     } catch (error) {
       toast({
@@ -49,6 +52,7 @@ export function useSession() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
       setLoading(true);
+      initializeSupabase(newSession);
       setSession(newSession);
       setLoading(false);
     });
