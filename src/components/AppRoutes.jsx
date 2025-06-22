@@ -10,6 +10,7 @@ import ShoppingList from '@/components/ShoppingList';
 import AccountPage from '@/components/AccountPage';
 import CommunityPage from '@/pages/CommunityPage';
 import UserProfilePage from '@/pages/UserProfilePage';
+import MenusPage from '@/pages/MenusPage.jsx';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import { PlusCircle } from 'lucide-react';
 import LoginPage from '@/pages/Login.jsx';
@@ -107,6 +108,10 @@ export default function AppRoutes({
             )}
           </div>
         }
+      />
+      <Route
+        path="/app/menus"
+        element={<MenusPage />}
       />
       <Route
         path="/app/menu"
