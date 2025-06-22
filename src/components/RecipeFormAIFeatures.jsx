@@ -12,6 +12,7 @@ const RecipeFormAIFeatures = ({
   formData,
   handleDescriptionChange,
   descriptionRef,
+  iaUsage,
 }) => {
   console.log('RecipeFormAIFeatures subscription tier:', subscription_tier);
   return (
@@ -28,7 +29,11 @@ const RecipeFormAIFeatures = ({
           variant={subscription_tier === 'premium' ? 'premium' : 'tertiary'}
           size="sm"
           onClick={() => generateWithAI('description')}
-          disabled={isGeneratingDescription || !session}
+          disabled={
+            isGeneratingDescription ||
+            !session ||
+            (subscription_tier === 'vip' && (iaUsage?.text_requests ?? 0) >= 20)
+          }
           className="w-full sm:w-auto"
         >
           {isGeneratingDescription ? (
@@ -45,6 +50,11 @@ const RecipeFormAIFeatures = ({
               : 'Premium Description'}
         </Button>
       </div>
+      {subscription_tier === 'vip' && (
+        <p className="text-xs text-pastel-muted-foreground text-right">
+          Descriptions IA : {iaUsage?.text_requests ?? 0} / 20
+        </p>
+      )}
       <Textarea
         id="description-ai-features"
         ref={descriptionRef}
