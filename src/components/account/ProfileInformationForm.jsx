@@ -199,10 +199,10 @@ export default function ProfileInformationForm({
 
         if (uploadError) throw uploadError;
 
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from('avatars').getPublicUrl(uploadData.path);
-        publicUserUpdates.avatar_url = publicUrl;
+        const { data } = await supabase.storage
+          .from('avatars')
+          .createSignedUrl(uploadData.path, 3600);
+        publicUserUpdates.avatar_url = data.signedUrl;
       }
 
       if (Object.keys(publicUserUpdates).length > 0) {
