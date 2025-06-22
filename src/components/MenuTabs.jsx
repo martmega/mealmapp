@@ -27,6 +27,7 @@ export default function MenuTabs({
             {menu.user_id === currentUserId && (
               <>
                 <button
+                  aria-label="Renommer"
                   onClick={(e) => {
                     e.stopPropagation();
                     const newName = window.prompt('Nouveau nom', menu.name);
@@ -37,6 +38,7 @@ export default function MenuTabs({
                   <Pencil className="w-3 h-3" />
                 </button>
                 <button
+                  aria-label="Supprimer"
                   onClick={(e) => {
                     e.stopPropagation();
                     if (window.confirm('Supprimer ce menu ?')) {
