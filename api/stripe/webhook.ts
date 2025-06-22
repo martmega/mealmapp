@@ -15,11 +15,8 @@ const stripe = new Stripe(stripeSecret, { apiVersion: "2024-04-10" });
 console.log("Stripe webhook handler initialized");
 
 serve(async (req) => {
-  console.log("Webhook request received");
-
-  const key = Deno.env.get("OPENAI_API_KEY");
-  if (!key) {
-    return new Response("Missing OpenAI API key", { status: 500 });
+  if (req.method !== "POST") {
+    return new Response("Method not allowed", { status: 405 });
   }
 
   const signature = req.headers.get("stripe-signature") ?? "";
@@ -28,32 +25,51 @@ serve(async (req) => {
   try {
     const body = await req.text();
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-    console.log(`Event validated: ${event.type}`);
   } catch (err) {
     console.error("Invalid Stripe signature", err);
     return new Response("Invalid signature", { status: 400 });
   }
 
-  if (
-    event.type === "checkout.session.completed" ||
-    event.type === "invoice.paid"
-  ) {
-    const session: any = event.data.object;
-    const email = session.customer_email;
-    console.log(`Processing session for ${email}`);
-    if (email) {
-      const supabase = createClient(supabaseUrl, supabaseServiceKey);
-      const { error } = await supabase.auth.admin.updateUserByEmail(email, {
-        user_metadata: { subscription_tier: "premium", is_premium: true },
-      });
-      if (error) {
-        console.error("Supabase update error", error.message);
-        return new Response("Supabase error", { status: 500 });
-      }
-      console.log("User updated successfully");
-    } else {
-      console.log("No email found in session");
+  try {
+    switch (event.type) {
+      case "checkout.session.completed":
+      case "invoice.paid":
+        const session: any = event.data.object;
+        const userId: string | undefined = session.client_reference_id;
+        const email: string | undefined =
+          session.customer_email || session.customer_details?.email;
+        let id = userId;
+
+        const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+        if (!id && email) {
+          const { data, error } = await supabase
+            .from("public_user_view")
+            .select("id")
+            .eq("email", email)
+            .maybeSingle();
+          if (error) {
+            console.error("Error fetching user:", error.message);
+          }
+          id = data?.id as string | undefined;
+        }
+
+        if (id) {
+          const { error } = await supabase.auth.admin.updateUserById(id, {
+            app_metadata: { subscription_tier: "premium" },
+          });
+          if (error) {
+            console.error("Supabase update error:", error.message);
+            return new Response("Supabase update failed", { status: 500 });
+          }
+        }
+        break;
+      default:
+        console.log(`Unhandled event type: ${event.type}`);
     }
+  } catch (err) {
+    console.error("Webhook processing error:", err);
+    return new Response("Internal server error", { status: 500 });
   }
 
   return new Response("OK", { status: 200 });
