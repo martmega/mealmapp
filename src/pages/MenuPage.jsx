@@ -1,21 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import MenuPlanner from '@/components/MenuPlanner';
 import MenuTabs from '@/components/MenuTabs.jsx';
-import { useMenuList } from '@/hooks/useMenuList.js';
+import { useMenus } from '@/hooks/useMenus.js';
 import { useWeeklyMenu } from '@/hooks/useWeeklyMenu.js';
 
 export default function MenuPage({ session, userProfile, recipes }) {
-  const { menus, refreshMenus } = useMenuList(session);
-  const [activeMenuId, setActiveMenuId] = useState(null);
+  const { menus, selectedMenuId, setSelectedMenuId, refreshMenus } =
+    useMenus(session);
 
   const { weeklyMenu, menuName, setWeeklyMenu, updateMenuName, deleteMenu } =
-    useWeeklyMenu(session, activeMenuId);
-
-  useEffect(() => {
-    if (!activeMenuId && Array.isArray(menus) && menus.length > 0) {
-      setActiveMenuId(menus[0].id);
-    }
-  }, [menus, activeMenuId]);
+    useWeeklyMenu(session, selectedMenuId);
 
   const handleRename = async (id, name) => {
     await updateMenuName(name, id);
@@ -25,9 +19,9 @@ export default function MenuPage({ session, userProfile, recipes }) {
   const handleDelete = async (id) => {
     await deleteMenu(id);
     refreshMenus();
-    if (id === activeMenuId) {
+    if (id === selectedMenuId) {
       const remaining = menus.filter((m) => m.id !== id);
-      setActiveMenuId(remaining[0]?.id || null);
+      setSelectedMenuId(remaining[0]?.id || null);
     }
   };
 
@@ -35,8 +29,8 @@ export default function MenuPage({ session, userProfile, recipes }) {
     <div className="p-6 space-y-4">
       <MenuTabs
         menus={menus}
-        activeMenuId={activeMenuId}
-        onSelect={setActiveMenuId}
+        activeMenuId={selectedMenuId}
+        onSelect={setSelectedMenuId}
         currentUserId={session?.user?.id}
         onRename={handleRename}
         onDelete={handleDelete}
@@ -47,8 +41,8 @@ export default function MenuPage({ session, userProfile, recipes }) {
         setWeeklyMenu={setWeeklyMenu}
         userProfile={userProfile}
         menuName={menuName}
-        onUpdateMenuName={(name) => handleRename(activeMenuId, name)}
-        onDeleteMenu={() => handleDelete(activeMenuId)}
+        onUpdateMenuName={(name) => handleRename(selectedMenuId, name)}
+        onDeleteMenu={() => handleDelete(selectedMenuId)}
       />
     </div>
   );
