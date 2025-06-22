@@ -33,6 +33,11 @@ export default function FriendActionButton({
   }, [session]);
 
   React.useEffect(() => {
+    setStatus(initialStatus);
+    setRelId(initialRelId);
+  }, [initialStatus, initialRelId]);
+
+  React.useEffect(() => {
     const fetchSession = async () => {
       const {
         data: { session: fresh },
