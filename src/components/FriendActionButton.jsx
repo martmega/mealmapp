@@ -23,6 +23,7 @@ export default function FriendActionButton({
   const [status, setStatus] = useState(initialStatus);
   const [relId, setRelId] = useState(initialRelId);
   const [loading, setLoading] = useState(false);
+  const [hover, setHover] = useState(false);
   const [currentSession, setCurrentSession] = useState(session);
   const { toast } = useToast();
   useSessionRequired();
@@ -116,48 +117,34 @@ export default function FriendActionButton({
         <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Chargement...
       </Button>
     );
+  } else if (status === 'pending_them') {
+    content = (
+      <Button variant="outline" className="mt-4 w-40" disabled>
+        <MessageCircle className="mr-2 h-4 w-4" /> Demande en attente
+      </Button>
+    );
+  } else if (status === 'pending_me') {
+    content = (
+      <Button onClick={handleAction} variant="default" className="mt-4 w-40">
+        <UserCheck className="mr-2 h-4 w-4" /> Accepter la demande
+      </Button>
+    );
   } else {
-    switch (status) {
-      case 'friends':
-        content = (
-          <Button
-            onClick={handleAction}
-            variant="secondary"
-            className="mt-4 w-40"
-          >
-            <UserX className="mr-2 h-4 w-4" /> Retirer l&apos;ami
-          </Button>
-        );
-        break;
-      case 'pending_them':
-        content = (
-          <Button variant="outline" className="mt-4 w-40" disabled>
-            <MessageCircle className="mr-2 h-4 w-4" /> Demande en attente
-          </Button>
-        );
-        break;
-      case 'pending_me':
-        content = (
-          <Button
-            onClick={handleAction}
-            variant="default"
-            className="mt-4 w-40"
-          >
-            <UserCheck className="mr-2 h-4 w-4" /> Accepter la demande
-          </Button>
-        );
-        break;
-      default:
-        content = (
-          <Button
-            onClick={handleAction}
-            variant="default"
-            className="mt-4 w-40"
-          >
-            <UserPlus className="mr-2 h-4 w-4" /> Demander en ami
-          </Button>
-        );
-    }
+    const isFriend = status === 'friends';
+    content = (
+      <button
+        onClick={handleAction}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        className={`mt-4 flex items-center gap-2 px-4 py-1.5 rounded-md border transition-all ${isFriend ? 'bg-green-600 text-white hover:bg-red-600' : 'bg-purple-600 text-white hover:bg-purple-700'}`}
+      >
+        {isFriend
+          ? hover
+            ? '❌ Retirer l\u2019ami'
+            : '✔️ Vous êtes amis'
+          : '➕ Demander en ami'}
+      </button>
+    );
   }
 
   return content;
