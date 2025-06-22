@@ -114,7 +114,7 @@ export default function ProfileInformationForm({
 
   const checkTagAvailability = async (tag) => {
     const { data, error } = await supabase
-      .from('user_links')
+      .from('public_users')
       .select('id')
       .eq('user_tag', tag);
     if (error) {
@@ -144,7 +144,7 @@ export default function ProfileInformationForm({
     setLoading(true);
     try {
       const { data, error: checkError } = await supabase
-        .from('user_links')
+        .from('public_users')
         .select('id')
         .eq('user_tag', trimmed);
       if (checkError) throw checkError;
@@ -154,7 +154,7 @@ export default function ProfileInformationForm({
         return;
       }
       const { error } = await supabase
-        .from('user_links')
+        .from('public_users')
         .update({ user_tag: trimmed })
         .eq('id', session.user.id);
       if (error) throw error;
