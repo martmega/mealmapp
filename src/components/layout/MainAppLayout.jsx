@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import {
   PlusCircle,
   Calendar,
-  ClipboardList,
   ShoppingCart,
   LogOut,
   LogIn,
@@ -76,7 +75,12 @@ export default function MainAppLayout({
                 )}
               </Button>
               {session ? (
-                <Button variant="outline" onClick={handleSignOut} size="sm" className="text-black dark:text-white transition-colors">
+                <Button
+                  variant="outline"
+                  onClick={handleSignOut}
+                  size="sm"
+                  className="text-black dark:text-white transition-colors"
+                >
                   <LogOut className="w-4 h-4 mr-1.5" />
                   Déconnexion
                 </Button>
@@ -101,12 +105,6 @@ export default function MainAppLayout({
                   label: 'Recettes',
                   icon: PlusCircle,
                   path: '/app/recipes',
-                },
-                {
-                  id: 'menus',
-                  label: 'Mes Menus',
-                  icon: ClipboardList,
-                  path: '/app/menus',
                 },
                 {
                   id: 'menu',
