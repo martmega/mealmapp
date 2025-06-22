@@ -98,7 +98,7 @@ export default function MainAppLayout({
             </div>
           </div>
           {showMainNavigation && (
-            <nav className="flex space-x-1 sm:space-x-2 mt-5 overflow-x-auto pb-1 -mb-px transition-colors duration-300 bg-white text-black dark:bg-[#1e1e1e] dark:text-white">
+            <nav className="flex gap-2 mt-4 overflow-x-auto pb-1 -mb-px transition-colors duration-300 bg-white text-black dark:bg-[#1e1e1e] dark:text-white">
               {[
                 {
                   id: 'recipes',
@@ -139,15 +139,14 @@ export default function MainAppLayout({
                     ]
                   : []),
               ].map((tab) => (
-                <Button
+                <button
                   key={tab.id}
-                  variant="ghost"
                   onClick={() => handleTabClick(tab)}
-                  className={`px-3 py-1.5 sm:px-4 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap text-black dark:text-white
+                  className={`cursor-pointer px-3 py-1.5 sm:px-4 rounded border transition-all text-xs sm:text-sm whitespace-nowrap
                     ${
                       activeTab === tab.id
-                        ? 'bg-pastel-primary/10 dark:bg-pastel-primary/20 text-pastel-primary dark:text-pastel-primary-hover border-b-2 border-pastel-primary dark:border-pastel-primary-hover'
-                        : 'hover:bg-pastel-muted/70 dark:hover:bg-pastel-muted/30 border-b-2 border-transparent'
+                        ? 'bg-pastel-primary text-white font-bold border-pastel-primary'
+                        : 'bg-transparent text-pastel-primary border-pastel-primary hover:bg-pastel-primary/10'
                     }`}
                 >
                   <span className="relative mr-1.5 hidden sm:inline-block">
@@ -158,7 +157,7 @@ export default function MainAppLayout({
                       )}
                   </span>
                   {tab.label}
-                </Button>
+                </button>
               ))}
             </nav>
           )}
