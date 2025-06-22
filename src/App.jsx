@@ -61,6 +61,7 @@ function App() {
     menuName,
     setWeeklyMenu: saveUserWeeklyMenuHook,
     updateMenuName,
+    deleteMenu: deleteWeeklyMenu,
     loading: weeklyMenuLoading,
   } = useWeeklyMenu(session);
 
@@ -162,6 +163,7 @@ function App() {
           weeklyMenuLoading={weeklyMenuLoading}
           saveUserWeeklyMenuHook={saveUserWeeklyMenuHook}
           updateMenuName={updateMenuName}
+          deleteMenu={deleteWeeklyMenu}
           showRecipeForm={showRecipeForm}
           editingRecipe={editingRecipe}
           openRecipeFormForAdd={openRecipeForm}

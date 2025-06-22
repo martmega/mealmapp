@@ -9,6 +9,7 @@ export default function MenuPage({
   setWeeklyMenu,
   menuName,
   updateMenuName,
+  deleteMenu,
 }) {
   return (
     <div className="p-6">
@@ -19,6 +20,7 @@ export default function MenuPage({
         userProfile={userProfile}
         menuName={menuName}
         onUpdateMenuName={updateMenuName}
+        onDeleteMenu={deleteMenu}
       />
     </div>
   );

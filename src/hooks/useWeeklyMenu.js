@@ -193,17 +193,41 @@ export function useWeeklyMenu(session) {
           description: 'Impossible de renommer le menu: ' + err.message,
           variant: 'destructive',
         });
-        return false;
-      }
-    },
-    [userId, menuId, fetchUserWeeklyMenu, toast]
-  );
+      return false;
+    }
+  },
+  [userId, menuId, fetchUserWeeklyMenu, toast]
+);
+
+  const deleteWeeklyMenu = useCallback(async () => {
+    if (!userId || !menuId) return false;
+    try {
+      const { error } = await supabase
+        .from('weekly_menus')
+        .delete()
+        .eq('id', menuId);
+
+      if (error) throw error;
+      await fetchUserWeeklyMenu();
+      toast({ title: 'Menu supprimé' });
+      return true;
+    } catch (err) {
+      console.error('Error deleting menu:', err);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de supprimer le menu: ' + err.message,
+        variant: 'destructive',
+      });
+      return false;
+    }
+  }, [userId, menuId, fetchUserWeeklyMenu, toast]);
 
   return {
     weeklyMenu,
     menuName,
     setWeeklyMenu: saveWeeklyMenuToSupabase,
     updateMenuName: updateWeeklyMenuName,
+    deleteMenu: deleteWeeklyMenu,
     loading,
   };
 }
