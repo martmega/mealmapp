@@ -79,6 +79,31 @@ function RecipeForm({
   const navigate = useNavigate();
 
   const subscriptionTier = userProfile?.subscription_tier;
+  const [iaUsage, setIaUsage] = useState(null);
+
+  const fetchIaUsage = useCallback(async () => {
+    if (subscriptionTier !== 'vip' || !session?.user?.id) {
+      setIaUsage(null);
+      return;
+    }
+    const now = new Date();
+    const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const { data, error } = await supabase
+      .from('ia_usage')
+      .select('text_requests, image_requests')
+      .eq('user_id', session.user.id)
+      .eq('month', month)
+      .single();
+    if (!error) {
+      setIaUsage(data);
+    } else {
+      setIaUsage(null);
+    }
+  }, [session, subscriptionTier]);
+
+  useEffect(() => {
+    fetchIaUsage();
+  }, [fetchIaUsage]);
 
   useEffect(() => {
     if (recipe) {
@@ -481,11 +506,27 @@ function RecipeForm({
       return;
     }
 
-    if (subscriptionTier !== 'premium') {
+    if (subscriptionTier !== 'premium' && subscriptionTier !== 'vip') {
       handlePremiumFeatureClick(
         type === 'description' ? 'de description' : "d'images"
       );
       return;
+    }
+
+    if (subscriptionTier === 'vip') {
+      if (
+        (type === 'description' && (iaUsage?.text_requests ?? 0) >= 20) ||
+        (type === 'image' && (iaUsage?.image_requests ?? 0) >= 5)
+      ) {
+        toast({
+          title: 'Quota IA dépassé',
+          description: `Vous avez atteint la limite de ${
+            type === 'description' ? 'descriptions' : 'images'
+          } pour ce mois.`,
+          variant: 'destructive',
+        });
+        return;
+      }
     }
 
     if (!formData.name || !formData.ingredients.some((i) => i.name)) {
@@ -541,6 +582,12 @@ function RecipeForm({
           title: 'Description générée',
           description: 'La description a été mise à jour.',
         });
+        if (subscriptionTier === 'vip') {
+          setIaUsage((prev) => ({
+            ...prev,
+            text_requests: (prev?.text_requests ?? 0) + 1,
+          }));
+        }
       } else if (type === 'image') {
         setFormData((prev) => ({ ...prev, image_url: data.url }));
         setPreviewImage(data.url);
@@ -549,6 +596,12 @@ function RecipeForm({
           title: 'Image générée',
           description: "L'image a été mise à jour.",
         });
+        if (subscriptionTier === 'vip') {
+          setIaUsage((prev) => ({
+            ...prev,
+            image_requests: (prev?.image_requests ?? 0) + 1,
+          }));
+        }
       }
     } catch (error) {
       console.error('Erreur IA:', error);
@@ -665,6 +718,7 @@ function RecipeForm({
               formData={formData}
               handleDescriptionChange={handleDescriptionChange}
               descriptionRef={descriptionRef}
+              iaUsage={iaUsage}
             />
 
             <RecipeFormImageHandler
@@ -678,6 +732,7 @@ function RecipeForm({
               subscription_tier={subscriptionTier}
               generateWithAI={generateWithAI}
               isGeneratingImage={isGeneratingImage}
+              iaUsage={iaUsage}
             />
 
             <div className="flex justify-end gap-3 pt-4 border-t border-pastel-border/60">

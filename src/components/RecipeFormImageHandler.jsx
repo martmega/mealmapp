@@ -20,6 +20,7 @@ const RecipeFormImageHandler = ({
   subscription_tier,
   generateWithAI,
   isGeneratingImage,
+  iaUsage,
 }) => {
   console.log('RecipeFormImageHandler subscription tier:', subscription_tier);
   return (
@@ -58,7 +59,11 @@ const RecipeFormImageHandler = ({
           type="button"
           variant={subscription_tier === 'premium' ? 'premium' : 'accent'}
           onClick={() => generateWithAI('image')}
-          disabled={isGeneratingImage || !session}
+          disabled={
+            isGeneratingImage ||
+            !session ||
+            (subscription_tier === 'vip' && (iaUsage?.image_requests ?? 0) >= 5)
+          }
           className="h-auto py-3"
         >
           {isGeneratingImage ? (
@@ -75,6 +80,11 @@ const RecipeFormImageHandler = ({
               : 'Premium Image'}
         </Button>
       </div>
+      {subscription_tier === 'vip' && (
+        <p className="text-xs text-pastel-muted-foreground text-right">
+          Images IA : {iaUsage?.image_requests ?? 0} / 5
+        </p>
+      )}
       {previewImage && (
         <div className="mt-3 aspect-video rounded-lg overflow-hidden border border-pastel-border bg-pastel-card-alt shadow-pastel-card-item">
           <img
