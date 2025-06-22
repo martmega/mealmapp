@@ -102,7 +102,8 @@ export function useRecipes(session, subscriptionTier) {
                 : [],
               servings: parseInt(recipe.servings, 10) || 1,
             },
-            subscriptionTier
+            subscriptionTier,
+            session
           );
 
           if (estimated !== null) {
