@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button.jsx';
 import { Input } from '@/components/ui/input.jsx';
 import { Checkbox } from '@/components/ui/Checkbox.jsx';
 
-function NewMenuModal({ onCreate, friends = [] }) {
+function NewMenuModal({ onCreate, friends = [], trigger }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [isShared, setIsShared] = useState(false);
@@ -27,7 +27,7 @@ function NewMenuModal({ onCreate, friends = [] }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Créer un menu</Button>
+        {trigger || <Button>Créer un menu</Button>}
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>

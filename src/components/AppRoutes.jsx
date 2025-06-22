@@ -5,8 +5,7 @@ import PrivacyPolicy from '@/pages/legal/PrivacyPolicy';
 import ContactPage from '@/pages/legal/ContactPage';
 import RecipeForm from '@/components/RecipeForm';
 import RecipeList from '@/components/RecipeList';
-import MenuPlanner from '@/components/MenuPlanner';
-import MenusPage from '@/pages/MenusPage.jsx';
+import MenuPage from '@/pages/MenuPage.jsx';
 import ShoppingList from '@/components/ShoppingList';
 import AccountPage from '@/components/AccountPage';
 import CommunityPage from '@/pages/CommunityPage';
@@ -20,6 +19,10 @@ export default function AppRoutes({
   userProfile,
   recipes,
   recipesLoading,
+  menus,
+  activeMenuId,
+  setActiveMenuId,
+  createMenu,
   weeklyMenu,
   weeklyMenuLoading,
   showRecipeForm,
@@ -110,10 +113,6 @@ export default function AppRoutes({
         }
       />
       <Route
-        path="/app/menus"
-        element={<MenusPage session={session} />}
-      />
-      <Route
         path="/app/menu"
         element={
           session &&
@@ -121,11 +120,16 @@ export default function AppRoutes({
           isMenuDataEmpty(weeklyMenu) ? (
             <LoadingScreen message="Chargement du menu..." />
           ) : session ? (
-            <MenuPlanner
+            <MenuPage
+              session={session}
+              userProfile={userProfile}
               recipes={recipes}
+              menus={menus}
+              activeMenuId={activeMenuId}
+              setActiveMenuId={setActiveMenuId}
+              createMenu={createMenu}
               weeklyMenu={weeklyMenu}
               setWeeklyMenu={saveUserWeeklyMenuHook}
-              userProfile={userProfile}
             />
           ) : (
             <Navigate to="/app/recipes" replace />
