@@ -1,6 +1,8 @@
 import { useState, useCallback, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast.js';
+
+const supabase = getSupabase();
 
 export function useLinkedUsers(userProfile, preferences, setPreferences) {
   const { toast } = useToast();

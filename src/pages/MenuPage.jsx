@@ -1,10 +1,12 @@
 import React from 'react';
 import MenuPlanner from '@/components/MenuPlanner';
 import MenuTabs from '@/components/MenuTabs.jsx';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import { initialWeeklyMenuState } from '@/lib/menu';
 import { useMenus } from '@/hooks/useMenus.js';
 import { useWeeklyMenu } from '@/hooks/useWeeklyMenu.js';
+
+const supabase = getSupabase();
 
 export default function MenuPage({ session, userProfile, recipes }) {
   const { menus, selectedMenuId, setSelectedMenuId, refreshMenus } =

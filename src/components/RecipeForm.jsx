@@ -5,7 +5,7 @@ import { X, Loader2, Eye, EyeOff, Users, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TagManager from '@/components/TagManager';
 import { generateTagSuggestions } from '@/lib/tagSuggestions';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
 import RecipeFormImageHandler from '@/components/RecipeFormImageHandler';
@@ -15,6 +15,8 @@ import RecipeIngredientsManager from '@/components/form/RecipeIngredientsManager
 import RecipeInstructionsManager from '@/components/form/RecipeInstructionsManager';
 import RecipeMetaFields from '@/components/form/RecipeMetaFields';
 import { estimateRecipePrice } from '@/lib/openai';
+
+const supabase = getSupabase();
 import {
   Select,
   SelectContent,

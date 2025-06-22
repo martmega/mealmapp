@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
 import { initialWeeklyMenuState } from '@/lib/menu';
+
+const supabase = getSupabase();
 
 function isValidUUID(value) {
   return (

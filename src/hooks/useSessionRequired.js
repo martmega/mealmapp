@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
+
+const supabase = getSupabase();
 
 export default function useSessionRequired() {
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import RecipeList from '@/components/RecipeList';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import { UserCircle, ShieldCheck } from 'lucide-react';
@@ -7,6 +7,8 @@ import { useToast } from '@/components/ui/use-toast';
 import RecipeDetailModal from '@/components/RecipeDetailModal';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { formatRecipe } from '@/lib/formatRecipe';
+
+const supabase = getSupabase();
 
 export default function MyPublicProfile({
   session,

@@ -1,6 +1,8 @@
 import { useCallback, useMemo } from 'react';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import { useSupabasePaginated } from './useSupabasePaginated';
+
+const supabase = getSupabase();
 
 export function usePublicRecipes(session) {
   const queryFn = useCallback(

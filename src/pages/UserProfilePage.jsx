@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import UserRecipeList from '@/components/UserRecipeList.jsx';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import { UserCircle, ArrowLeft } from 'lucide-react';
@@ -9,6 +9,8 @@ import { useToast } from '@/components/ui/use-toast';
 import RecipeDetailModal from '@/components/RecipeDetailModal';
 import FriendActionButton from '@/components/FriendActionButton.jsx';
 import { formatRecipe } from '@/lib/formatRecipe';
+
+const supabase = getSupabase();
 
 export default function UserProfilePage({
   session,

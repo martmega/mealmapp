@@ -1,4 +1,6 @@
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
+
+const supabase = getSupabase();
 
 const COMMON_TAGS = {
   'petit-dejeuner': [

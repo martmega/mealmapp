@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase, initializeSupabase } from '@/lib/supabase';
+import { getSupabase, initializeSupabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast.js';
+
+const supabase = getSupabase();
 
 export function useSession() {
   const [session, setSession] = useState(undefined);

@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
+
+const supabase = getSupabase();
 
 export function useUserSearch(session) {
   const [results, setResults] = useState([]);

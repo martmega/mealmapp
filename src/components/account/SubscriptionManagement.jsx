@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2, Star, CheckCircle, CreditCard } from 'lucide-react';
 import PropTypes from 'prop-types';
 import { loadStripe } from '@stripe/stripe-js';
+
+const supabase = getSupabase();
 
 const STRIPE_PUBLISHABLE_KEY =
   'pk_test_51RM7DtGEb36fLGJ0lbRvJ0HCxgKaCzj5iVnWXOSQvengGlpSFHKBEOmb2fYQEPUE0FuwOYZDndSj7IVRy3rijOmi00sJXXZ4sG';

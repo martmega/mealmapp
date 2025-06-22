@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import { acceptFriendRequest } from '@/lib/friends';
 import {
   Loader2,
@@ -11,6 +11,8 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import useSessionRequired from '@/hooks/useSessionRequired';
+
+const supabase = getSupabase();
 
 export default function FriendActionButton({
   session,
