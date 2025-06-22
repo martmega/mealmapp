@@ -466,7 +466,8 @@ function RecipeForm({
           ingredients: cleanedNewIngredients,
           servings: parseInt(formData.servings, 10) || 1,
         },
-        userProfile.subscription_tier
+        userProfile.subscription_tier,
+        session
       );
     }
 

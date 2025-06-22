@@ -22,15 +22,20 @@ export const generateRecipe = async (prompt, subscriptionTier = 'standard') => {
 
 export const estimateRecipePrice = async (
   recipe,
-  subscriptionTier = 'standard'
+  subscriptionTier = 'standard',
+  session
 ) => {
   try {
+    const headers = {
+      'Content-Type': 'application/json',
+      'x-subscription-tier': subscriptionTier,
+    };
+    const token = session?.access_token ?? session;
+    if (token) headers.Authorization = `Bearer ${token}`;
+
     const response = await fetch('/api/estimate-cost', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-subscription-tier': subscriptionTier,
-      },
+      headers,
       body: JSON.stringify({ recipe }),
     });
 
