@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button.jsx';
-import { RotateCw, Pencil } from 'lucide-react';
+import { RotateCw, Pencil, X } from 'lucide-react';
 import MenuPreferencesModal from '@/components/menu_planner/MenuPreferencesModal.jsx';
 import WeeklyMenuView from '@/components/menu_planner/WeeklyMenuView.jsx';
 import { useMenuGeneration } from '@/hooks/useMenuGeneration.js';
@@ -24,6 +24,7 @@ function MenuPlanner({
   userProfile,
   menuName,
   onUpdateMenuName,
+  onDeleteMenu,
 }) {
   const [internalWeeklyMenu, setInternalWeeklyMenu] = useState(
     Array.isArray(propWeeklyMenu) && propWeeklyMenu.length === 7
@@ -148,6 +149,15 @@ function MenuPlanner({
     }
   };
 
+  const handleDeleteMenu = async () => {
+    if (!onDeleteMenu) return;
+    const confirmed = window.confirm(
+      'Es-tu sûr de vouloir supprimer ce menu ?'
+    );
+    if (!confirmed) return;
+    await onDeleteMenu();
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-pastel-card p-6 rounded-xl shadow-pastel-soft">
@@ -174,6 +184,13 @@ function MenuPlanner({
                 className="text-pastel-muted-foreground hover:text-pastel-primary"
               >
                 <Pencil className="w-4 h-4" />
+              </button>
+              <button
+                onClick={handleDeleteMenu}
+                className="text-destructive/70 hover:text-destructive hover:bg-destructive/20 rounded-full p-1"
+                title="Supprimer le menu"
+              >
+                <X className="w-4 h-4" />
               </button>
             </>
           )}
