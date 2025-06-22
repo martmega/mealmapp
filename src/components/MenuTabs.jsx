@@ -32,11 +32,7 @@ export default function MenuTabs({
           <TabsTrigger
             key={menu.id}
             value={menu.id}
-            className={`relative group whitespace-nowrap rounded-md px-3 py-1 text-sm transition-all focus:outline-none focus-visible:ring-0 ${
-              activeMenuId === menu.id
-                ? 'bg-pastel-primary text-white font-semibold shadow-none'
-                : 'border border-pastel-primary text-pastel-primary hover:bg-pastel-primary/10'
-            }`}
+            className="relative group whitespace-nowrap rounded-md px-3 py-1 text-sm transition-all focus:outline-none focus-visible:ring-0 border border-pastel-primary text-pastel-primary hover:bg-pastel-primary/10 data-[state=active]:bg-pastel-primary data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:border-none data-[state=active]:shadow-none"
           >
             {menu.name || 'Menu'}
             {menu.user_id === currentUserId && (
