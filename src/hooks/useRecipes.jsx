@@ -265,13 +265,19 @@ export function useRecipes(session, subscriptionTier) {
         delete payload.user;
         delete payload.public_users;
 
+        console.log('Updating recipe with', {
+          id: recipeId,
+          user_id: session.user.id,
+          data: payload,
+        });
+
         const { data: updatedRecipeResult, error } = await supabase
           .from('recipes')
           .update(payload)
           .eq('id', recipeId)
           .eq('user_id', session.user.id)
           .select(baseRecipeSelect)
-          .single();
+          .maybeSingle();
 
         if (error) {
           console.error(
