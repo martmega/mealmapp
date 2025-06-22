@@ -59,7 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         if (!id && email) {
           const { data, error } = await supabase
-            .from('public_users')
+            .from('public_user_view')
             .select('id')
             .eq('email', email)
             .maybeSingle();

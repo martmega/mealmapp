@@ -21,7 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const { data: profile, error: profileError } = await supabaseAdmin
-    .from('public_users')
+    .from('public_user_view')
     .select('subscription_tier')
     .eq('id', user.id)
     .maybeSingle();

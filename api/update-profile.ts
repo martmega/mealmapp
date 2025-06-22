@@ -29,7 +29,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const { error } = await supabaseAdmin
-      .from('public_users')
+      .from('public_user_view')
       .update(updates)
       .eq('id', body.id);
 

@@ -24,7 +24,7 @@ export function usePublicRecipes(session) {
 
       const userIds = [...new Set(recipes.map((r) => r.user_id))];
       const { data: users } = await supabase
-        .from('public_users')
+        .from('public_user_view')
         .select('id, username, avatar_url, bio, subscription_tier')
         .in('id', userIds);
       const usersMap = Object.fromEntries((users || []).map((u) => [u.id, u]));

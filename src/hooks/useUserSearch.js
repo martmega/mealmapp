@@ -16,7 +16,7 @@ export function useUserSearch(session) {
       setLoading(true);
       try {
         let query = supabase
-          .from('public_users')
+          .from('public_user_view')
           .select('id, username, avatar_url, bio, subscription_tier')
           .or(`username.ilike.*${sanitized}*,bio.ilike.*${sanitized}*`)
           .limit(10);
