@@ -70,9 +70,10 @@ export default function UserProfilePage({
             .or(
               `(requester_id.eq.${session.user.id},addressee_id.eq.${userId}),(requester_id.eq.${userId},addressee_id.eq.${session.user.id})`
             )
-            .maybeSingle();
+            .limit(1)
+            .single();
 
-          if (relError && relError.code !== 'PGRST116') {
+          if (relError) {
             console.warn('Error fetching relationship:', relError.message);
           } else if (rel) {
             relId = rel.id;
