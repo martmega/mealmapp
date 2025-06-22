@@ -47,8 +47,10 @@ export default function FriendsTab({ session, userProfile, onRequestsChange }) {
 
       const uniqueMap = {};
       for (const rel of relationships) {
-        const key = `${rel.requester_id}-${rel.addressee_id}`;
-        if (!uniqueMap[key]) uniqueMap[key] = rel;
+        const key = [rel.requester_id, rel.addressee_id].sort().join('-');
+        if (!uniqueMap[key] || uniqueMap[key].status !== 'accepted') {
+          uniqueMap[key] = rel;
+        }
       }
       const uniqueRelationships = Object.values(uniqueMap);
 
