@@ -12,10 +12,10 @@ function isValidUUID(value) {
   );
 }
 
-export function useWeeklyMenu(session) {
+export function useWeeklyMenu(session, currentMenuId = null) {
   const [weeklyMenu, setWeeklyMenu] = useState(initialWeeklyMenuState());
   const [menuName, setMenuName] = useState('Menu de la semaine');
-  const [menuId, setMenuId] = useState(null);
+  const [menuId, setMenuId] = useState(currentMenuId);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const userId = session?.user?.id;
@@ -42,33 +42,37 @@ export function useWeeklyMenu(session) {
     }
   }, []);
 
-  const fetchUserWeeklyMenu = useCallback(async () => {
-    if (!userId) return;
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('weekly_menus')
-        .select('id, user_id, name, menu_data, created_at, updated_at')
-        .eq('user_id', userId)
-        .maybeSingle();
+  const fetchWeeklyMenu = useCallback(
+    async (id = menuId) => {
+      if (!id && !userId) return;
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('weekly_menus')
+          .select('id, user_id, name, menu_data, created_at, updated_at')
+          .eq(id ? 'id' : 'user_id', id || userId)
+          .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
-        throw error;
+        if (error && error.code !== 'PGRST116') {
+          throw error;
+        }
+
+        if (data) safeSetWeeklyMenu(data);
+      } catch (err) {
+        console.error('Erreur fetch weekly menu :', err);
+        toast({
+          title: 'Erreur',
+          description:
+            'Impossible de charger le menu hebdomadaire: ' + err.message,
+          variant: 'destructive',
+        });
+        safeSetWeeklyMenu(null);
+      } finally {
+        setLoading(false);
       }
-
-      if (data) safeSetWeeklyMenu(data);
-    } catch (err) {
-      console.error('Erreur fetch weekly menu :', err);
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de charger le menu hebdomadaire: ' + err.message,
-        variant: 'destructive',
-      });
-      safeSetWeeklyMenu(null);
-    } finally {
-      setLoading(false);
-    }
-  }, [userId, toast, safeSetWeeklyMenu]);
+    },
+    [userId, toast, safeSetWeeklyMenu]
+  );
 
   useEffect(() => {
     const loadLocalMenu = () => {
@@ -89,8 +93,8 @@ export function useWeeklyMenu(session) {
       return;
     }
 
-    fetchUserWeeklyMenu();
-  }, [session, userId, toast, safeSetWeeklyMenu, fetchUserWeeklyMenu]);
+    fetchWeeklyMenu();
+  }, [session, userId, menuId, toast, safeSetWeeklyMenu, fetchWeeklyMenu]);
 
   useEffect(() => {
     if (!userId) {
@@ -124,37 +128,29 @@ export function useWeeklyMenu(session) {
     if (userId) {
       setLoading(true);
       try {
-        const { data: existingMenu, error: fetchError } = await supabase
-          .from('weekly_menus')
-          .select('id')
-          .eq('user_id', userId)
-          .maybeSingle();
-
-        if (fetchError && fetchError.code !== 'PGRST116') {
-          throw fetchError;
-        }
-
         const upsertData = {
           user_id: userId,
           menu_data: validatedMenu,
           name: menuName,
         };
 
-        if (existingMenu && existingMenu.id) {
-          upsertData.id = existingMenu.id;
+        if (menuId && isValidUUID(menuId)) {
+          upsertData.id = menuId;
         }
 
-        const { error: upsertError } = await supabase
+        const { data: upserted, error: upsertError } = await supabase
           .from('weekly_menus')
-          .upsert(upsertData, { onConflict: 'user_id' })
-          .select('id, user_id, name, menu_data, created_at, updated_at');
+          .upsert(upsertData)
+          .select('id, user_id, name, menu_data, created_at, updated_at')
+          .single();
 
         if (upsertError) throw upsertError;
+        if (upserted?.id) setMenuId(upserted.id);
         toast({
           title: 'Menu sauvegardé',
           description: 'Votre menu hebdomadaire a été sauvegardé avec succès.',
         });
-        await fetchUserWeeklyMenu();
+        await fetchWeeklyMenu(upserted?.id || menuId);
       } catch (error) {
         console.error('Error saving weekly menu:', error);
         toast({
@@ -174,17 +170,17 @@ export function useWeeklyMenu(session) {
   };
 
   const updateWeeklyMenuName = useCallback(
-    async (newName) => {
-      if (!userId || !menuId || !newName) return false;
+    async (newName, id = menuId) => {
+      if (!userId || !id || !newName) return false;
       try {
         const { error } = await supabase
           .from('weekly_menus')
           .update({ name: newName })
-          .eq('id', menuId);
+          .eq('id', id);
 
         if (error) throw error;
-        setMenuName(newName);
-        await fetchUserWeeklyMenu();
+        if (id === menuId) setMenuName(newName);
+        await fetchWeeklyMenu(id);
         return true;
       } catch (err) {
         console.error('Error updating menu name:', err);
@@ -193,34 +189,39 @@ export function useWeeklyMenu(session) {
           description: 'Impossible de renommer le menu: ' + err.message,
           variant: 'destructive',
         });
-      return false;
-    }
-  },
-  [userId, menuId, fetchUserWeeklyMenu, toast]
-);
+        return false;
+      }
+    },
+    [userId, menuId, fetchWeeklyMenu, toast]
+  );
 
-  const deleteWeeklyMenu = useCallback(async () => {
-    if (!userId || !menuId) return false;
-    try {
-      const { error } = await supabase
-        .from('weekly_menus')
-        .delete()
-        .eq('id', menuId);
+  const deleteWeeklyMenu = useCallback(
+    async (id = menuId) => {
+      if (!userId || !id) return false;
+      try {
+        const { error } = await supabase
+          .from('weekly_menus')
+          .delete()
+          .eq('id', id);
 
-      if (error) throw error;
-      await fetchUserWeeklyMenu();
-      toast({ title: 'Menu supprimé' });
-      return true;
-    } catch (err) {
-      console.error('Error deleting menu:', err);
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de supprimer le menu: ' + err.message,
-        variant: 'destructive',
-      });
-      return false;
-    }
-  }, [userId, menuId, fetchUserWeeklyMenu, toast]);
+        if (error) throw error;
+        if (id === menuId) {
+          await fetchWeeklyMenu(null);
+        }
+        toast({ title: 'Menu supprimé' });
+        return true;
+      } catch (err) {
+        console.error('Error deleting menu:', err);
+        toast({
+          title: 'Erreur',
+          description: 'Impossible de supprimer le menu: ' + err.message,
+          variant: 'destructive',
+        });
+        return false;
+      }
+    },
+    [userId, menuId, fetchWeeklyMenu, toast]
+  );
 
   return {
     weeklyMenu,
