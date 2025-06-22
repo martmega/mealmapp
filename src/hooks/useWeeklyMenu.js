@@ -75,7 +75,7 @@ export function useWeeklyMenu(session, currentMenuId = null) {
         setLoading(false);
       }
     },
-    [userId, toast, safeSetWeeklyMenu]
+    [userId, toast, safeSetWeeklyMenu, menuId]
   );
 
   useEffect(() => {
