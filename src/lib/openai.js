@@ -31,7 +31,11 @@ export const estimateRecipePrice = async (
       'x-subscription-tier': subscriptionTier,
     };
     const token = session?.access_token ?? session;
-    if (token) headers.Authorization = `Bearer ${token}`;
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    } else {
+      console.error('Missing access token for /api/estimate-cost request');
+    }
 
     const response = await fetch('/api/estimate-cost', {
       method: 'POST',
