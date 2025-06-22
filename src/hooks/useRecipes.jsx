@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast.js';
 import { ToastAction } from '@/components/ui/toast.jsx';
 import { estimateRecipePrice } from '@/lib/openai';
+
+const supabase = getSupabase();
 
 export function useRecipes(session, subscriptionTier) {
   const [recipes, setRecipes] = useState([]);

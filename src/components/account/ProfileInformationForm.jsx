@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, UserCircle } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+
+const supabase = getSupabase();
 
 const DEFAULT_AVATAR_URL = 'https://placehold.co/100x100?text=Avatar';
 

@@ -1,4 +1,6 @@
-import { supabase } from './supabase';
+import { getSupabase } from './supabase';
+
+const supabase = getSupabase();
 
 export async function acceptFriendRequest(relationshipId, userId) {
   const { error } = await supabase

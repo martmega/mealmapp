@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { X } from 'lucide-react';
 import SignUpForm from '@/components/SignUpForm';
+
+const supabase = getSupabase();
 
 export default function Auth({ onClose }) {
   const [loading, setLoading] = useState(false);

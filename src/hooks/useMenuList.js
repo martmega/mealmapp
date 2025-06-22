@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
+
+const supabase = getSupabase();
 
 export function useMenuList(session) {
   const [menus, setMenus] = useState([]);

@@ -3,8 +3,10 @@ import { Button } from '@/components/ui/button';
 import { X, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/components/ui/use-toast';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import useSessionRequired from '@/hooks/useSessionRequired';
+
+const supabase = getSupabase();
 
 function TagManager({
   onClose,

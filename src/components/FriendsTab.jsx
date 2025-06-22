@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import { acceptFriendRequest } from '@/lib/friends';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -23,6 +23,8 @@ import {
   DialogTrigger,
   DialogClose,
 } from '@/components/ui/dialog.jsx';
+
+const supabase = getSupabase();
 
 export default function FriendsTab({ session, userProfile, onRequestsChange }) {
   const { toast } = useToast();
