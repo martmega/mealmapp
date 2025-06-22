@@ -15,6 +15,7 @@ import {
   Sun,
   Star,
   Utensils,
+  List,
   Users,
 } from 'lucide-react';
 
@@ -100,6 +101,12 @@ export default function MainAppLayout({
                   label: 'Recettes',
                   icon: PlusCircle,
                   path: '/app/recipes',
+                },
+                {
+                  id: 'menus',
+                  label: 'Mes menus',
+                  icon: List,
+                  path: '/app/menus',
                 },
                 {
                   id: 'menu',
