@@ -159,11 +159,7 @@ function App() {
           recipes={recipes}
           recipesLoading={recipesLoading}
           weeklyMenu={weeklyMenu}
-          menuName={menuName}
           weeklyMenuLoading={weeklyMenuLoading}
-          saveUserWeeklyMenuHook={saveUserWeeklyMenuHook}
-          updateMenuName={updateMenuName}
-          deleteMenu={deleteWeeklyMenu}
           showRecipeForm={showRecipeForm}
           editingRecipe={editingRecipe}
           openRecipeFormForAdd={openRecipeForm}

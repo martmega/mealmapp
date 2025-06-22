@@ -20,7 +20,6 @@ export default function AppRoutes({
   recipes,
   recipesLoading,
   weeklyMenu,
-  menuName,
   weeklyMenuLoading,
   showRecipeForm,
   editingRecipe,
@@ -29,13 +28,10 @@ export default function AppRoutes({
   handleAddRecipeSubmit,
   handleEditRecipeSubmit,
   deleteRecipeHook,
-  saveUserWeeklyMenuHook,
   setEditingRecipe,
   setSelectedRecipeForDetail,
   handleProfileUpdated,
   refreshPendingFriendRequests,
-  updateMenuName,
-  deleteMenu,
 }) {
   const recipePageTitle = useMemo(() => {
     if (
@@ -115,20 +111,11 @@ export default function AppRoutes({
       <Route
         path="/app/menu"
         element={
-          session &&
-          (recipesLoading || weeklyMenuLoading) &&
-          isMenuDataEmpty(weeklyMenu) ? (
-            <LoadingScreen message="Chargement du menu..." />
-          ) : session ? (
+          session ? (
             <MenuPage
               session={session}
               userProfile={userProfile}
               recipes={recipes}
-              weeklyMenu={weeklyMenu}
-              setWeeklyMenu={saveUserWeeklyMenuHook}
-              menuName={menuName}
-              updateMenuName={updateMenuName}
-              deleteMenu={deleteMenu}
             />
           ) : (
             <Navigate to="/app/recipes" replace />
