@@ -32,7 +32,11 @@ export default function MenuTabs({
           <TabsTrigger
             key={menu.id}
             value={menu.id}
-            className="relative group whitespace-nowrap border border-pastel-primary-light rounded-md px-3 py-1 text-sm data-[state=active]:bg-pastel-primary data-[state=active]:text-white data-[state=active]:font-bold"
+            className={`relative group whitespace-nowrap rounded-md px-3 py-1 text-sm transition-all ${
+              activeMenuId === menu.id
+                ? 'bg-pastel-primary text-white font-semibold shadow-none'
+                : 'border border-pastel-primary text-pastel-primary hover:bg-pastel-primary/10'
+            }`}
           >
             {menu.name || 'Menu'}
             {menu.user_id === currentUserId && (
