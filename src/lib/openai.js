@@ -5,7 +5,7 @@ export const generateRecipe = async (prompt, subscriptionTier = 'standard') => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
         'x-subscription-tier': subscriptionTier,
       },
       body: JSON.stringify({ prompt }),
