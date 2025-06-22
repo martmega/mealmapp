@@ -86,4 +86,13 @@ describe('MenuTabs', () => {
       screen.queryByRole('tab', { name: 'Menu Renommé' })
     ).not.toBeInTheDocument();
   });
+
+  it('affiche un message et un bouton quand la liste est vide', () => {
+    render(<MenuTabs menus={[]} onCreate={() => {}} />);
+
+    expect(
+      screen.getByText('Aucun menu disponible pour le moment')
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Créer un menu' })).toBeInTheDocument();
+  });
 });

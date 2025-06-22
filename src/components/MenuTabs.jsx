@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.jsx';
 import { Pencil, X } from 'lucide-react';
+import NewMenuModal from '@/components/NewMenuModal.jsx';
 
 export default function MenuTabs({
   menus = [],
@@ -9,7 +10,18 @@ export default function MenuTabs({
   currentUserId,
   onRename,
   onDelete,
+  onCreate,
 }) {
+  if (!menus || menus.length === 0) {
+    return (
+      <div className="text-center py-12 px-6 bg-pastel-card rounded-xl shadow-pastel-soft space-y-4">
+        <p className="text-xl text-pastel-muted-foreground">
+          Aucun menu disponible pour le moment
+        </p>
+        <NewMenuModal onCreate={onCreate} />
+      </div>
+    );
+  }
   return (
     <Tabs
       value={activeMenuId || ''}
