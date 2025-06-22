@@ -338,16 +338,16 @@ function RecipeForm({
 
       if (uploadError) throw uploadError;
 
-      const { data: publicUrlData } = supabase.storage
+      const { data: signedUrlData } = await supabase.storage
         .from('recipe-images')
-        .getPublicUrl(data.path);
+        .createSignedUrl(data.path, 3600);
 
       setIsUploadingImage(false);
       toast({
         title: 'Image téléversée',
         description: 'Votre image a été ajoutée à la recette.',
       });
-      return publicUrlData.publicUrl;
+      return signedUrlData.signedUrl;
     } catch (error) {
       console.error('Error uploading image:', error);
       toast({
