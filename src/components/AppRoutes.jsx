@@ -20,6 +20,7 @@ export default function AppRoutes({
   recipes,
   recipesLoading,
   weeklyMenu,
+  menuName,
   weeklyMenuLoading,
   showRecipeForm,
   editingRecipe,
@@ -33,6 +34,7 @@ export default function AppRoutes({
   setSelectedRecipeForDetail,
   handleProfileUpdated,
   refreshPendingFriendRequests,
+  updateMenuName,
 }) {
   const recipePageTitle = useMemo(() => {
     if (
@@ -123,6 +125,8 @@ export default function AppRoutes({
               recipes={recipes}
               weeklyMenu={weeklyMenu}
               setWeeklyMenu={saveUserWeeklyMenuHook}
+              menuName={menuName}
+              updateMenuName={updateMenuName}
             />
           ) : (
             <Navigate to="/app/recipes" replace />
