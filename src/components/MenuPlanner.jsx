@@ -4,7 +4,6 @@ import { RotateCw } from 'lucide-react';
 import MenuPreferencesModal from '@/components/menu_planner/MenuPreferencesModal.jsx';
 import WeeklyMenuView from '@/components/menu_planner/WeeklyMenuView.jsx';
 import { useMenuGeneration } from '@/hooks/useMenuGeneration.js';
-import { useLinkedUsers } from '@/hooks/useLinkedUsers.js';
 import { initialWeeklyMenuState } from '@/lib/menu';
 import {
   Dialog,
@@ -69,11 +68,6 @@ function MenuPlanner({
       weeklyBudget: 35,
       tagPreferences: [],
       servingsPerMeal: 4,
-      commonMenuSettings: {
-        enabled: false,
-        linkedUsers: [],
-        linkedUserRecipes: [],
-      },
     };
 
     const profilePrefs = userProfile?.preferences || {};
@@ -89,10 +83,6 @@ function MenuPlanner({
         initialPrefs = {
           ...initialPrefs,
           ...savedPrefs,
-          commonMenuSettings: {
-            ...initialPrefs.commonMenuSettings,
-            ...(savedPrefs.commonMenuSettings || {}),
-          },
         };
       } catch (e) {
         console.error('Error parsing saved menu preferences', e);
@@ -102,13 +92,6 @@ function MenuPlanner({
     if (initialPrefs.tolerance !== undefined) {
       delete initialPrefs.tolerance;
     }
-
-    initialPrefs.commonMenuSettings = {
-      ...defaultPreferences.commonMenuSettings,
-      ...(profilePrefs.commonMenuSettings || {}),
-      ...(initialPrefs.commonMenuSettings || {}),
-      linkedUserRecipes: [],
-    };
 
     return initialPrefs;
   });
@@ -140,11 +123,6 @@ function MenuPlanner({
     userProfile
   );
 
-  const linkedUserProps = useLinkedUsers(
-    userProfile,
-    preferences,
-    setPreferences
-  );
 
   const handleGenerateMenu = useCallback(() => {
     generateMenu();
@@ -163,7 +141,6 @@ function MenuPlanner({
             preferences={preferences}
             setPreferences={setPreferences}
             availableTags={availableTags}
-            linkedUserProps={linkedUserProps}
           />
           <Button
             onClick={handleGenerateMenu}

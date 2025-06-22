@@ -20,17 +20,7 @@ function MenuPreferencesModal({
   preferences,
   setPreferences,
   availableTags,
-  linkedUserProps,
 }) {
-  const {
-    newLinkedUserTag,
-    setNewLinkedUserTag,
-    isLinkingUser,
-    handleAddLinkedUser,
-    handleToggleCommonMenu,
-    handleLinkedUserRatioChange,
-    handleRemoveLinkedUser,
-  } = linkedUserProps;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -55,13 +45,6 @@ function MenuPreferencesModal({
             preferences={preferences}
             setPreferences={setPreferences}
             availableTags={availableTags}
-            newLinkedUserTag={newLinkedUserTag}
-            setNewLinkedUserTag={setNewLinkedUserTag}
-            isLinkingUser={isLinkingUser}
-            handleAddLinkedUser={handleAddLinkedUser}
-            handleToggleCommonMenu={handleToggleCommonMenu}
-            handleLinkedUserRatioChange={handleLinkedUserRatioChange}
-            handleRemoveLinkedUser={handleRemoveLinkedUser}
           />
         </ScrollArea>
         <DialogFooter>
