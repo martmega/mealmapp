@@ -28,7 +28,7 @@ export function useFriendsList(session) {
         return;
       }
       const { data: users } = await supabase
-        .from('public_users')
+        .from('public_user_view')
         .select('id, username')
         .in('id', ids);
       setFriends(users || []);

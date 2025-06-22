@@ -21,7 +21,7 @@ export default function Auth({ onClose }) {
     try {
       if (!isEmail(emailOrUsername)) {
         const { data: userData, error: userError } = await supabase
-          .from('public_users')
+          .from('public_user_view')
           .select('email')
           .eq('username', emailOrUsername)
           .single();

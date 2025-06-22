@@ -51,7 +51,7 @@ export function useRecipes(session, subscriptionTier) {
 
         const userIds = [...new Set(data.map((r) => r.user_id))];
         const { data: users } = await supabase
-          .from('public_users')
+          .from('public_user_view')
           .select('id, username, avatar_url, bio, subscription_tier')
           .in('id', userIds);
 
@@ -188,7 +188,7 @@ export function useRecipes(session, subscriptionTier) {
         }
 
         const { data: user } = await supabase
-          .from('public_users')
+          .from('public_user_view')
           .select('id, username, avatar_url, bio, subscription_tier')
           .eq('id', newRecipeResult.user_id)
           .single();
@@ -284,7 +284,7 @@ export function useRecipes(session, subscriptionTier) {
         }
 
         const { data: user } = await supabase
-          .from('public_users')
+          .from('public_user_view')
           .select('id, username, avatar_url, bio, subscription_tier')
           .eq('id', updatedRecipeResult.user_id)
           .single();

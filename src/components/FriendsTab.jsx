@@ -63,7 +63,7 @@ export default function FriendsTab({ session, userProfile, onRequestsChange }) {
         ),
       ];
       const { data: users } = await supabase
-        .from('public_users')
+        .from('public_user_view')
         .select('id, username, avatar_url, subscription_tier')
         .in('id', userIds);
       const usersById = Object.fromEntries((users || []).map((u) => [u.id, u]));
