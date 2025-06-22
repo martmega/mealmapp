@@ -3,16 +3,12 @@ import { Button } from '@/components/ui/button.jsx';
 import { Input } from '@/components/ui/input.jsx';
 import { Label } from '@/components/ui/label.jsx';
 import { Switch } from '@/components/ui/switch.jsx';
-import { Slider } from '@/components/ui/slider.jsx';
 import {
   Plus,
   ChevronDown,
   ChevronUp,
   Trash2,
   Users,
-  Link,
-  Unlink,
-  Info,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import {
@@ -26,20 +22,8 @@ import {
 } from '@/components/ui/dialog.jsx';
 import MealTypeSelector from '@/components/MealTypeSelector';
 import TagPreferencesForm from '@/components/menu_planner/TagPreferencesForm.jsx';
-import CommonMenuSettings from '@/components/menu_planner/CommonMenuSettings.jsx';
 
-function MenuPreferencesPanel({
-  preferences,
-  setPreferences,
-  availableTags,
-  newLinkedUserTag,
-  setNewLinkedUserTag,
-  isLinkingUser,
-  handleAddLinkedUser,
-  handleToggleCommonMenu,
-  handleLinkedUserRatioChange,
-  handleRemoveLinkedUser,
-}) {
+function MenuPreferencesPanel({ preferences, setPreferences, availableTags }) {
   const addMeal = () => {
     const newMealNumber = (preferences.meals?.length || 0) + 1;
     setPreferences({
@@ -183,16 +167,7 @@ function MenuPreferencesPanel({
         </div>
       </div>
 
-      <CommonMenuSettings
-        preferences={preferences}
-        newLinkedUserTag={newLinkedUserTag}
-        setNewLinkedUserTag={setNewLinkedUserTag}
-        isLinkingUser={isLinkingUser}
-        handleAddLinkedUser={handleAddLinkedUser}
-        handleToggleCommonMenu={handleToggleCommonMenu}
-        handleLinkedUserRatioChange={handleLinkedUserRatioChange}
-        handleRemoveLinkedUser={handleRemoveLinkedUser}
-      />
+
 
       <div className="space-y-4 pt-4 border-t border-pastel-border/70">
         <div className="flex justify-between items-center">

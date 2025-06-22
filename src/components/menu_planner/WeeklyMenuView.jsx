@@ -92,17 +92,7 @@ function WeeklyMenuView({
       ? mealPreference.types
       : [];
 
-    let recipesToFilter = [...safeRecipes];
-    if (
-      preferences.commonMenuSettings.enabled &&
-      Array.isArray(preferences.commonMenuSettings.linkedUserRecipes) &&
-      preferences.commonMenuSettings.linkedUserRecipes.length > 0
-    ) {
-      recipesToFilter = [
-        ...recipesToFilter,
-        ...preferences.commonMenuSettings.linkedUserRecipes,
-      ];
-    }
+    const recipesToFilter = [...safeRecipes];
 
     const uniqueRecipeMap = new Map();
     recipesToFilter.forEach((r) => {
@@ -128,7 +118,6 @@ function WeeklyMenuView({
     recipeToReplaceInfo,
     searchTermModal,
     preferences.meals,
-    preferences.commonMenuSettings,
   ]);
 
   const totalMenuCost = useMemo(

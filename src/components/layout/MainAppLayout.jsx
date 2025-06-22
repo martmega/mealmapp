@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import {
   PlusCircle,
   Calendar,
+  ClipboardList,
   ShoppingCart,
   LogOut,
   LogIn,
@@ -100,6 +101,12 @@ export default function MainAppLayout({
                   label: 'Recettes',
                   icon: PlusCircle,
                   path: '/app/recipes',
+                },
+                {
+                  id: 'menus',
+                  label: 'Mes Menus',
+                  icon: ClipboardList,
+                  path: '/app/menus',
                 },
                 {
                   id: 'menu',
