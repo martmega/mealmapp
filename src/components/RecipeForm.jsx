@@ -590,7 +590,7 @@ function RecipeForm({
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${session.access_token}`,
-          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
           'x-subscription-tier': subscriptionTier,
         },
         body: JSON.stringify({
