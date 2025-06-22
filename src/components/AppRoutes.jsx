@@ -6,6 +6,7 @@ import ContactPage from '@/pages/legal/ContactPage';
 import RecipeForm from '@/components/RecipeForm';
 import RecipeList from '@/components/RecipeList';
 import MenuPage from '@/pages/MenuPage.jsx';
+import MenusPage from '@/pages/MenusPage.jsx';
 import ShoppingList from '@/components/ShoppingList';
 import AccountPage from '@/components/AccountPage';
 import CommunityPage from '@/pages/CommunityPage';
@@ -111,6 +112,10 @@ export default function AppRoutes({
             )}
           </div>
         }
+      />
+      <Route
+        path="/app/menus"
+        element={<MenusPage session={session} />}
       />
       <Route
         path="/app/menu"
