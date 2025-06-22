@@ -11,6 +11,7 @@ import MainAppLayout from '@/components/layout/MainAppLayout';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import { useRecipes } from '@/hooks/useRecipes.jsx';
 import { useWeeklyMenu } from '@/hooks/useWeeklyMenu.js';
+import { useMenus } from '@/hooks/useMenus.js';
 import { useSession } from '@/hooks/useSession.js';
 import { useUserProfile } from '@/hooks/useUserProfile.js';
 import { usePendingFriendRequests } from '@/hooks/usePendingFriendRequests.js';
@@ -57,10 +58,17 @@ function App() {
   } = useRecipes(session, userProfile?.subscription_tier);
 
   const {
+    menus,
+    activeMenuId,
+    setActiveMenuId,
+    createMenu,
+  } = useMenus();
+
+  const {
     weeklyMenu,
     setWeeklyMenu: saveUserWeeklyMenuHook,
     loading: weeklyMenuLoading,
-  } = useWeeklyMenu(session);
+  } = useWeeklyMenu(session, activeMenuId);
 
   const { pendingCount, refreshPendingFriendRequests } =
     usePendingFriendRequests(session);
@@ -70,7 +78,7 @@ function App() {
 
   useEffect(() => {
     const currentPathTab = location.pathname.split('/app/')[1]?.split('/')[0];
-    const validTabs = ['recipes', 'menus', 'menu', 'shopping', 'community', 'account'];
+    const validTabs = ['recipes', 'menu', 'shopping', 'community', 'account'];
     if (validTabs.includes(currentPathTab)) {
       if (activeTab !== currentPathTab) {
         setActiveTab(currentPathTab);
@@ -155,8 +163,13 @@ function App() {
           userProfile={userProfile}
           recipes={recipes}
           recipesLoading={recipesLoading}
+          menus={menus}
+          activeMenuId={activeMenuId}
+          setActiveMenuId={setActiveMenuId}
+          createMenu={createMenu}
           weeklyMenu={weeklyMenu}
           weeklyMenuLoading={weeklyMenuLoading}
+          saveUserWeeklyMenuHook={saveUserWeeklyMenuHook}
           showRecipeForm={showRecipeForm}
           editingRecipe={editingRecipe}
           openRecipeFormForAdd={openRecipeForm}
@@ -164,7 +177,6 @@ function App() {
           handleAddRecipeSubmit={handleAddRecipeSubmit}
           handleEditRecipeSubmit={handleEditRecipeSubmit}
           deleteRecipeHook={deleteRecipeHook}
-          saveUserWeeklyMenuHook={saveUserWeeklyMenuHook}
           setEditingRecipe={setEditingRecipe}
           setSelectedRecipeForDetail={setSelectedRecipeForDetail}
           handleProfileUpdated={handleProfileUpdated}

@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
 import { initialWeeklyMenuState } from '@/lib/menu';
 
-export function useWeeklyMenu(session) {
+export function useWeeklyMenu(session, menuId) {
   const [weeklyMenu, setWeeklyMenu] = useState(initialWeeklyMenuState());
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -30,7 +30,7 @@ export function useWeeklyMenu(session) {
 
   useEffect(() => {
     const loadLocalMenu = () => {
-      const saved = localStorage.getItem('localWeeklyMenu');
+      const saved = localStorage.getItem(`localWeeklyMenu-${menuId}`);
       try {
         const parsed = saved ? JSON.parse(saved) : null;
         safeSetWeeklyMenu(parsed);
@@ -39,6 +39,11 @@ export function useWeeklyMenu(session) {
       }
       setLoading(false);
     };
+
+    if (!menuId) {
+      safeSetWeeklyMenu(null);
+      return;
+    }
 
     if (!session?.user?.id) {
       loadLocalMenu();
@@ -50,8 +55,9 @@ export function useWeeklyMenu(session) {
       try {
         const { data, error } = await supabase
           .from('weekly_menus')
-          .select('id, user_id, menu_data, created_at, updated_at')
+          .select('id, user_id, menu_id, menu_data, created_at, updated_at')
           .eq('user_id', session.user.id)
+          .eq('menu_id', menuId)
           .maybeSingle();
 
         if (error && error.code !== 'PGRST116') {
@@ -74,13 +80,14 @@ export function useWeeklyMenu(session) {
     };
 
     fetchUserWeeklyMenu();
-  }, [session, toast, safeSetWeeklyMenu]);
+  }, [session, menuId, toast, safeSetWeeklyMenu]);
 
   useEffect(() => {
+    if (!menuId) return;
     if (!session?.user?.id) {
-      localStorage.setItem('localWeeklyMenu', JSON.stringify(weeklyMenu));
+      localStorage.setItem(`localWeeklyMenu-${menuId}`, JSON.stringify(weeklyMenu));
     }
-  }, [weeklyMenu, session]);
+  }, [weeklyMenu, session, menuId]);
 
   const saveWeeklyMenuToSupabase = async (newMenu) => {
     const validatedMenu =
@@ -108,6 +115,7 @@ export function useWeeklyMenu(session) {
           .from('weekly_menus')
           .select('id')
           .eq('user_id', session.user.id)
+          .eq('menu_id', menuId)
           .maybeSingle();
 
         if (fetchError && fetchError.code !== 'PGRST116') {
@@ -116,6 +124,7 @@ export function useWeeklyMenu(session) {
 
         const upsertData = {
           user_id: session.user.id,
+          menu_id: menuId,
           menu_data: validatedMenu,
         };
 
@@ -125,8 +134,8 @@ export function useWeeklyMenu(session) {
 
         const { error: upsertError } = await supabase
           .from('weekly_menus')
-          .upsert(upsertData, { onConflict: 'user_id' })
-          .select('id, user_id, menu_data, created_at, updated_at');
+          .upsert(upsertData, { onConflict: 'user_id,menu_id' })
+          .select('id, user_id, menu_id, menu_data, created_at, updated_at');
 
         if (upsertError) throw upsertError;
         toast({
