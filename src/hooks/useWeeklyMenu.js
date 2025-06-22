@@ -3,6 +3,13 @@ import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
 import { initialWeeklyMenuState } from '@/lib/menu';
 
+function isValidUUID(value) {
+  return (
+    typeof value === 'string' &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)
+  );
+}
+
 export function useWeeklyMenu(session, menuId) {
   const [weeklyMenu, setWeeklyMenu] = useState(initialWeeklyMenuState());
   const [loading, setLoading] = useState(false);
@@ -45,7 +52,7 @@ export function useWeeklyMenu(session, menuId) {
       return;
     }
 
-    if (!session?.user?.id) {
+    if (!session?.user?.id || !isValidUUID(menuId)) {
       loadLocalMenu();
       return;
     }
@@ -84,8 +91,11 @@ export function useWeeklyMenu(session, menuId) {
 
   useEffect(() => {
     if (!menuId) return;
-    if (!session?.user?.id) {
-      localStorage.setItem(`localWeeklyMenu-${menuId}`, JSON.stringify(weeklyMenu));
+    if (!session?.user?.id || !isValidUUID(menuId)) {
+      localStorage.setItem(
+        `localWeeklyMenu-${menuId}`,
+        JSON.stringify(weeklyMenu)
+      );
     }
   }, [weeklyMenu, session, menuId]);
 
@@ -108,7 +118,7 @@ export function useWeeklyMenu(session, menuId) {
 
     setWeeklyMenu(validatedMenu);
 
-    if (session?.user?.id) {
+    if (session?.user?.id && isValidUUID(menuId)) {
       setLoading(true);
       try {
         const { data: existingMenu, error: fetchError } = await supabase
@@ -152,6 +162,8 @@ export function useWeeklyMenu(session, menuId) {
       } finally {
         setLoading(false);
       }
+    } else {
+      localStorage.setItem(`localWeeklyMenu-${menuId}`, JSON.stringify(validatedMenu));
     }
   };
 
