@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, Loader2, UserCircle } from 'lucide-react';
+import SignedImage from '@/components/SignedImage';
+import { DEFAULT_AVATAR_URL } from '@/lib/images';
 import { Link } from 'react-router-dom';
 import { useUserSearch } from '@/hooks/useUserSearch';
 
@@ -38,7 +40,13 @@ export default function UserSearch({ session }) {
               <li key={user.id} className="flex items-center justify-between p-3 bg-pastel-card-alt rounded-lg shadow-sm">
                 <div className="flex items-center gap-3">
                   {user.avatar_url ? (
-                    <img src={user.avatar_url} alt={`Avatar de ${user.username}`} className="w-10 h-10 rounded-full object-cover border border-pastel-border" />
+                    <SignedImage
+                      bucket="avatars"
+                      path={user.avatar_url}
+                      alt={`Avatar de ${user.username}`}
+                      fallback={DEFAULT_AVATAR_URL}
+                      className="w-10 h-10 rounded-full object-cover border border-pastel-border"
+                    />
                   ) : (
                     <UserCircle className="w-10 h-10 text-pastel-muted-foreground" />
                   )}

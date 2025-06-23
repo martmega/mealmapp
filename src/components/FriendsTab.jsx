@@ -13,6 +13,8 @@ import {
   UserCircle,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import SignedImage from '@/components/SignedImage';
+import { DEFAULT_AVATAR_URL } from '@/lib/images';
 import {
   Dialog,
   DialogContent,
@@ -207,9 +209,11 @@ export default function FriendsTab({ session, userProfile, onRequestsChange }) {
                   className="flex items-center gap-3 hover:opacity-80 transition-opacity"
                 >
                   {req.avatar_url ? (
-                    <img
-                      src={req.avatar_url}
+                    <SignedImage
+                      bucket="avatars"
+                      path={req.avatar_url}
                       alt={req.username}
+                      fallback={DEFAULT_AVATAR_URL}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
@@ -270,9 +274,11 @@ export default function FriendsTab({ session, userProfile, onRequestsChange }) {
                   className="flex items-center gap-3 hover:opacity-80 transition-opacity"
                 >
                   {req.avatar_url ? (
-                    <img
-                      src={req.avatar_url}
+                    <SignedImage
+                      bucket="avatars"
+                      path={req.avatar_url}
                       alt={req.username}
+                      fallback={DEFAULT_AVATAR_URL}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
@@ -306,9 +312,11 @@ export default function FriendsTab({ session, userProfile, onRequestsChange }) {
                   className="flex items-center gap-3 hover:opacity-80 transition-opacity"
                 >
                   {friend.avatar_url ? (
-                    <img
-                      src={friend.avatar_url}
+                    <SignedImage
+                      bucket="avatars"
+                      path={friend.avatar_url}
                       alt={friend.username}
+                      fallback={DEFAULT_AVATAR_URL}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (

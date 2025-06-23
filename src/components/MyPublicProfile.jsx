@@ -3,6 +3,8 @@ import { getSupabase } from '@/lib/supabase';
 import RecipeList from '@/components/RecipeList';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import { UserCircle, ShieldCheck } from 'lucide-react';
+import SignedImage from '@/components/SignedImage';
+import { DEFAULT_AVATAR_URL } from '@/lib/images';
 import { useToast } from '@/components/ui/use-toast';
 import RecipeDetailModal from '@/components/RecipeDetailModal';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -136,9 +138,11 @@ export default function MyPublicProfile({
         <div className="bg-pastel-card p-6 sm:p-8 rounded-xl shadow-pastel-soft">
           <div className="flex flex-col sm:flex-row items-center sm:items-center gap-6 mb-8">
             {profileData.avatar_url ? (
-              <img
-                src={profileData.avatar_url}
+              <SignedImage
+                bucket="avatars"
+                path={profileData.avatar_url}
                 alt={`Avatar de ${profileData.username}`}
+                fallback={DEFAULT_AVATAR_URL}
                 className="w-32 h-32 rounded-full object-cover border-4 border-pastel-primary shadow-lg"
               />
             ) : (
