@@ -8,10 +8,9 @@ import { loadStripe } from '@stripe/stripe-js';
 
 const supabase = getSupabase();
 
-const STRIPE_PUBLISHABLE_KEY =
-  'pk_test_51RM7DtGEb36fLGJ0lbRvJ0HCxgKaCzj5iVnWXOSQvengGlpSFHKBEOmb2fYQEPUE0FuwOYZDndSj7IVRy3rijOmi00sJXXZ4sG';
-const STANDARD_PRICE_ID = 'price_1RM8x4GEb36fLGJ0Ujde7SpN';
-const PREMIUM_PRICE_ID = 'price_1RM8xWGEb36fLGJ04nw7meVK';
+const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+const STANDARD_PRICE_ID = import.meta.env.VITE_STANDARD_PRICE_ID;
+const PREMIUM_PRICE_ID = import.meta.env.VITE_PREMIUM_PRICE_ID;
 
 let stripePromise;
 const getStripe = () => {
