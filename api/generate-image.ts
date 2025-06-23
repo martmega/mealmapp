@@ -1,6 +1,7 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import OpenAI from 'openai';
 import { getUserFromRequest } from '../src/utils/auth.js';
+import generateRecipeImagePrompt from '../src/lib/recipeImagePrompt.js';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
@@ -80,7 +81,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const openai = new OpenAI({ apiKey });
-    const prompt = `Photographie culinaire professionnelle de ${recipe.name} pr\u00e9par\u00e9 avec ${recipe.ingredients?.map((i:any)=>`${i.quantity||''} ${i.unit||''} ${i.name}`).join(', ')}.`;
+    const prompt = generateRecipeImagePrompt(recipe);
     const response = await openai.images.generate({
       model: 'dall-e-3',
       prompt,
