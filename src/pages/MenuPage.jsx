@@ -6,6 +6,9 @@ import { initialWeeklyMenuState } from '@/lib/menu';
 import { useMenus } from '@/hooks/useMenus.js';
 import { useWeeklyMenu } from '@/hooks/useWeeklyMenu.js';
 import { useFriendsList } from '@/hooks/useFriendsList.js';
+import { useMenuParticipants } from '@/hooks/useMenuParticipants.js';
+import SignedImage from '@/components/SignedImage';
+import { DEFAULT_AVATAR_URL } from '@/lib/images';
 
 const supabase = getSupabase();
 
@@ -15,8 +18,16 @@ export default function MenuPage({ session, userProfile, recipes }) {
 
   const friends = useFriendsList(session);
 
-  const { weeklyMenu, menuName, setWeeklyMenu, updateMenuName, deleteMenu } =
-    useWeeklyMenu(session, selectedMenuId);
+  const {
+    weeklyMenu,
+    menuName,
+    isShared,
+    setWeeklyMenu,
+    updateMenuName,
+    deleteMenu,
+  } = useWeeklyMenu(session, selectedMenuId);
+
+  const participants = useMenuParticipants(isShared ? selectedMenuId : null);
 
   const handleRename = async (id, name) => {
     await updateMenuName(name, id);
@@ -77,6 +88,29 @@ export default function MenuPage({ session, userProfile, recipes }) {
         onCreate={handleCreate}
         friends={friends}
       />
+      {isShared && participants.length > 0 && (
+        <div className="bg-pastel-card p-4 rounded-lg shadow-pastel-soft flex flex-wrap items-center gap-3">
+          <span className="font-semibold text-pastel-text">Participants :</span>
+          {participants.map((p) => (
+            <div key={p.id} className="flex items-center gap-2">
+              {p.avatar_url ? (
+                <SignedImage
+                  bucket="avatars"
+                  path={p.avatar_url}
+                  alt={p.username}
+                  fallback={DEFAULT_AVATAR_URL}
+                  className="w-8 h-8 rounded-full object-cover border border-pastel-border"
+                />
+              ) : (
+                <span className="w-8 h-8 rounded-full bg-pastel-muted flex items-center justify-center text-xs text-pastel-muted-foreground">
+                  {p.username?.charAt(0) || 'U'}
+                </span>
+              )}
+              <span className="text-sm">{p.username}</span>
+            </div>
+          ))}
+        </div>
+      )}
       <MenuPlanner
         recipes={recipes}
         weeklyMenu={weeklyMenu}
