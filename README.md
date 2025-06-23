@@ -54,3 +54,8 @@ Cette clé ne doit jamais être exposée au client ; n'utilisez donc pas de pr�
 # ENV
 OPENAI_API_KEY=sk-...
 
+
+## Prompt templates
+
+Des exemples de prompts pour générer des images de recettes sont disponibles dans [prompt-templates.md](prompt-templates.md).
+
