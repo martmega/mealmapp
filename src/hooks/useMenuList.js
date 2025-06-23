@@ -16,7 +16,7 @@ export function useMenuList(session) {
     try {
       const { data: ownerMenus, error: ownerError } = await supabase
         .from('weekly_menus')
-        .select('id, user_id, name, updated_at')
+        .select('id, user_id, name, updated_at, is_shared')
         .eq('user_id', userId)
         .order('created_at');
 
@@ -38,7 +38,7 @@ export function useMenuList(session) {
       if (participantIds.length > 0) {
         const { data, error } = await supabase
           .from('weekly_menus')
-          .select('id, user_id, name, updated_at')
+          .select('id, user_id, name, updated_at, is_shared')
           .in('id', participantIds);
         if (error) throw error;
         participantMenus = data || [];

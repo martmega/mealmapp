@@ -18,6 +18,7 @@ export function useWeeklyMenu(session, currentMenuId = null) {
   const [weeklyMenu, setWeeklyMenu] = useState(initialWeeklyMenuState());
   const [menuName, setMenuName] = useState('Menu de la semaine');
   const [menuId, setMenuId] = useState(currentMenuId);
+  const [isShared, setIsShared] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const userId = session?.user?.id;
@@ -33,6 +34,7 @@ export function useWeeklyMenu(session, currentMenuId = null) {
       data.every((day) => Array.isArray(day))
     ) {
       setWeeklyMenu(data);
+      setIsShared(false);
     } else if (
       data &&
       typeof data === 'object' &&
@@ -43,8 +45,10 @@ export function useWeeklyMenu(session, currentMenuId = null) {
       setWeeklyMenu(data.menu_data);
       if (data.name) setMenuName(data.name);
       if (data.id) setMenuId(data.id);
+      if (typeof data.is_shared === 'boolean') setIsShared(data.is_shared);
     } else {
       setWeeklyMenu(initialWeeklyMenuState());
+      setIsShared(false);
     }
   }, []);
 
@@ -55,7 +59,9 @@ export function useWeeklyMenu(session, currentMenuId = null) {
       try {
         const { data, error } = await supabase
           .from('weekly_menus')
-          .select('id, user_id, name, menu_data, created_at, updated_at')
+          .select(
+            'id, user_id, name, menu_data, is_shared, created_at, updated_at'
+          )
           .eq(id ? 'id' : 'user_id', id || userId)
           .maybeSingle();
 
@@ -147,7 +153,9 @@ export function useWeeklyMenu(session, currentMenuId = null) {
         const { data: upserted, error: upsertError } = await supabase
           .from('weekly_menus')
           .upsert(upsertData)
-          .select('id, user_id, name, menu_data, created_at, updated_at')
+          .select(
+            'id, user_id, name, menu_data, is_shared, created_at, updated_at'
+          )
           .single();
 
         if (upsertError) throw upsertError;
@@ -232,6 +240,7 @@ export function useWeeklyMenu(session, currentMenuId = null) {
   return {
     weeklyMenu,
     menuName,
+    isShared,
     setWeeklyMenu: saveWeeklyMenuToSupabase,
     updateMenuName: updateWeeklyMenuName,
     deleteMenu: deleteWeeklyMenu,

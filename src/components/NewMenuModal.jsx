@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger, DialogClose } from '@/components/ui/dialog.jsx';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+  DialogClose,
+} from '@/components/ui/dialog.jsx';
 import { Button } from '@/components/ui/button.jsx';
 import { Input } from '@/components/ui/input.jsx';
 import { Checkbox } from '@/components/ui/Checkbox.jsx';
@@ -29,7 +37,10 @@ function NewMenuModal({ onCreate, friends = [], trigger }) {
       <DialogTrigger asChild>
         {trigger || <Button>Créer un menu</Button>}
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent
+        className="max-w-md"
+        overlayClassName="bg-background/80 backdrop-blur-sm"
+      >
         <DialogHeader>
           <DialogTitle>Nouveau menu</DialogTitle>
         </DialogHeader>
@@ -54,7 +65,9 @@ function NewMenuModal({ onCreate, friends = [], trigger }) {
                   <span>{f.username || f.id}</span>
                 </label>
               ))}
-              {friends.length === 0 && <p className="text-sm">Aucun ami disponible</p>}
+              {friends.length === 0 && (
+                <p className="text-sm">Aucun ami disponible</p>
+              )}
             </div>
           )}
         </div>
