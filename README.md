@@ -62,3 +62,8 @@ OPENAI_API_KEY=sk-...
 
 Des exemples de prompts pour générer des images de recettes sont disponibles dans [prompt-templates.md](prompt-templates.md).
 
+
+## License
+
+This project is released under the [MIT License](LICENSE).
+
