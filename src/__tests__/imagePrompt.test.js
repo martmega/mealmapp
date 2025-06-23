@@ -13,10 +13,10 @@ const recipe = {
 };
 
 describe('generateRecipeImagePrompt', () => {
-  it('builds an english prompt from recipe data', () => {
+  it('builds a french prompt from recipe data', () => {
     const prompt = generateRecipeImagePrompt(recipe);
     expect(prompt).toBe(
-      'A delicious and realistic photo of a home-cooked dish: fried eggs with bacon and grilled cheese. It includes: egg, bacon, bread, cheese. Styled simply on a plate or in a pan. Lighting is natural and appetizing. Do not use a restaurant or gourmet aesthetic. Show the food clearly. No people, no logos, no text. Focus on realistic food presentation, homemade style.'
+      "Photographie d'un plat maison réaliste : Œuf au plat, bacon, grilled cheese. Ingrédients visibles : Œuf, Bacon, Pain de mie, Fromage. Description : Œuf au plat classic avec son bacon et grilled cheese. Style : photo réaliste, plat simple, appétissant et rustique, fond neutre, assiette centrée, lumière naturelle. Éviter toute décoration sophistiquée ou ingrédients absents, ne pas ajouter de poisson s'il n'y en a pas."
     );
   });
 });
