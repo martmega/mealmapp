@@ -52,13 +52,18 @@ export default function MenuTabs({
             )}
           </TabsTrigger>
         ))}
-        <button
-          type="button"
-          onClick={() => onCreate && onCreate()}
-          className="ml-2 px-3 py-1 text-sm border-2 border-dashed border-pastel-primary rounded-md whitespace-nowrap hover:bg-pastel-primary hover:text-white"
-        >
-          + Nouveau menu
-        </button>
+        <NewMenuModal
+          onCreate={onCreate}
+          friends={friends}
+          trigger={
+            <button
+              type="button"
+              className="ml-2 px-3 py-1 text-sm border-2 border-dashed border-pastel-primary rounded-md whitespace-nowrap hover:bg-pastel-primary hover:text-white"
+            >
+              + Nouveau menu
+            </button>
+          }
+        />
       </TabsList>
     </Tabs>
   );
