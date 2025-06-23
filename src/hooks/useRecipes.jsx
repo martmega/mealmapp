@@ -268,13 +268,21 @@ export function useRecipes(session, subscriptionTier) {
         delete payload.user;
         delete payload.public_users;
 
-        console.log('Updating recipe with', {
-          id: recipeId,
-          user_id: session.user.id,
-          data: payload,
-        });
+        console.log(
+          '🧪 Tentative de modification recette : id =',
+          recipeId,
+          'user_id =',
+          session?.user?.id
+        );
 
-        const { data: updatedRecipeResult, error } = await supabase
+        if (!session?.user?.id) {
+          console.error(
+            '❌ Aucun utilisateur connecté lors de l\u2019update de recette'
+          );
+          return false;
+        }
+
+        const { data: updatedRecipeResult, error: updateError } = await supabase
           .from('recipes')
           .update(payload)
           .eq('id', recipeId)
@@ -282,30 +290,44 @@ export function useRecipes(session, subscriptionTier) {
           .select(baseRecipeSelect)
           .maybeSingle();
 
-        if (error) {
+        if (updateError) {
           console.error(
-            'Erreur modification recette (Supabase) :',
-            error.message,
-            error.details,
-            error.hint
+            '❌ Erreur Supabase lors de l\u2019update recette :',
+            updateError.message,
+            updateError.details
           );
-          throw error;
+          return false;
         }
 
         if (!updatedRecipeResult) {
+          console.error(
+            '❌ Aucune ligne mise \u00e0 jour. id =',
+            recipeId,
+            'user_id =',
+            session.user.id
+          );
           toast({
             title: 'Erreur',
-            description: 'Recette introuvable.',
+            description:
+              'Impossible de modifier la recette (aucune correspondance trouv\u00e9e).',
             variant: 'destructive',
           });
           return false;
         }
 
-        const { data: user } = await supabase
-          .from('public_user_view')
-          .select('id, username, avatar_url, bio, subscription_tier')
-          .eq('id', updatedRecipeResult.user_id)
-          .single();
+        let user = null;
+        try {
+          const { data: fetchedUser, error: userError } = await supabase
+            .from('public_user_view')
+            .select('id, username, avatar_url, bio, subscription_tier')
+            .eq('id', updatedRecipeResult.user_id)
+            .single();
+
+          if (userError) throw userError;
+          user = fetchedUser;
+        } catch (err) {
+          console.error('❌ Erreur r\u00e9cup\u00e9ration utilisateur post-update :', err);
+        }
 
         const updatedRecipe = {
           ...updatedRecipeResult,
