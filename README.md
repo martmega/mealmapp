@@ -15,6 +15,7 @@ STRIPE_WEBHOOK_SECRET=<your-stripe-webhook-secret>
 ```
 
 These values are injected by Vite and used by the app at runtime.
+Additional documentation is available in the [docs](docs) directory.
 
 ## Database
 
@@ -60,5 +61,5 @@ OPENAI_API_KEY=sk-...
 
 ## Prompt templates
 
-Des exemples de prompts pour générer des images de recettes sont disponibles dans [prompt-templates.md](prompt-templates.md).
+Des exemples de prompts pour générer des images de recettes sont disponibles dans [prompt-templates.md](docs/prompt-templates.md).
 
