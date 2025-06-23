@@ -34,6 +34,7 @@ function Wrapper() {
       currentUserId="user1"
       onDelete={handleDelete}
       onCreate={handleCreate}
+      friends={[]}
     />
   );
 }
@@ -46,6 +47,7 @@ describe('MenuTabs', () => {
         activeMenuId="1"
         onSelect={() => {}}
         currentUserId="user1"
+        friends={[]}
       />
     );
 
@@ -61,6 +63,7 @@ describe('MenuTabs', () => {
         activeMenuId="1"
         onSelect={onSelect}
         currentUserId="user1"
+        friends={[]}
       />
     );
 
@@ -92,7 +95,7 @@ describe('MenuTabs', () => {
   });
 
   it('affiche un message et un bouton quand la liste est vide', () => {
-    render(<MenuTabs menus={[]} onCreate={() => {}} />);
+    render(<MenuTabs menus={[]} onCreate={() => {}} friends={[]} />);
 
     expect(
       screen.getByText('Aucun menu disponible pour le moment')
