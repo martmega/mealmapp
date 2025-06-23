@@ -18,6 +18,7 @@ STRIPE_PREMIUM_PRICE_ID=<your-premium-price-id>
 ```
 
 These values are injected by Vite and used by the app at runtime.
+Additional documentation is available in the [docs](docs) directory.
 
 `STRIPE_PUBLISHABLE_KEY` is the public key used by the browser to initialize Stripe.
 `STRIPE_STANDARD_PRICE_ID` and `STRIPE_PREMIUM_PRICE_ID` correspond to the price identifiers for your Standard and Premium subscription plans.
@@ -67,7 +68,7 @@ OPENAI_API_KEY=sk-...
 
 ## Prompt templates
 
-Des exemples de prompts pour générer des images de recettes sont disponibles dans [prompt-templates.md](prompt-templates.md).
+Des exemples de prompts pour générer des images de recettes sont disponibles dans [prompt-templates.md](docs/prompt-templates.md).
 
 
 ## License
