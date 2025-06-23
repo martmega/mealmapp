@@ -32,7 +32,7 @@ export default function MenuPage({ session, userProfile, recipes }) {
     }
   };
 
-  const handleCreate = async ({ name, isShared = false, participantIds = [] } = {}) => {
+  const handleCreate = async ({ name, isShared, participantIds } = {}) => {
     const userId = session?.user?.id;
     if (!userId) return;
 
@@ -54,14 +54,12 @@ export default function MenuPage({ session, userProfile, recipes }) {
       return;
     }
 
-    if (isShared && participantIds.length > 0 && data?.id) {
-      const rows = participantIds.map((id) => ({ menu_id: data.id, user_id: id }));
-      const { error: participantsError } = await supabase
-        .from('menu_participants')
-        .insert(rows);
-      if (participantsError) {
-        console.error('Erreur ajout participants:', participantsError);
-      }
+    if (isShared && Array.isArray(participantIds)) {
+      const rows = participantIds.map((userId) => ({
+        menu_id: data.id,
+        user_id: userId,
+      }));
+      await supabase.from('menu_participants').insert(rows);
     }
 
     await refreshMenus();

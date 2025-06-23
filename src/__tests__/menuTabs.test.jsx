@@ -89,6 +89,8 @@ describe('MenuTabs', () => {
     render(<Wrapper />);
     const createBtn = screen.getByRole('button', { name: '+ Nouveau menu' });
     fireEvent.click(createBtn);
+    const confirm = screen.getByRole('button', { name: 'Créer' });
+    fireEvent.click(confirm);
     expect(
       screen.getByRole('tab', { name: 'Menu sans titre' })
     ).toBeInTheDocument();
