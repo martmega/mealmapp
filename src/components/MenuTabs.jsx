@@ -10,6 +10,7 @@ export default function MenuTabs({
   currentUserId,
   onDelete,
   onCreate,
+  friends = [],
 }) {
   if (!menus || menus.length === 0) {
     return (
@@ -17,7 +18,7 @@ export default function MenuTabs({
         <p className="text-xl text-pastel-muted-foreground">
           Aucun menu disponible pour le moment
         </p>
-        <NewMenuModal onCreate={onCreate} />
+        <NewMenuModal onCreate={onCreate} friends={friends} />
       </div>
     );
   }
