@@ -292,6 +292,15 @@ export function useRecipes(session, subscriptionTier) {
           throw error;
         }
 
+        if (!updatedRecipeResult) {
+          toast({
+            title: 'Erreur',
+            description: 'Recette introuvable.',
+            variant: 'destructive',
+          });
+          return false;
+        }
+
         const { data: user } = await supabase
           .from('public_user_view')
           .select('id, username, avatar_url, bio, subscription_tier')
