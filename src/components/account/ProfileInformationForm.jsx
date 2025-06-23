@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { getSupabase } from '@/lib/supabase';
+import { getSignedImageUrl, DEFAULT_AVATAR_URL } from '@/lib/images';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,7 +10,6 @@ import { useToast } from '@/components/ui/use-toast';
 
 const supabase = getSupabase();
 
-const DEFAULT_AVATAR_URL = 'https://placehold.co/100x100?text=Avatar';
 
 export default function ProfileInformationForm({
   session,
@@ -40,7 +40,13 @@ export default function ProfileInformationForm({
       setDesiredTag(userProfile.user_tag || '');
       setBio(userProfile.bio || '');
       setInitialBio(userProfile.bio || '');
-      setAvatarPreview(userProfile.avatar_url || DEFAULT_AVATAR_URL);
+      if (userProfile.avatar_url) {
+        getSignedImageUrl('avatars', userProfile.avatar_url, DEFAULT_AVATAR_URL).then(
+          setAvatarPreview
+        );
+      } else {
+        setAvatarPreview(DEFAULT_AVATAR_URL);
+      }
     }
   }, [userProfile]);
 
@@ -201,10 +207,7 @@ export default function ProfileInformationForm({
 
         if (uploadError) throw uploadError;
 
-        const { data } = await supabase.storage
-          .from('avatars')
-          .createSignedUrl(uploadData.path, 3600);
-        publicUserUpdates.avatar_url = data.signedUrl;
+        publicUserUpdates.avatar_url = uploadData.path;
       }
 
       if (Object.keys(publicUserUpdates).length > 0) {

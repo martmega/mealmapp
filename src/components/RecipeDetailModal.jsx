@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { X, Clock, Users, Tag, ClipboardList, Soup } from 'lucide-react';
 import { MEAL_TYPE_OPTIONS_MAP } from '@/lib/mealTypes';
+import SignedImage from '@/components/SignedImage';
 
 function RecipeDetailModal({ recipe, onClose, userProfile }) {
   const servingsPerMealPreference = useMemo(() => {
@@ -96,10 +97,11 @@ function RecipeDetailModal({ recipe, onClose, userProfile }) {
 
             {recipe.image_url && (
               <div className="aspect-video rounded-lg overflow-hidden border border-pastel-border bg-pastel-muted/50">
-                <img
-                  className="w-full h-full object-cover"
+                <SignedImage
+                  bucket="recipe-images"
+                  path={recipe.image_url}
                   alt={`Image de ${recipe.name}`}
-                  src={recipe.image_url}
+                  className="w-full h-full object-cover"
                 />
               </div>
             )}

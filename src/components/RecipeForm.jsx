@@ -15,6 +15,7 @@ import RecipeIngredientsManager from '@/components/form/RecipeIngredientsManager
 import RecipeInstructionsManager from '@/components/form/RecipeInstructionsManager';
 import RecipeMetaFields from '@/components/form/RecipeMetaFields';
 import { estimateRecipePrice } from '@/lib/openai';
+import { getSignedImageUrl } from '@/lib/images';
 
 const supabase = getSupabase();
 import {
@@ -132,7 +133,11 @@ function RecipeForm({
         descriptionRef.current.value = recipe.description;
       }
       if (recipe.image_url) {
-        setPreviewImage(recipe.image_url);
+        if (recipe.image_url.startsWith('http')) {
+          setPreviewImage(recipe.image_url);
+        } else {
+          getSignedImageUrl('recipe-images', recipe.image_url).then(setPreviewImage);
+        }
       } else {
         setPreviewImage(null);
       }
@@ -162,7 +167,11 @@ function RecipeForm({
               descriptionRef.current.value = parsed.description;
             }
             if (parsed.image_url) {
-              setPreviewImage(parsed.image_url);
+              if (parsed.image_url.startsWith('http')) {
+                setPreviewImage(parsed.image_url);
+              } else {
+                getSignedImageUrl('recipe-images', parsed.image_url).then(setPreviewImage);
+              }
             }
           } else {
             localStorage.removeItem('draft_recipe');
@@ -340,16 +349,12 @@ function RecipeForm({
 
       if (uploadError) throw uploadError;
 
-      const { data: signedUrlData } = await supabase.storage
-        .from('recipe-images')
-        .createSignedUrl(data.path, 3600);
-
       setIsUploadingImage(false);
       toast({
         title: 'Image téléversée',
         description: 'Votre image a été ajoutée à la recette.',
       });
-      return signedUrlData.signedUrl;
+      return data.path;
     } catch (error) {
       console.error('Error uploading image:', error);
       toast({
@@ -475,9 +480,9 @@ function RecipeForm({
 
     let finalImageUrl = formData.image_url;
     if (selectedFile) {
-      const uploadedUrl = await uploadImage();
-      if (uploadedUrl) {
-        finalImageUrl = uploadedUrl;
+      const uploadedPath = await uploadImage();
+      if (uploadedPath) {
+        finalImageUrl = uploadedPath;
       } else if (!finalImageUrl && !recipe?.image_url) {
         toast({
           title: 'Attention',

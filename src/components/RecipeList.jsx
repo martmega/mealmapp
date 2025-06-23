@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Edit2, Trash2, Star, Clock, Eye } from 'lucide-react';
 import { RECIPE_CARD_COLORS_CLASSES } from '@/lib/colors';
+import SignedImage from '@/components/SignedImage';
 
 const MemoizedRecipeCard = React.memo(function RecipeCard({
   recipe,
@@ -29,10 +30,11 @@ const MemoizedRecipeCard = React.memo(function RecipeCard({
     >
       {recipe.image_url && (
         <div className="mb-3 aspect-[16/9] rounded-lg overflow-hidden">
-          <img
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          <SignedImage
+            bucket="recipe-images"
+            path={recipe.image_url}
             alt={`Photo de ${recipe.name}`}
-            src={recipe.image_url}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         </div>
       )}
