@@ -9,9 +9,16 @@ VITE_ACCESS_KEYS=BETA2025
 SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
 STRIPE_SECRET_KEY=<your-stripe-secret-key>
 STRIPE_WEBHOOK_SECRET=<your-stripe-webhook-secret>
+STRIPE_PUBLISHABLE_KEY=<your-stripe-publishable-key>
+STRIPE_STANDARD_PRICE_ID=<your-standard-price-id>
+STRIPE_PREMIUM_PRICE_ID=<your-premium-price-id>
 ```
 
 These values are injected by Vite and used by the app at runtime.
+
+`STRIPE_PUBLISHABLE_KEY` is the public key used by the browser to initialize Stripe.
+`STRIPE_STANDARD_PRICE_ID` and `STRIPE_PREMIUM_PRICE_ID` correspond to the price identifiers for your Standard and Premium subscription plans.
+You can find all three in the Stripe dashboard: the publishable key under **Developers > API keys** and the price IDs on each product's pricing page.
 
 ## Database
 
