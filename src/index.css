@@ -166,6 +166,16 @@
   }
 }
 
+@layer components {
+  .shared-menu {
+    @apply border-pastel-mint text-pastel-mint hover:bg-pastel-mint/10;
+  }
+
+  .shared-menu-active {
+    @apply bg-pastel-salmon text-white border-none font-semibold;
+  }
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;

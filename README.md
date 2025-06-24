@@ -70,6 +70,17 @@ OPENAI_API_KEY=sk-...
 
 Des exemples de prompts pour générer des images de recettes sont disponibles dans [prompt-templates.md](docs/prompt-templates.md).
 
+## Tailwind CSS
+
+Two utility classes help style menus shared with you:
+
+```html
+<div class="shared-menu data-[state=active]:shared-menu-active">...</div>
+```
+
+They apply colors defined by the `pastel-mint` and `pastel-salmon` variables in
+`src/index.css`.
+
 
 ## License
 
