@@ -68,6 +68,7 @@ function App() {
   const {
     weeklyMenu,
     menuName,
+    isShared,
     setWeeklyMenu: saveUserWeeklyMenuHook,
     updateMenuName,
     deleteMenu: deleteWeeklyMenu,
