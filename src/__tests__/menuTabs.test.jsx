@@ -9,6 +9,10 @@ const sampleMenus = [
   { id: '2', user_id: 'user1', name: 'Menu 2' },
 ];
 
+const sharedMenu = [
+  { id: '1', user_id: 'user1', name: 'Menu 1', is_shared: true },
+];
+
 function Wrapper() {
   const [menus, setMenus] = useState(sampleMenus);
   const [activeId, setActiveId] = useState(sampleMenus[0].id);
@@ -105,5 +109,22 @@ describe('MenuTabs', () => {
     expect(
       screen.getByRole('button', { name: 'Créer un menu' })
     ).toBeInTheDocument();
+  });
+
+  it('applique le style partage sur un menu', () => {
+    render(
+      <MenuTabs
+        menus={sharedMenu}
+        activeMenuId="1"
+        onSelect={() => {}}
+        currentUserId="user1"
+        friends={[]}
+      />
+    );
+
+    const tab = screen.getByRole('tab', { name: 'Menu 1' });
+    expect(tab).toHaveClass('border-pastel-mint');
+    expect(tab).toHaveClass('text-pastel-mint');
+    expect(tab).toHaveClass('data-[state=active]:bg-pastel-mint');
   });
 });
