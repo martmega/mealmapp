@@ -11,6 +11,7 @@ import { useToast } from '@/components/ui/use-toast';
 import RecipeDetailModal from '@/components/RecipeDetailModal';
 import FriendActionButton from '@/components/FriendActionButton.jsx';
 import { formatRecipe } from '@/lib/formatRecipe';
+import { mapRelationshipStatus, allowedVisibilities } from '@/lib/relationships';
 
 const supabase = getSupabase();
 
@@ -57,58 +58,37 @@ export default function UserProfilePage({
       let relId = null;
 
       if (session?.user?.id && session.user.id !== userId) {
-        const { data: existing, error: existingError } = await supabase
+        const { data: rel, error: relError } = await supabase
           .from('user_relationships')
-          .select('id, status')
-          .eq('requester_id', session.user.id)
-          .eq('addressee_id', userId)
+          .select('id, requester_id, addressee_id, status')
+          .or(
+            `and(requester_id.eq.${session.user.id},addressee_id.eq.${userId}),and(requester_id.eq.${userId},addressee_id.eq.${session.user.id})`
+          )
+          .limit(1)
           .single();
 
-        if (!existingError && existing?.status === 'pending') {
-          currentRelationshipStatus = 'pending_them';
-          relId = existing.id;
-        } else {
-          const { data: rel, error: relError } = await supabase
-            .from('user_relationships')
-            .select('id, requester_id, addressee_id, status')
-            .or(
-              `(requester_id.eq.${session.user.id},addressee_id.eq.${userId}),(requester_id.eq.${userId},addressee_id.eq.${session.user.id})`
-            )
-            .limit(1)
-            .single();
-
-          if (relError) {
-            console.warn('Error fetching relationship:', relError.message);
-          } else if (rel) {
-            relId = rel.id;
-            if (rel.status === 'accepted') {
-              currentRelationshipStatus = 'friends';
-            } else if (rel.status === 'pending') {
-              currentRelationshipStatus =
-                rel.requester_id === session.user.id
-                  ? 'pending_them'
-                  : 'pending_me';
-            }
-          }
+        if (relError) {
+          console.warn('Error fetching relationship:', relError.message);
+        } else if (rel) {
+          relId = rel.id;
+          currentRelationshipStatus = mapRelationshipStatus(
+            rel,
+            session.user.id
+          );
         }
       }
       setRelationshipStatus(currentRelationshipStatus);
       setRelationshipId(relId);
 
-      if (session?.user?.id === userId) {
-        recipesQuery = recipesQuery.in('visibility', [
-          'public',
-          'private',
-          'friends_only',
-        ]);
-      } else if (currentRelationshipStatus === 'friends') {
-        recipesQuery = recipesQuery.in('visibility', [
-          'public',
-          'friends_only',
-        ]);
-      } else {
-        recipesQuery = recipesQuery.eq('visibility', 'public');
-      }
+      const visibilities = allowedVisibilities(
+        session?.user?.id || null,
+        userId,
+        currentRelationshipStatus
+      );
+      recipesQuery =
+        visibilities.length > 1
+          ? recipesQuery.in('visibility', visibilities)
+          : recipesQuery.eq('visibility', visibilities[0]);
 
       const { data: recipeData, error: recipeError } = await recipesQuery.order(
         'created_at',

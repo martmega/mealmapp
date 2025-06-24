@@ -12,3 +12,4 @@ export async function acceptFriendRequest(relationshipId, userId) {
   if (error) throw error;
   return true;
 }
+
