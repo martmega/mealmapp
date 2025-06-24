@@ -5,11 +5,24 @@ export const DEFAULT_AVATAR_URL = 'https://placehold.co/100x100?text=Avatar';
 
 const supabase = getSupabase();
 
-export async function getSignedImageUrl(bucket, path, fallback = DEFAULT_IMAGE_URL) {
+export async function getSignedImageUrl(
+  bucket,
+  path,
+  fallback = DEFAULT_IMAGE_URL
+) {
   if (!path) return fallback;
-  if (path.startsWith('http')) return path;
+
+  const match = path.match(/\/storage\/v1\/object\/sign\/([^?]+)/);
+  const objectPath = match ? match[1] : path;
+
+  if (!match && path.startsWith('http')) {
+    return path;
+  }
+
   try {
-    const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, 3600);
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .createSignedUrl(objectPath, 3600);
     if (error) throw error;
     return data.signedUrl;
   } catch (err) {
