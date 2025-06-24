@@ -3,6 +3,7 @@ import OpenAI from 'openai';
 import { getUserFromRequest } from '../src/utils/auth.js';
 import generateRecipeImagePrompt from '../src/lib/recipeImagePrompt.js';
 import { createClient } from '@supabase/supabase-js';
+import { SUPABASE_BUCKETS } from '../src/config/constants';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 if (!supabaseUrl) throw new Error('VITE_SUPABASE_URL is not defined');
@@ -90,9 +91,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       quality: 'standard',
       response_format: 'url',
     });
-    return res.status(200).json({ url: response.data[0].url });
+
+    const dalleUrl = response.data[0].url;
+    const imageRes = await fetch(dalleUrl);
+    if (!imageRes.ok) throw new Error('Failed to download image');
+    const arrayBuffer = await imageRes.arrayBuffer();
+    const fileName = `${user.id}-${Date.now()}.png`;
+    const { error: uploadError } = await supabaseAdmin.storage
+      .from(SUPABASE_BUCKETS.recipes)
+      .upload(fileName, Buffer.from(arrayBuffer), {
+        contentType: 'image/png',
+      });
+    if (uploadError) throw uploadError;
+
+    return res.status(200).json({ path: fileName });
   } catch (err) {
     console.error('OpenAI error:', err);
-    return res.status(500).json({ error: 'Internal Server Error', details: String(err) });
+    return res
+      .status(500)
+      .json({ error: 'Internal Server Error', details: String(err) });
   }
 }
