@@ -9,5 +9,10 @@
         }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/getSignedImageUrl.ts": {
+      "runtime": "nodejs18.x"
+    }
+  }
 }
