@@ -53,6 +53,14 @@
     --pastel-accent-hover: hsl(35 60% 57%);
     --pastel-accent-text: hsl(var(--accent-foreground));
 
+    --pastel-mint-raw: 142 55% 82%;
+    --pastel-mint: hsl(var(--pastel-mint-raw));
+    --pastel-mint-text: hsl(0 0% 100%);
+
+    --pastel-salmon-raw: 22 93% 89%;
+    --pastel-salmon: hsl(var(--pastel-salmon-raw));
+    --pastel-salmon-text: hsl(0 0% 100%);
+
     --pastel-muted: hsl(var(--muted));
     --pastel-muted-foreground: hsl(var(--muted-foreground));
 
@@ -87,7 +95,9 @@
   }
 
   html {
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
 
   .dark {
@@ -123,6 +133,14 @@
     --pastel-tertiary-hover: hsl(190 40% 60%);
 
     --pastel-accent-hover: hsl(35 55% 60%);
+
+    --pastel-mint-raw: 142 40% 35%;
+    --pastel-mint: hsl(var(--pastel-mint-raw));
+    --pastel-mint-text: hsl(0 0% 100%);
+
+    --pastel-salmon-raw: 22 65% 40%;
+    --pastel-salmon: hsl(var(--pastel-salmon-raw));
+    --pastel-salmon-text: hsl(0 0% 100%);
 
     --pastel-highlight-raw: 220 20% 35%;
     --pastel-highlight-border: hsl(220 20% 40%);

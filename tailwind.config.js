@@ -79,6 +79,8 @@ export default {
           hover: 'hsl(var(--pastel-accent-raw) / 0.9)',
           text: 'hsl(var(--pastel-accent-text))',
         },
+        'pastel-mint': '#b6eac9',
+        'pastel-salmon': '#fddcc9',
         'pastel-muted': 'hsl(var(--pastel-muted))',
         'pastel-muted-foreground': 'hsl(var(--pastel-muted-foreground))',
         'pastel-highlight': 'hsl(var(--pastel-highlight-raw))',
