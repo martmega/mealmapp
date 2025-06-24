@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.jsx';
-import { X } from 'lucide-react';
+import { X, Users } from 'lucide-react';
 import NewMenuModal from '@/components/NewMenuModal.jsx';
 
 export default function MenuTabs({
@@ -33,14 +33,12 @@ export default function MenuTabs({
           <TabsTrigger
             key={menu.id}
             value={menu.id}
-            className="relative group whitespace-nowrap rounded-md px-3 py-1 text-sm transition-all focus:outline-none focus-visible:ring-0 border border-pastel-primary text-pastel-primary hover:bg-pastel-primary/10 data-[state=active]:bg-pastel-primary data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:border-none data-[state=active]:shadow-none"
+            className="relative group whitespace-nowrap rounded-md px-3 py-1 text-sm transition-all focus:outline-none focus-visible:ring-0 border border-pastel-primary text-pastel-primary hover:bg-pastel-primary/10 data-[state=active]:bg-pastel-primary data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:border-none data-[state=active]:shadow-none flex items-center"
           >
-            {menu.name || 'Menu'}
             {menu.is_shared && (
-              <span className="ml-2 bg-pastel-tertiary text-white text-xs rounded-full px-1.5 py-0.5">
-                Partagé
-              </span>
+              <Users className="w-3 h-3 mr-1 text-[#00D3A9]" aria-hidden="true" />
             )}
+            {menu.name || 'Menu'}
             {menu.user_id === currentUserId && (
               <button
                 aria-label="Supprimer"
