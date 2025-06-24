@@ -13,14 +13,13 @@ import UserProfilePage from '@/pages/UserProfilePage';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import { PlusCircle } from 'lucide-react';
 import LoginPage from '@/pages/Login.jsx';
+import { useActiveMenu } from '@/context/ActiveMenuContext.jsx';
 
 export default function AppRoutes({
   session,
   userProfile,
   recipes,
   recipesLoading,
-  weeklyMenu,
-  weeklyMenuLoading,
   showRecipeForm,
   editingRecipe,
   openRecipeFormForAdd,
@@ -33,6 +32,7 @@ export default function AppRoutes({
   handleProfileUpdated,
   refreshPendingFriendRequests,
 }) {
+  const { weeklyMenu, loading: weeklyMenuLoading } = useActiveMenu();
   const recipePageTitle = useMemo(() => {
     if (
       userProfile &&

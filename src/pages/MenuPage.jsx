@@ -4,19 +4,25 @@ import MenuTabs from '@/components/MenuTabs.jsx';
 import { getSupabase } from '@/lib/supabase';
 import { initialWeeklyMenuState } from '@/lib/menu';
 import { useMenus } from '@/hooks/useMenus.js';
-import { useWeeklyMenu } from '@/hooks/useWeeklyMenu.js';
+import { useActiveMenu } from '@/context/ActiveMenuContext.jsx';
 import { useFriendsList } from '@/hooks/useFriendsList.js';
 
 const supabase = getSupabase();
 
 export default function MenuPage({ session, userProfile, recipes }) {
-  const { menus, selectedMenuId, setSelectedMenuId, refreshMenus } =
-    useMenus(session);
+  const { menus, refreshMenus } = useMenus(session);
 
   const friends = useFriendsList(session);
 
-  const { weeklyMenu, menuName, setWeeklyMenu, updateMenuName, deleteMenu } =
-    useWeeklyMenu(session, selectedMenuId);
+  const {
+    weeklyMenu,
+    menuName,
+    setWeeklyMenu,
+    updateMenuName,
+    deleteMenu,
+    selectedMenuId,
+    setSelectedMenuId,
+  } = useActiveMenu();
 
   const handleRename = async (id, name) => {
     await updateMenuName(name, id);

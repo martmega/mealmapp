@@ -10,7 +10,7 @@ import Footer from '@/components/Footer';
 import MainAppLayout from '@/components/layout/MainAppLayout';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import { useRecipes } from '@/hooks/useRecipes.jsx';
-import { useWeeklyMenu } from '@/hooks/useWeeklyMenu.js';
+import { ActiveMenuProvider } from '@/context/ActiveMenuContext.jsx';
 import { useSession } from '@/hooks/useSession.js';
 import { useUserProfile } from '@/hooks/useUserProfile.js';
 import { usePendingFriendRequests } from '@/hooks/usePendingFriendRequests.js';
@@ -56,14 +56,7 @@ function App() {
     loading: recipesLoading,
   } = useRecipes(session, userProfile?.subscription_tier);
 
-  const {
-    weeklyMenu,
-    menuName,
-    setWeeklyMenu: saveUserWeeklyMenuHook,
-    updateMenuName,
-    deleteMenu: deleteWeeklyMenu,
-    loading: weeklyMenuLoading,
-  } = useWeeklyMenu(session);
+
 
   const { pendingCount, refreshPendingFriendRequests } =
     usePendingFriendRequests(session);
@@ -153,25 +146,25 @@ function App() {
         darkMode={darkMode}
         pendingRequestCount={pendingCount}
       >
-        <AppRoutes
-          session={session}
-          userProfile={userProfile}
-          recipes={recipes}
-          recipesLoading={recipesLoading}
-          weeklyMenu={weeklyMenu}
-          weeklyMenuLoading={weeklyMenuLoading}
-          showRecipeForm={showRecipeForm}
-          editingRecipe={editingRecipe}
-          openRecipeFormForAdd={openRecipeForm}
-          closeRecipeForm={closeRecipeForm}
-          handleAddRecipeSubmit={handleAddRecipeSubmit}
-          handleEditRecipeSubmit={handleEditRecipeSubmit}
-          deleteRecipeHook={deleteRecipeHook}
-          setEditingRecipe={setEditingRecipe}
-          setSelectedRecipeForDetail={setSelectedRecipeForDetail}
-          handleProfileUpdated={handleProfileUpdated}
-          refreshPendingFriendRequests={refreshPendingFriendRequests}
-        />
+        <ActiveMenuProvider session={session}>
+          <AppRoutes
+            session={session}
+            userProfile={userProfile}
+            recipes={recipes}
+            recipesLoading={recipesLoading}
+            showRecipeForm={showRecipeForm}
+            editingRecipe={editingRecipe}
+            openRecipeFormForAdd={openRecipeForm}
+            closeRecipeForm={closeRecipeForm}
+            handleAddRecipeSubmit={handleAddRecipeSubmit}
+            handleEditRecipeSubmit={handleEditRecipeSubmit}
+            deleteRecipeHook={deleteRecipeHook}
+            setEditingRecipe={setEditingRecipe}
+            setSelectedRecipeForDetail={setSelectedRecipeForDetail}
+            handleProfileUpdated={handleProfileUpdated}
+            refreshPendingFriendRequests={refreshPendingFriendRequests}
+          />
+        </ActiveMenuProvider>
       </MainAppLayout>
 
       {showAuth && <Auth onClose={() => setShowAuth(false)} />}
