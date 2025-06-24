@@ -3,7 +3,9 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import SignedImage from '../components/SignedImage.jsx';
-import { DEFAULT_IMAGE_URL } from '../lib/images.js';
+import * as images from '../lib/images.js';
+import recipeImage from '../../tests/fixtures/recipe-image.json';
+const { DEFAULT_IMAGE_URL } = images;
 
 // Helper to mock fetch responses
 function mockFetch(response) {
@@ -32,5 +34,22 @@ describe('SignedImage', () => {
 
     const img = await screen.findByRole('img');
     expect(img).toHaveAttribute('src', DEFAULT_IMAGE_URL);
+  });
+
+  it('loads a signed URL for the fixture path', async () => {
+    const signedUrl = 'https://example.com/fixture.png';
+    vi.spyOn(images, 'getSignedImageUrl').mockResolvedValue(signedUrl);
+
+    render(
+      <SignedImage bucket={recipeImage.bucket} path={recipeImage.path} alt="fixture" />
+    );
+
+    const img = await screen.findByRole('img');
+    expect(img).toHaveAttribute('src', signedUrl);
+    expect(images.getSignedImageUrl).toHaveBeenCalledWith(
+      recipeImage.bucket,
+      recipeImage.path,
+      DEFAULT_IMAGE_URL
+    );
   });
 });

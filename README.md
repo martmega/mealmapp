@@ -46,6 +46,28 @@ Run the following command to execute `scripts/test-zod.ts`:
 npx ts-node scripts/test-zod.ts
 ```
 
+## Test recipe image
+
+Some tests rely on a small image stored in Supabase. Upload any PNG to the
+`recipe-images` bucket at `public/test-image.png`.
+
+Example with the Supabase CLI:
+
+```bash
+supabase storage cp ./test-image.png supabase://recipe-images/public/test-image.png
+```
+
+You can also run:
+
+```bash
+npx ts-node scripts/upload-test-image.ts ./test-image.png
+```
+
+Once uploaded, the image will be publicly available at
+`https://<project-ref>.supabase.co/storage/v1/object/public/recipe-images/public/test-image.png`.
+Its location is referenced in `tests/fixtures/recipe-image.json` and used by the
+`SignedImage` tests.
+
 
 ## Price estimation
 
