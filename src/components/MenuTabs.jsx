@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.jsx';
-import { X, Users } from 'lucide-react';
+import { X } from 'lucide-react';
+import { cn } from '@/lib/utils.js';
 import NewMenuModal from '@/components/NewMenuModal.jsx';
 
 export default function MenuTabs({
@@ -29,32 +30,40 @@ export default function MenuTabs({
       className="w-full"
     >
       <TabsList className="flex overflow-x-auto items-center gap-2">
-        {menus.map((menu) => (
-          <TabsTrigger
-            key={menu.id}
-            value={menu.id}
-            className="relative group whitespace-nowrap rounded-md px-3 py-1 text-sm transition-all focus:outline-none focus-visible:ring-0 border border-pastel-primary text-pastel-primary hover:bg-pastel-primary/10 data-[state=active]:bg-pastel-primary data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:border-none data-[state=active]:shadow-none flex items-center"
-          >
-            {menu.is_shared && (
-              <Users className="w-3 h-3 mr-1 text-[#00D3A9]" aria-hidden="true" />
-            )}
-            {menu.name || 'Menu'}
-            {menu.user_id === currentUserId && (
-              <button
-                aria-label="Supprimer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (window.confirm('Supprimer ce menu ?')) {
-                    onDelete && onDelete(menu.id);
-                  }
-                }}
-                className="absolute -top-1 -right-1 hidden group-hover:block text-destructive/70 hover:text-destructive bg-white rounded-full p-0.5"
-              >
-                <X className="w-3 h-3" />
-              </button>
-            )}
-          </TabsTrigger>
-        ))}
+        {menus.map((menu) => {
+          const sharedWithCurrent = Array.isArray(menu.shared_with_ids) &&
+            menu.shared_with_ids.includes(currentUserId);
+          const colorClasses = sharedWithCurrent
+            ? 'border-pastel-secondary text-pastel-secondary hover:bg-pastel-secondary/10 data-[state=active]:bg-pastel-secondary'
+            : 'border-pastel-primary text-pastel-primary hover:bg-pastel-primary/10 data-[state=active]:bg-pastel-primary';
+          return (
+            <TabsTrigger
+              key={menu.id}
+              value={menu.id}
+              className={cn(
+                'relative group whitespace-nowrap rounded-md px-3 py-1 text-sm transition-all focus:outline-none focus-visible:ring-0 flex items-center',
+                colorClasses,
+                'data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:border-none data-[state=active]:shadow-none'
+              )}
+            >
+              {menu.name || 'Menu'}
+              {menu.user_id === currentUserId && (
+                <button
+                  aria-label="Supprimer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (window.confirm('Supprimer ce menu ?')) {
+                      onDelete && onDelete(menu.id);
+                    }
+                  }}
+                  className="absolute -top-1 -right-1 hidden group-hover:block text-destructive/70 hover:text-destructive bg-white rounded-full p-0.5"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </TabsTrigger>
+          );
+        })}
         <NewMenuModal
           onCreate={onCreate}
           friends={friends}
