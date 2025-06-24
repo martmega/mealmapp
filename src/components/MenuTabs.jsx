@@ -31,10 +31,7 @@ export default function MenuTabs({
     >
       <TabsList className="flex overflow-x-auto items-center gap-2">
         {menus.map((menu) => {
-          const sharedWithCurrent =
-            Array.isArray(menu.shared_with_ids) &&
-            menu.shared_with_ids.includes(currentUserId);
-          const isShared = menu.is_shared || sharedWithCurrent;
+          const isShared = menu.is_shared === true;
           // Shared menus use mint and salmon helper classes
           const colorClasses = isShared
             ? 'shared-menu data-[state=active]:shared-menu-active'
