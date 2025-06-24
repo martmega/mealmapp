@@ -7,6 +7,7 @@ import { useFriendsList } from '@/hooks/useFriendsList.js';
 import { useMenuParticipants } from '@/hooks/useMenuParticipants.js';
 import SignedImage from '@/components/SignedImage';
 import { DEFAULT_AVATAR_URL } from '@/lib/images';
+import { SUPABASE_BUCKETS } from '@/config/constants';
 
 const supabase = getSupabase();
 
@@ -95,7 +96,7 @@ export default function MenuPage({
             <div key={p.id} className="flex items-center gap-2">
               {p.avatar_url ? (
                 <SignedImage
-                  bucket="avatars"
+                  bucket={SUPABASE_BUCKETS.avatars}
                   path={p.avatar_url}
                   alt={p.username}
                   fallback={DEFAULT_AVATAR_URL}

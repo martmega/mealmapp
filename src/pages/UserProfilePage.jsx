@@ -6,6 +6,7 @@ import LoadingScreen from '@/components/layout/LoadingScreen';
 import { UserCircle, ArrowLeft } from 'lucide-react';
 import SignedImage from '@/components/SignedImage';
 import { DEFAULT_AVATAR_URL } from '@/lib/images';
+import { SUPABASE_BUCKETS } from '@/config/constants';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import RecipeDetailModal from '@/components/RecipeDetailModal';
@@ -178,7 +179,7 @@ export default function UserProfilePage({
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8">
             {profileData.avatar_url ? (
               <SignedImage
-                bucket="avatars"
+                bucket={SUPABASE_BUCKETS.avatars}
                 path={profileData.avatar_url}
                 alt={`Avatar de ${profileData.username}`}
                 fallback={DEFAULT_AVATAR_URL}
