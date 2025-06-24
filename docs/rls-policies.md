@@ -8,7 +8,22 @@ The project relies on Supabase RLS to secure most tables.
 - "friends_only" recipes are visible to linked users.
 
 ## weekly_menus
-- Only the owner (column `user_id`) can read or modify a menu.
+- The owner (column `user_id`) can read and modify their menu.
+- Users referenced in `menu_participants` can read a shared menu.
+
+```sql
+create policy "allow menu owner" on weekly_menus
+  for all using ( auth.uid() = user_id );
+
+create policy "allow menu participants" on weekly_menus
+  for select using (
+    auth.uid() = user_id
+    or exists (
+      select 1 from menu_participants mp
+      where mp.menu_id = id and mp.user_id = auth.uid()
+    )
+  );
+```
 
 ## user_relationships
 - Rows are visible to the requester and the addressee only.

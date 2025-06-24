@@ -23,8 +23,15 @@ create table weekly_menus (
   user_id uuid references auth.users(id) on delete cascade,
   name text not null,
   menu_data jsonb not null,
+  is_shared boolean default false,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
+);
+
+create table menu_participants (
+  menu_id uuid references weekly_menus(id) on delete cascade,
+  user_id uuid references auth.users(id) on delete cascade,
+  primary key (menu_id, user_id)
 );
 
 create table user_relationships (
