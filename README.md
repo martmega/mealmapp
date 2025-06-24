@@ -20,6 +20,15 @@ STRIPE_PREMIUM_PRICE_ID=<your-premium-price-id>
 These values are injected by Vite and used by the app at runtime.
 Additional documentation is available in the [docs](docs) directory.
 
+## Supabase configuration
+
+All URLs related to Supabase are centralized in `src/config/constants.ts`.
+Always import these constants when interacting with Supabase services.
+The `SUPABASE_BUCKETS` object lists the allowed storage buckets:
+
+- `recipe-images`
+- `avatars`
+
 `STRIPE_PUBLISHABLE_KEY` is the public key used by the browser to initialize Stripe.
 `STRIPE_STANDARD_PRICE_ID` and `STRIPE_PREMIUM_PRICE_ID` correspond to the price identifiers for your Standard and Premium subscription plans.
 You can find all three in the Stripe dashboard: the publishable key under **Developers > API keys** and the price IDs on each product's pricing page.

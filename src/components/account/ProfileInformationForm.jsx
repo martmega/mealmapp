@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { getSupabase } from '@/lib/supabase';
 import { getSignedImageUrl, DEFAULT_AVATAR_URL } from '@/lib/images';
+import { SUPABASE_BUCKETS } from '@/config/constants';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -41,7 +42,11 @@ export default function ProfileInformationForm({
       setBio(userProfile.bio || '');
       setInitialBio(userProfile.bio || '');
       if (userProfile.avatar_url) {
-        getSignedImageUrl('avatars', userProfile.avatar_url, DEFAULT_AVATAR_URL).then(
+        getSignedImageUrl(
+          SUPABASE_BUCKETS.avatars,
+          userProfile.avatar_url,
+          DEFAULT_AVATAR_URL
+        ).then(
           setAvatarPreview
         );
       } else {
@@ -202,7 +207,7 @@ export default function ProfileInformationForm({
       if (avatarFile) {
         const fileName = `${session.user.id}/${Date.now()}_${avatarFile.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
         const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('avatars')
+          .from(SUPABASE_BUCKETS.avatars)
           .upload(fileName, avatarFile, { upsert: true });
 
         if (uploadError) throw uploadError;

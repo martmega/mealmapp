@@ -16,6 +16,7 @@ import RecipeInstructionsManager from '@/components/form/RecipeInstructionsManag
 import RecipeMetaFields from '@/components/form/RecipeMetaFields';
 import { estimateRecipePrice } from '@/lib/openai';
 import { getSignedImageUrl } from '@/lib/images';
+import { SUPABASE_BUCKETS } from '@/config/constants';
 
 const supabase = getSupabase();
 import {
@@ -137,7 +138,7 @@ function RecipeForm({
         if (recipe.image_url.startsWith('http')) {
           setPreviewImage(recipe.image_url);
         } else {
-          getSignedImageUrl('recipe-images', recipe.image_url).then(
+          getSignedImageUrl(SUPABASE_BUCKETS.recipes, recipe.image_url).then(
             setPreviewImage
           );
         }
@@ -173,7 +174,7 @@ function RecipeForm({
               if (parsed.image_url.startsWith('http')) {
                 setPreviewImage(parsed.image_url);
               } else {
-                getSignedImageUrl('recipe-images', parsed.image_url).then(
+                getSignedImageUrl(SUPABASE_BUCKETS.recipes, parsed.image_url).then(
                   setPreviewImage
                 );
               }
@@ -349,7 +350,7 @@ function RecipeForm({
       const filePath = `${fileName}`;
 
       const { data, error: uploadError } = await supabase.storage
-        .from('recipe-images')
+        .from(SUPABASE_BUCKETS.recipes)
         .upload(filePath, selectedFile);
 
       if (uploadError) throw uploadError;

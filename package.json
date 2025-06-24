@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "test": "vitest",
     "lint": "eslint . --ext .js,.jsx",
-    "format": "prettier --write \"src/**/*.{js,jsx,json,css}\""
+    "format": "prettier --write \"src/**/*.{js,jsx,json,css}\"",
+    "validate-config": "ts-node scripts/validate-config.ts",
+    "update-vercel": "ts-node scripts/update-vercel-json.ts"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "^1.2.1",
@@ -57,6 +59,7 @@
     "tailwindcss": "^3.3.3",
     "terser": "^5.39.0",
     "vite": "^4.4.5",
-    "vitest": "^3.2.3"
+    "vitest": "^3.2.3",
+    "ts-node": "^10.9.1"
   }
 }
