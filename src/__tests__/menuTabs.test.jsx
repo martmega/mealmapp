@@ -123,8 +123,7 @@ describe('MenuTabs', () => {
     );
 
     const tab = screen.getByRole('tab', { name: 'Menu 1' });
-    expect(tab).toHaveClass('border-pastel-mint');
-    expect(tab).toHaveClass('text-pastel-mint');
-    expect(tab).toHaveClass('data-[state=active]:bg-pastel-mint');
+    expect(tab).toHaveClass('shared-menu');
+    expect(tab).toHaveClass('data-[state=active]:shared-menu-active');
   });
 });

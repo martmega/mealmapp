@@ -53,6 +53,15 @@ Recipe prices are estimated with OpenAI only when required. A new estimate is
 requested when a recipe is created or when its ingredients or base servings
 change during editing. Existing estimates are reused otherwise.
 
+## UI helpers
+
+Two utility classes in `src/index.css` style shared menus:
+
+- `.shared-menu` applies mint colors.
+- `.shared-menu-active` switches the background to salmon when active.
+
+The `MenuTabs` component uses these classes to highlight menus shared with you.
+
 ## 🔐 Configuration des variables d'environnement
 
 La clé `OPENAI_API_KEY` doit être fournie uniquement aux fonctions côté serveur.
