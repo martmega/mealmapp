@@ -181,3 +181,13 @@
 ::-webkit-scrollbar-thumb:hover {
   background: hsla(var(--pastel-muted-foreground), 0.8);
 }
+
+@layer components {
+  /* Mint and salmon helpers for shared menus */
+  .shared-menu {
+    @apply border-pastel-mint text-pastel-mint hover:bg-pastel-mint/10;
+  }
+  .shared-menu-active {
+    @apply bg-pastel-salmon text-white;
+  }
+}

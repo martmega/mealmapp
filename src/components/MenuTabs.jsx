@@ -35,8 +35,9 @@ export default function MenuTabs({
             Array.isArray(menu.shared_with_ids) &&
             menu.shared_with_ids.includes(currentUserId);
           const isShared = menu.is_shared || sharedWithCurrent;
+          // Shared menus use mint and salmon helper classes
           const colorClasses = isShared
-            ? 'border-pastel-mint text-pastel-mint hover:bg-pastel-mint/10 data-[state=active]:bg-pastel-mint'
+            ? 'shared-menu data-[state=active]:shared-menu-active'
             : 'border-pastel-primary text-pastel-primary hover:bg-pastel-primary/10 data-[state=active]:bg-pastel-primary';
           return (
             <TabsTrigger
