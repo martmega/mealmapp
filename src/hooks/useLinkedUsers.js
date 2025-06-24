@@ -17,7 +17,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
           .from('recipes')
           .select('*')
           .eq('user_id', userId)
-          .or('visibility.eq.public,visibility.eq.friends_only');
+          .in('is_public', [true, false]);
 
         if (error) throw error;
 

@@ -10,9 +10,9 @@ export function usePublicRecipes(session) {
       let baseQuery = supabase
         .from('recipes')
         .select(
-          'id, name, description, image_url, servings, calories, tags, visibility, user_id'
+          'id, name, description, image_url, servings, calories, tags, is_public, user_id'
         )
-        .eq('visibility', 'public')
+        .eq('is_public', true)
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
       if (session?.user?.id) {

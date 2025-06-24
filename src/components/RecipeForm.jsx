@@ -127,7 +127,7 @@ function RecipeForm({
         tags: Array.isArray(recipe.tags) ? recipe.tags : [],
         image_url: recipe.image_url || '',
         meal_types: Array.isArray(recipe.meal_types) ? recipe.meal_types : [],
-        visibility: recipe.visibility || 'private',
+        visibility: recipe.is_public ? 'public' : 'private',
       });
       if (descriptionRef.current && recipe.description) {
         descriptionRef.current.value = recipe.description;
@@ -504,7 +504,7 @@ function RecipeForm({
       instructions: Array.isArray(formData.instructions)
         ? formData.instructions.filter((line) => line.trim() !== '')
         : [],
-      visibility: formData.visibility,
+      is_public: formData.visibility === 'public',
       estimated_price: estimated !== null ? estimated : undefined,
     };
 
