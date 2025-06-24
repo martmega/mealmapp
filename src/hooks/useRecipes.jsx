@@ -17,7 +17,7 @@ export function useRecipes(session, subscriptionTier) {
   }, []);
 
   const baseRecipeSelect = `
-    id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, visibility, updated_at, estimated_price
+    id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, is_public, updated_at, estimated_price
   `;
 
   useEffect(() => {
@@ -161,7 +161,7 @@ export function useRecipes(session, subscriptionTier) {
           tags: ensureArray(recipeData.tags),
           instructions: ensureArray(recipeData.instructions),
           created_at: new Date().toISOString(),
-          visibility: recipeData.visibility || 'private',
+          is_public: !!recipeData.is_public,
         };
 
         if ('mealTypes' in payload) {
@@ -231,7 +231,7 @@ export function useRecipes(session, subscriptionTier) {
         meal_types: ensureArray(recipeData.meal_types),
         tags: ensureArray(recipeData.tags),
         instructions: ensureArray(recipeData.instructions),
-        visibility: recipeData.visibility || 'private',
+        is_public: !!recipeData.is_public,
       };
       setRecipes((prevRecipes) =>
         [
@@ -258,7 +258,7 @@ export function useRecipes(session, subscriptionTier) {
           meal_types: ensureArray(recipeData.meal_types),
           tags: ensureArray(recipeData.tags),
           instructions: ensureArray(recipeData.instructions),
-          visibility: recipeData.visibility || 'private',
+          is_public: !!recipeData.is_public,
         };
         if ('mealTypes' in payload) {
           delete payload.mealTypes;
@@ -365,7 +365,7 @@ export function useRecipes(session, subscriptionTier) {
         meal_types: ensureArray(recipeData.meal_types),
         tags: ensureArray(recipeData.tags),
         instructions: ensureArray(recipeData.instructions),
-        visibility: recipeData.visibility || 'private',
+        is_public: !!recipeData.is_public,
       };
       setRecipes((prevRecipes) =>
         (Array.isArray(prevRecipes) ? prevRecipes : [])
