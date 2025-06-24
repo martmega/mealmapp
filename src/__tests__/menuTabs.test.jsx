@@ -13,6 +13,10 @@ const sharedMenu = [
   { id: '1', user_id: 'user1', name: 'Menu 1', is_shared: true },
 ];
 
+const sharedMenuOtherUser = [
+  { id: '1', user_id: 'user2', name: 'Menu ami', is_shared: true },
+];
+
 function Wrapper() {
   const [menus, setMenus] = useState(sampleMenus);
   const [activeId, setActiveId] = useState(sampleMenus[0].id);
@@ -125,5 +129,21 @@ describe('MenuTabs', () => {
     const tab = screen.getByRole('tab', { name: 'Menu 1' });
     expect(tab).toHaveClass('shared-menu');
     expect(tab).toHaveClass('data-[state=active]:shared-menu-active');
+  });
+
+  it("n'affiche pas le bouton supprimer pour un menu partagé par un autre utilisateur", () => {
+    render(
+      <MenuTabs
+        menus={sharedMenuOtherUser}
+        activeMenuId="1"
+        onSelect={() => {}}
+        currentUserId="user1"
+        friends={[]}
+      />
+    );
+
+    const tab = screen.getByRole('tab', { name: 'Menu ami' });
+    expect(within(tab).queryByLabelText('Supprimer')).toBeNull();
+    expect(tab).toHaveClass('shared-menu');
   });
 });
