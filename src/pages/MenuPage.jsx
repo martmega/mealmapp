@@ -3,8 +3,6 @@ import MenuPlanner from '@/components/MenuPlanner';
 import MenuTabs from '@/components/MenuTabs.jsx';
 import { getSupabase } from '@/lib/supabase';
 import { initialWeeklyMenuState } from '@/lib/menu';
-import { useMenus } from '@/hooks/useMenus.js';
-import { useWeeklyMenu } from '@/hooks/useWeeklyMenu.js';
 import { useFriendsList } from '@/hooks/useFriendsList.js';
 import { useMenuParticipants } from '@/hooks/useMenuParticipants.js';
 import SignedImage from '@/components/SignedImage';
@@ -12,20 +10,22 @@ import { DEFAULT_AVATAR_URL } from '@/lib/images';
 
 const supabase = getSupabase();
 
-export default function MenuPage({ session, userProfile, recipes }) {
-  const { menus, selectedMenuId, setSelectedMenuId, refreshMenus } =
-    useMenus(session);
-
+export default function MenuPage({
+  session,
+  userProfile,
+  recipes,
+  menus = [],
+  selectedMenuId,
+  setSelectedMenuId,
+  refreshMenus,
+  weeklyMenu,
+  menuName,
+  isShared,
+  setWeeklyMenu,
+  updateMenuName,
+  deleteMenu,
+}) {
   const friends = useFriendsList(session);
-
-  const {
-    weeklyMenu,
-    menuName,
-    isShared,
-    setWeeklyMenu,
-    updateMenuName,
-    deleteMenu,
-  } = useWeeklyMenu(session, selectedMenuId);
 
   const participants = useMenuParticipants(isShared ? selectedMenuId : null);
 

@@ -11,6 +11,7 @@ import MainAppLayout from '@/components/layout/MainAppLayout';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import { useRecipes } from '@/hooks/useRecipes.jsx';
 import { useWeeklyMenu } from '@/hooks/useWeeklyMenu.js';
+import { useMenus } from '@/hooks/useMenus.js';
 import { useSession } from '@/hooks/useSession.js';
 import { useUserProfile } from '@/hooks/useUserProfile.js';
 import { usePendingFriendRequests } from '@/hooks/usePendingFriendRequests.js';
@@ -57,13 +58,21 @@ function App() {
   } = useRecipes(session, userProfile?.subscription_tier);
 
   const {
+    menus,
+    loading: menusLoading,
+    selectedMenuId,
+    setSelectedMenuId,
+    refreshMenus,
+  } = useMenus(session);
+
+  const {
     weeklyMenu,
     menuName,
     setWeeklyMenu: saveUserWeeklyMenuHook,
     updateMenuName,
     deleteMenu: deleteWeeklyMenu,
     loading: weeklyMenuLoading,
-  } = useWeeklyMenu(session);
+  } = useWeeklyMenu(session, selectedMenuId);
 
   const { pendingCount, refreshPendingFriendRequests } =
     usePendingFriendRequests(session);
@@ -158,8 +167,18 @@ function App() {
           userProfile={userProfile}
           recipes={recipes}
           recipesLoading={recipesLoading}
+          menus={menus}
+          menusLoading={menusLoading}
+          selectedMenuId={selectedMenuId}
+          setSelectedMenuId={setSelectedMenuId}
+          refreshMenus={refreshMenus}
           weeklyMenu={weeklyMenu}
           weeklyMenuLoading={weeklyMenuLoading}
+          menuName={menuName}
+          isShared={isShared}
+          saveUserWeeklyMenuHook={saveUserWeeklyMenuHook}
+          updateMenuName={updateMenuName}
+          deleteWeeklyMenu={deleteWeeklyMenu}
           showRecipeForm={showRecipeForm}
           editingRecipe={editingRecipe}
           openRecipeFormForAdd={openRecipeForm}

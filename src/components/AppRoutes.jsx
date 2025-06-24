@@ -19,8 +19,18 @@ export default function AppRoutes({
   userProfile,
   recipes,
   recipesLoading,
+  menus,
+  menusLoading,
+  selectedMenuId,
+  setSelectedMenuId,
+  refreshMenus,
   weeklyMenu,
   weeklyMenuLoading,
+  menuName,
+  isShared,
+  saveUserWeeklyMenuHook,
+  updateMenuName,
+  deleteWeeklyMenu,
   showRecipeForm,
   editingRecipe,
   openRecipeFormForAdd,
@@ -116,6 +126,17 @@ export default function AppRoutes({
               session={session}
               userProfile={userProfile}
               recipes={recipes}
+              menus={menus}
+              menusLoading={menusLoading}
+              selectedMenuId={selectedMenuId}
+              setSelectedMenuId={setSelectedMenuId}
+              refreshMenus={refreshMenus}
+              weeklyMenu={weeklyMenu}
+              menuName={menuName}
+              isShared={isShared}
+              setWeeklyMenu={saveUserWeeklyMenuHook}
+              updateMenuName={updateMenuName}
+              deleteMenu={deleteWeeklyMenu}
             />
           ) : (
             <Navigate to="/app/recipes" replace />
