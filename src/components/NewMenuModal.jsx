@@ -38,8 +38,8 @@ function NewMenuModal({ onCreate, friends = [], trigger }) {
         {trigger || <Button>Créer un menu</Button>}
       </DialogTrigger>
       <DialogContent
-        className="max-w-md"
-        overlayClassName="bg-background/80 backdrop-blur-sm"
+        className="max-w-md bg-white dark:bg-neutral-900 text-black dark:text-neutral-100"
+        overlayClassName="backdrop-blur-sm bg-black/30 dark:bg-black/60"
       >
         <DialogHeader>
           <DialogTitle>Nouveau menu</DialogTitle>
