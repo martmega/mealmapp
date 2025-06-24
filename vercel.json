@@ -9,10 +9,5 @@
         }
       ]
     }
-  ],
-  "functions": {
-    "api/getSignedImageUrl.ts": {
-      "runtime": "vercel-node@18.0.0"
-    }
-  }
+  ]
 }
