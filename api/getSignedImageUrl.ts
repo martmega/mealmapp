@@ -1,5 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
+import { SUPABASE_BUCKETS } from '../src/config/constants';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 if (!supabaseUrl) throw new Error('VITE_SUPABASE_URL is not defined');
@@ -14,13 +15,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const path = req.query.path;
-  const bucket = req.query.bucket || 'recipe-images';
+  const bucket = (req.query.bucket as string) || SUPABASE_BUCKETS.recipes;
 
   if (!path || typeof path !== 'string' || typeof bucket !== 'string') {
     return res.status(400).json({ error: 'Invalid path or bucket' });
   }
 
-  if (bucket !== 'recipe-images') {
+  if (bucket !== SUPABASE_BUCKETS.recipes) {
     return res.status(403).json({ error: 'Bucket not allowed' });
   }
 

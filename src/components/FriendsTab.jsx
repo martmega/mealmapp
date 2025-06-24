@@ -15,6 +15,7 @@ import {
 import { Link } from 'react-router-dom';
 import SignedImage from '@/components/SignedImage';
 import { DEFAULT_AVATAR_URL } from '@/lib/images';
+import { SUPABASE_BUCKETS } from '@/config/constants';
 import {
   Dialog,
   DialogContent,
@@ -210,7 +211,7 @@ export default function FriendsTab({ session, userProfile, onRequestsChange }) {
                 >
                   {req.avatar_url ? (
                     <SignedImage
-                      bucket="avatars"
+                      bucket={SUPABASE_BUCKETS.avatars}
                       path={req.avatar_url}
                       alt={req.username}
                       fallback={DEFAULT_AVATAR_URL}
@@ -275,7 +276,7 @@ export default function FriendsTab({ session, userProfile, onRequestsChange }) {
                 >
                   {req.avatar_url ? (
                     <SignedImage
-                      bucket="avatars"
+                      bucket={SUPABASE_BUCKETS.avatars}
                       path={req.avatar_url}
                       alt={req.username}
                       fallback={DEFAULT_AVATAR_URL}
@@ -313,7 +314,7 @@ export default function FriendsTab({ session, userProfile, onRequestsChange }) {
                 >
                   {friend.avatar_url ? (
                     <SignedImage
-                      bucket="avatars"
+                      bucket={SUPABASE_BUCKETS.avatars}
                       path={friend.avatar_url}
                       alt={friend.username}
                       fallback={DEFAULT_AVATAR_URL}

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Search, Loader2, UserCircle } from 'lucide-react';
 import SignedImage from '@/components/SignedImage';
 import { DEFAULT_AVATAR_URL } from '@/lib/images';
+import { SUPABASE_BUCKETS } from '@/config/constants';
 import { Link } from 'react-router-dom';
 import { useUserSearch } from '@/hooks/useUserSearch';
 
@@ -41,7 +42,7 @@ export default function UserSearch({ session }) {
                 <div className="flex items-center gap-3">
                   {user.avatar_url ? (
                     <SignedImage
-                      bucket="avatars"
+                      bucket={SUPABASE_BUCKETS.avatars}
                       path={user.avatar_url}
                       alt={`Avatar de ${user.username}`}
                       fallback={DEFAULT_AVATAR_URL}

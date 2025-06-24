@@ -20,6 +20,11 @@ STRIPE_PREMIUM_PRICE_ID=<your-premium-price-id>
 These values are injected by Vite and used by the app at runtime.
 Additional documentation is available in the [docs](docs) directory.
 
+All Supabase URLs used by the application are defined in
+`src/config/constants.ts`. Any new interaction with Supabase should import these
+constants instead of hard coding URLs. The buckets currently in use are
+`recipe-images` and `avatars`.
+
 `STRIPE_PUBLISHABLE_KEY` is the public key used by the browser to initialize Stripe.
 `STRIPE_STANDARD_PRICE_ID` and `STRIPE_PREMIUM_PRICE_ID` correspond to the price identifiers for your Standard and Premium subscription plans.
 You can find all three in the Stripe dashboard: the publishable key under **Developers > API keys** and the price IDs on each product's pricing page.
@@ -50,6 +55,8 @@ npx ts-node scripts/test-zod.ts
 
 Some tests rely on a small image stored in Supabase. Upload any PNG to the
 `recipe-images` bucket at `public/test-image.png`.
+The bucket name corresponds to `SUPABASE_BUCKETS.recipes` from
+`src/config/constants.ts`.
 
 Example with the Supabase CLI:
 
