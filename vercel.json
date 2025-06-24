@@ -1,23 +1,18 @@
-diff --git a/vercel.json b/vercel.json
-index c15e2101b1e9d7a69e7999fd03152a266702829c..a5f7e4fb7a546c5d09081030eb98e362137fb6b4 100644
---- a/vercel.json
-+++ b/vercel.json
-@@ -1,13 +1,18 @@
- {
-   "headers": [
-     {
-       "source": "/(.*)",
-       "headers": [
-         {
-           "key": "Content-Security-Policy",
-           "value": "default-src 'self'; script-src 'self' https://js.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https://*.supabase.co https://*.blob.core.windows.net; connect-src 'self' https://*.supabase.co https://*.stripe.com https://*.vercel.app"
-         }
-       ]
-     }
-+  ],
-+  "functions": {
-+    "api/getSignedImageUrl.ts": {
-+      "runtime": "nodejs18.x"
-+    }
-+  }
- }
+{
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' https://js.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https://*.supabase.co https://*.blob.core.windows.net; connect-src 'self' https://*.supabase.co https://*.stripe.com https://*.vercel.app"
+        }
+      ]
+    }
+  ],
+  "functions": {
+    "api/getSignedImageUrl.ts": {
+      "runtime": "nodejs18.x"
+    }
+  }
+}
