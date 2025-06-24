@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { X, Clock, Users, Tag, ClipboardList, Soup } from 'lucide-react';
 import { MEAL_TYPE_OPTIONS_MAP } from '@/lib/mealTypes';
 import SignedImage from '@/components/SignedImage';
+import { SUPABASE_BUCKETS } from '@/config/constants';
 
 function RecipeDetailModal({ recipe, onClose, userProfile }) {
   const servingsPerMealPreference = useMemo(() => {
@@ -98,7 +99,7 @@ function RecipeDetailModal({ recipe, onClose, userProfile }) {
             {recipe.image_url && (
               <div className="aspect-video rounded-lg overflow-hidden border border-pastel-border bg-pastel-muted/50">
                 <SignedImage
-                  bucket="recipe-images"
+                  bucket={SUPABASE_BUCKETS.recipes}
                   path={recipe.image_url}
                   alt={`Image de ${recipe.name}`}
                   className="w-full h-full object-cover"

@@ -5,6 +5,7 @@ import '@testing-library/jest-dom';
 import SignedImage from '../components/SignedImage.jsx';
 import * as images from '../lib/images.js';
 import recipeImage from '../../tests/fixtures/recipe-image.json';
+import { SUPABASE_BUCKETS } from '../config/constants';
 const { DEFAULT_IMAGE_URL } = images;
 
 // Helper to mock fetch responses
@@ -21,7 +22,7 @@ describe('SignedImage', () => {
     const signedUrl = 'https://example.com/signed.jpg';
     mockFetch({ ok: true, json: () => Promise.resolve({ url: signedUrl }) });
 
-    render(<SignedImage bucket="recipe-images" path="image.jpg" alt="image" />);
+    render(<SignedImage bucket={SUPABASE_BUCKETS.recipes} path="image.jpg" alt="image" />);
 
     const img = await screen.findByRole('img');
     expect(img).toHaveAttribute('src', signedUrl);
@@ -30,7 +31,7 @@ describe('SignedImage', () => {
   it('falls back to default image when API fails', async () => {
     mockFetch({ ok: false });
 
-    render(<SignedImage bucket="recipe-images" path="image.jpg" alt="image" />);
+    render(<SignedImage bucket={SUPABASE_BUCKETS.recipes} path="image.jpg" alt="image" />);
 
     const img = await screen.findByRole('img');
     expect(img).toHaveAttribute('src', DEFAULT_IMAGE_URL);

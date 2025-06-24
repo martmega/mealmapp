@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Edit2, Trash2, Star, Clock, Eye } from 'lucide-react';
 import { RECIPE_CARD_COLORS_CLASSES } from '@/lib/colors';
 import SignedImage from '@/components/SignedImage';
+import { SUPABASE_BUCKETS } from '@/config/constants';
 
 const MemoizedRecipeCard = React.memo(function RecipeCard({
   recipe,
@@ -31,7 +32,7 @@ const MemoizedRecipeCard = React.memo(function RecipeCard({
       {recipe.image_url && (
         <div className="mb-3 aspect-[16/9] rounded-lg overflow-hidden">
           <SignedImage
-            bucket="recipe-images"
+            bucket={SUPABASE_BUCKETS.recipes}
             path={recipe.image_url}
             alt={`Photo de ${recipe.name}`}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
