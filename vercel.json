@@ -9,5 +9,10 @@
         }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/getSignedImageUrl.ts": {
+      "runtime": "vercel-node@canary"
+    }
+  }
 }
