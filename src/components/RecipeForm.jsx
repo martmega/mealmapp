@@ -644,8 +644,9 @@ function RecipeForm({
           }));
         }
       } else if (type === 'image') {
-        setFormData((prev) => ({ ...prev, image_url: data.url }));
-        setPreviewImage(data.url);
+        const filePath = data.path;
+        setFormData((prev) => ({ ...prev, image_url: filePath }));
+        getSignedImageUrl(SUPABASE_BUCKETS.recipes, filePath).then(setPreviewImage);
         setSelectedFile(null);
         toast({
           title: 'Image générée',
