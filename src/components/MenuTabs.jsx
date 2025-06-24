@@ -31,10 +31,11 @@ export default function MenuTabs({
     >
       <TabsList className="flex overflow-x-auto items-center gap-2">
         {menus.map((menu) => {
-          const sharedWithCurrent = Array.isArray(menu.shared_with_ids) &&
+          const sharedWithCurrent =
+            Array.isArray(menu.shared_with_ids) &&
             menu.shared_with_ids.includes(currentUserId);
           const colorClasses = sharedWithCurrent
-            ? 'border-pastel-secondary text-pastel-secondary hover:bg-pastel-secondary/10 data-[state=active]:bg-pastel-secondary'
+            ? 'border-pastel-mint text-pastel-mint hover:bg-pastel-mint/10 data-[state=active]:bg-pastel-mint'
             : 'border-pastel-primary text-pastel-primary hover:bg-pastel-primary/10 data-[state=active]:bg-pastel-primary';
           return (
             <TabsTrigger
@@ -43,7 +44,7 @@ export default function MenuTabs({
               className={cn(
                 'relative group whitespace-nowrap rounded-md px-3 py-1 text-sm transition-all focus:outline-none focus-visible:ring-0 flex items-center',
                 colorClasses,
-                'data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:border-none data-[state=active]:shadow-none'
+                'data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:border-none'
               )}
             >
               {menu.name || 'Menu'}
