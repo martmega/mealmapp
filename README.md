@@ -66,6 +66,22 @@ Cette clé ne doit jamais être exposée au client ; n'utilisez donc pas de pr�
 OPENAI_API_KEY=sk-...
 
 
+## Test recipe image
+
+A public image is available in the Supabase `recipe-images` bucket for testing purposes.
+The object path is `public/test-image.png` and it is referenced in
+[`tests/fixtures/recipe-image.json`](tests/fixtures/recipe-image.json).
+Use this file to validate that signed URLs work correctly. Upload a small image
+to the bucket at this path so the tests can load it. One option is the Supabase
+Dashboard or the `supabase` CLI:
+
+```bash
+supabase storage cp path/to/your/image.png storage://recipe-images/public/test-image.png
+```
+The above command assumes you have configured the CLI for your project and that
+`path/to/your/image.png` points to a small PNG you provide locally.
+
+
 ## Prompt templates
 
 Des exemples de prompts pour générer des images de recettes sont disponibles dans [prompt-templates.md](docs/prompt-templates.md).
