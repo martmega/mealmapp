@@ -1,9 +1,5 @@
-import { getSupabase } from './supabase';
-
 export const DEFAULT_IMAGE_URL = 'https://placehold.co/600x400?text=Image';
 export const DEFAULT_AVATAR_URL = 'https://placehold.co/100x100?text=Avatar';
-
-const supabase = getSupabase();
 
 export async function getSignedImageUrl(
   bucket,
@@ -20,11 +16,11 @@ export async function getSignedImageUrl(
   }
 
   try {
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .createSignedUrl(objectPath, 3600);
-    if (error) throw error;
-    return data.signedUrl;
+    const params = new URLSearchParams({ bucket, path: objectPath });
+    const response = await fetch(`/api/getSignedImageUrl?${params.toString()}`);
+    if (!response.ok) throw new Error('Request failed');
+    const { url } = await response.json();
+    return url;
   } catch (err) {
     console.error('getSignedImageUrl error:', err.message);
     return fallback;
