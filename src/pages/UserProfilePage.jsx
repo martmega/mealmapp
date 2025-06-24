@@ -49,7 +49,7 @@ export default function UserProfilePage({
       let recipesQuery = supabase
         .from('recipes')
         .select(
-          'id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, is_public'
+          'id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, visibility'
         )
         .eq('user_id', userId);
 
@@ -89,9 +89,13 @@ export default function UserProfilePage({
       if (session?.user?.id === userId) {
         // Owner can see all their recipes
       } else if (currentRelationshipStatus === 'friends') {
-        recipesQuery = recipesQuery.in('is_public', [true, false]);
+        recipesQuery = recipesQuery.in('visibility', [
+          'private',
+          'public',
+          'friends_only',
+        ]);
       } else {
-        recipesQuery = recipesQuery.eq('is_public', true);
+        recipesQuery = recipesQuery.eq('visibility', 'public');
       }
 
       const { data: recipeData, error: recipeError } = await recipesQuery.order(

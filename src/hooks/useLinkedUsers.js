@@ -17,7 +17,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
           .from('recipes')
           .select('*')
           .eq('user_id', userId)
-          .in('is_public', [true, false]);
+          .in('visibility', ['private', 'public', 'friends_only']);
 
         if (error) throw error;
 
@@ -39,7 +39,10 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
             }))
           : [];
       } catch (error) {
-        console.error(`Error fetching recipes for user ${userName} (${userId}):`, error);
+        console.error(
+          `Error fetching recipes for user ${userName} (${userId}):`,
+          error
+        );
         toast({
           title: 'Erreur',
           description: `Impossible de charger les recettes de ${userName}.`,
@@ -70,7 +73,10 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
     if (newEnabledState && newLinkedUsers.length > 0) {
       for (const user of newLinkedUsers) {
         if (user?.id && user.id !== userProfile?.id) {
-          const fetchedRecipes = await fetchLinkedUserRecipes(user.id, user.name);
+          const fetchedRecipes = await fetchLinkedUserRecipes(
+            user.id,
+            user.name
+          );
           newLinkedUserRecipes.push(...fetchedRecipes);
         }
       }
@@ -91,7 +97,9 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
     const newRatio = parseInt(newRatioStr, 10);
     if (isNaN(newRatio)) return;
 
-    const updatedUsers = [...(preferences.commonMenuSettings.linkedUsers || [])];
+    const updatedUsers = [
+      ...(preferences.commonMenuSettings.linkedUsers || []),
+    ];
     if (updatedUsers[index]) {
       updatedUsers[index].ratio = Math.max(0, Math.min(100, newRatio));
     }
@@ -114,7 +122,10 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
       });
       return;
     }
-    if (newLinkedUserTag.trim().toLowerCase() === userProfile.username?.toLowerCase()) {
+    if (
+      newLinkedUserTag.trim().toLowerCase() ===
+      userProfile.username?.toLowerCase()
+    ) {
       toast({
         title: 'Erreur',
         description: 'Vous ne pouvez pas vous lier à vous-même.',
@@ -135,7 +146,8 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
 
       const peerUser = usersData;
 
-      const currentLinkedUsers = preferences.commonMenuSettings.linkedUsers || [];
+      const currentLinkedUsers =
+        preferences.commonMenuSettings.linkedUsers || [];
       if (currentLinkedUsers.some((u) => u.id === peerUser.id)) {
         toast({
           title: 'Déjà lié',
@@ -159,7 +171,10 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
         );
 
       if (linkError && linkError.code !== '23505') {
-        console.warn('Error creating/upserting relationship for menu link:', linkError);
+        console.warn(
+          'Error creating/upserting relationship for menu link:',
+          linkError
+        );
       }
 
       const peerUsername = peerUser.username || peerUser.id.substring(0, 8);
@@ -170,8 +185,12 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
         isOwner: false,
       };
 
-      const fetchedRecipes = await fetchLinkedUserRecipes(peerUser.id, peerUsername);
-      const currentLinkedUserRecipes = preferences.commonMenuSettings.linkedUserRecipes || [];
+      const fetchedRecipes = await fetchLinkedUserRecipes(
+        peerUser.id,
+        peerUsername
+      );
+      const currentLinkedUserRecipes =
+        preferences.commonMenuSettings.linkedUserRecipes || [];
 
       setPreferences((prev) => ({
         ...prev,
@@ -205,10 +224,12 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
         ...prev,
         commonMenuSettings: {
           ...prev.commonMenuSettings,
-          linkedUsers: (prev.commonMenuSettings.linkedUsers || []).filter((u) => u.id !== userIdToRemove),
-          linkedUserRecipes: (prev.commonMenuSettings.linkedUserRecipes || []).filter(
-            (r) => r.sourceUserId !== userIdToRemove
+          linkedUsers: (prev.commonMenuSettings.linkedUsers || []).filter(
+            (u) => u.id !== userIdToRemove
           ),
+          linkedUserRecipes: (
+            prev.commonMenuSettings.linkedUserRecipes || []
+          ).filter((r) => r.sourceUserId !== userIdToRemove),
         },
       }));
       toast({
@@ -234,7 +255,9 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
           .from('user_relationships')
           .select('requester_id, addressee_id')
           .eq('status', 'accepted')
-          .or(`requester_id.eq.${userProfile.id},addressee_id.eq.${userProfile.id}`);
+          .or(
+            `requester_id.eq.${userProfile.id},addressee_id.eq.${userProfile.id}`
+          );
 
         if (friendsError) throw friendsError;
 
@@ -278,12 +301,15 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
 
         if (validLinkedUsers.length > 0) {
           const remainingRatio = 100 - ownerUserEntry.ratio;
-          const ratioPerUser = Math.floor(remainingRatio / validLinkedUsers.length);
+          const ratioPerUser = Math.floor(
+            remainingRatio / validLinkedUsers.length
+          );
           validLinkedUsers.forEach((u) => {
             if (u) u.ratio = ratioPerUser;
           });
           const remainder = remainingRatio % validLinkedUsers.length;
-          if (remainder > 0 && validLinkedUsers[0]) validLinkedUsers[0].ratio += remainder;
+          if (remainder > 0 && validLinkedUsers[0])
+            validLinkedUsers[0].ratio += remainder;
         }
 
         const allLinkedUsersSetup = [ownerUserEntry, ...validLinkedUsers];
@@ -291,7 +317,10 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
 
         for (const user of allLinkedUsersSetup) {
           if (user?.id && user.id !== userProfile.id) {
-            const fetchedRecipes = await fetchLinkedUserRecipes(user.id, user.name);
+            const fetchedRecipes = await fetchLinkedUserRecipes(
+              user.id,
+              user.name
+            );
             allLinkedUserRecipes.push(...fetchedRecipes);
           }
         }
@@ -312,7 +341,12 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
     if (preferences.commonMenuSettings.enabled) {
       fetchInitialLinks();
     }
-  }, [userProfile?.id, userProfile?.username, preferences.commonMenuSettings.enabled, fetchLinkedUserRecipes]);
+  }, [
+    userProfile?.id,
+    userProfile?.username,
+    preferences.commonMenuSettings.enabled,
+    fetchLinkedUserRecipes,
+  ]);
 
   return {
     newLinkedUserTag,

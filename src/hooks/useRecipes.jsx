@@ -17,7 +17,7 @@ export function useRecipes(session, subscriptionTier) {
   }, []);
 
   const baseRecipeSelect = `
-    id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, is_public, updated_at, estimated_price
+    id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, visibility, updated_at, estimated_price
   `;
 
   useEffect(() => {
@@ -161,7 +161,9 @@ export function useRecipes(session, subscriptionTier) {
           tags: ensureArray(recipeData.tags),
           instructions: ensureArray(recipeData.instructions),
           created_at: new Date().toISOString(),
-          is_public: !!recipeData.is_public,
+          visibility:
+            recipeData.visibility ||
+            (recipeData.is_public ? 'public' : 'private'),
         };
 
         if ('mealTypes' in payload) {
@@ -231,7 +233,9 @@ export function useRecipes(session, subscriptionTier) {
         meal_types: ensureArray(recipeData.meal_types),
         tags: ensureArray(recipeData.tags),
         instructions: ensureArray(recipeData.instructions),
-        is_public: !!recipeData.is_public,
+        visibility:
+          recipeData.visibility ||
+          (recipeData.is_public ? 'public' : 'private'),
       };
       setRecipes((prevRecipes) =>
         [
@@ -258,7 +262,9 @@ export function useRecipes(session, subscriptionTier) {
           meal_types: ensureArray(recipeData.meal_types),
           tags: ensureArray(recipeData.tags),
           instructions: ensureArray(recipeData.instructions),
-          is_public: !!recipeData.is_public,
+          visibility:
+            recipeData.visibility ||
+            (recipeData.is_public ? 'public' : 'private'),
         };
         if ('mealTypes' in payload) {
           delete payload.mealTypes;
@@ -326,7 +332,10 @@ export function useRecipes(session, subscriptionTier) {
           if (userError) throw userError;
           user = fetchedUser;
         } catch (err) {
-          console.error('❌ Erreur r\u00e9cup\u00e9ration utilisateur post-update :', err);
+          console.error(
+            '❌ Erreur r\u00e9cup\u00e9ration utilisateur post-update :',
+            err
+          );
         }
 
         const updatedRecipe = {
@@ -365,7 +374,9 @@ export function useRecipes(session, subscriptionTier) {
         meal_types: ensureArray(recipeData.meal_types),
         tags: ensureArray(recipeData.tags),
         instructions: ensureArray(recipeData.instructions),
-        is_public: !!recipeData.is_public,
+        visibility:
+          recipeData.visibility ||
+          (recipeData.is_public ? 'public' : 'private'),
       };
       setRecipes((prevRecipes) =>
         (Array.isArray(prevRecipes) ? prevRecipes : [])
