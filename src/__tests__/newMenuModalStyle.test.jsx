@@ -12,9 +12,8 @@ describe('NewMenuModal overlay style', () => {
     const trigger = screen.getByRole('button', { name: 'Créer un menu' });
     fireEvent.click(trigger);
 
-    const overlay = document.querySelector('.backdrop-blur-sm');
+    const overlay = document.querySelector('.backdrop-blur-md');
     expect(overlay).toBeInTheDocument();
-    expect(overlay).toHaveClass('bg-black/30');
-    expect(overlay).toHaveClass('dark:bg-black/60');
+    expect(overlay).toHaveClass('bg-surface/90');
   });
 });

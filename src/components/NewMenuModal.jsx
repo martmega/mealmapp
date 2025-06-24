@@ -39,7 +39,7 @@ function NewMenuModal({ onCreate, friends = [], trigger }) {
       </DialogTrigger>
       <DialogContent
         className="max-w-md bg-white dark:bg-neutral-900 text-black dark:text-neutral-100"
-        overlayClassName="backdrop-blur-sm bg-black/30 dark:bg-black/60"
+        overlayClassName="bg-surface/90 backdrop-blur-md"
       >
         <DialogHeader>
           <DialogTitle>Nouveau menu</DialogTitle>
