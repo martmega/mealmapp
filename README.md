@@ -29,6 +29,9 @@ The `SUPABASE_BUCKETS` object lists the allowed storage buckets:
 - `recipe-images`
 - `avatars`
 
+Run `npm run update-vercel` after modifying the constants to automatically update
+`vercel.json` with the correct project URL.
+
 `STRIPE_PUBLISHABLE_KEY` is the public key used by the browser to initialize Stripe.
 `STRIPE_STANDARD_PRICE_ID` and `STRIPE_PREMIUM_PRICE_ID` correspond to the price identifiers for your Standard and Premium subscription plans.
 You can find all three in the Stripe dashboard: the publishable key under **Developers > API keys** and the price IDs on each product's pricing page.
