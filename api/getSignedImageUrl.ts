@@ -20,9 +20,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Invalid path or bucket' });
   }
 
-  const allowedBuckets = ['recipe-images', 'avatars'];
-  if (!allowedBuckets.includes(bucket)) {
-    return res.status(400).json({ error: 'Invalid bucket' });
+  if (bucket !== 'recipe-images') {
+    return res.status(403).json({ error: 'Bucket not allowed' });
   }
 
   try {
