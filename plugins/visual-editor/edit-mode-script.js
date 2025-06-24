@@ -1,5 +1,7 @@
 import { POPUP_STYLES, getPopupHTMLTemplate } from './plugins/visual-editor/visual-editor-config.js';
 
+const STYLE_NONCE = 'inline-editor-style';
+
 const PLUGIN_APPLY_EDIT_API_URL = '/api/apply-edit';
 
 const ALLOWED_PARENT_ORIGINS = [
@@ -32,6 +34,7 @@ function injectPopupStyles() {
 
   const styleElement = document.createElement('style');
   styleElement.id = 'inline-editor-styles';
+  styleElement.setAttribute('nonce', STYLE_NONCE);
   styleElement.textContent = POPUP_STYLES;
   document.head.appendChild(styleElement);
   areStylesInjected = true;
