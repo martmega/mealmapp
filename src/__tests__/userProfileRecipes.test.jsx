@@ -7,8 +7,8 @@ import UserProfilePage from '../pages/UserProfilePage.jsx';
 
 var recipeFilterCalls;
 const recipesData = [
-  { id: '1', user_id: 'user2', name: 'Public Recipe', is_public: true },
-  { id: '2', user_id: 'user2', name: 'Private Recipe', is_public: false },
+  { id: '1', user_id: 'user2', name: 'Public Recipe', visibility: 'public' },
+  { id: '2', user_id: 'user2', name: 'Private Recipe', visibility: 'private' },
 ];
 
 vi.mock('../lib/supabase', () => {
@@ -17,11 +17,11 @@ vi.mock('../lib/supabase', () => {
     const q = {};
     q.select = vi.fn(() => q);
     q.eq = vi.fn((col, val) => {
-      if (col === 'is_public') recipeFilterCalls.eq = [col, val];
+      if (col === 'visibility') recipeFilterCalls.eq = [col, val];
       return q;
     });
     q.in = vi.fn((col, val) => {
-      if (col === 'is_public') recipeFilterCalls.in = [col, val];
+      if (col === 'visibility') recipeFilterCalls.in = [col, val];
       return q;
     });
     q.or = vi.fn(() => q);
@@ -37,7 +37,10 @@ vi.mock('../lib/supabase', () => {
         const q = createQuery([{ id: 'user2', username: 'User 2' }]);
         q.eq = vi.fn(() => q);
         q.single = vi.fn(() =>
-          Promise.resolve({ data: { id: 'user2', username: 'User 2' }, error: null })
+          Promise.resolve({
+            data: { id: 'user2', username: 'User 2' },
+            error: null,
+          })
         );
         return q;
       }
@@ -84,12 +87,18 @@ describe('UserProfilePage recipe visibility', () => {
     const { findByText } = render(
       <MemoryRouter initialEntries={['/user2']}>
         <Routes>
-          <Route path="/:userId" element={<UserProfilePage session={session} />} />
+          <Route
+            path="/:userId"
+            element={<UserProfilePage session={session} />}
+          />
         </Routes>
       </MemoryRouter>
     );
 
     expect(await findByText('Private Recipe')).toBeInTheDocument();
-    expect(recipeFilterCalls.in).toEqual(['is_public', [true, false]]);
+    expect(recipeFilterCalls.in).toEqual([
+      'visibility',
+      ['private', 'public', 'friends_only'],
+    ]);
   });
 });

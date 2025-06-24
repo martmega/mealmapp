@@ -127,7 +127,8 @@ function RecipeForm({
         tags: Array.isArray(recipe.tags) ? recipe.tags : [],
         image_url: recipe.image_url || '',
         meal_types: Array.isArray(recipe.meal_types) ? recipe.meal_types : [],
-        visibility: recipe.is_public ? 'public' : 'private',
+        visibility:
+          recipe.visibility ?? (recipe.is_public ? 'public' : 'private'),
       });
       if (descriptionRef.current && recipe.description) {
         descriptionRef.current.value = recipe.description;
@@ -136,7 +137,9 @@ function RecipeForm({
         if (recipe.image_url.startsWith('http')) {
           setPreviewImage(recipe.image_url);
         } else {
-          getSignedImageUrl('recipe-images', recipe.image_url).then(setPreviewImage);
+          getSignedImageUrl('recipe-images', recipe.image_url).then(
+            setPreviewImage
+          );
         }
       } else {
         setPreviewImage(null);
@@ -170,7 +173,9 @@ function RecipeForm({
               if (parsed.image_url.startsWith('http')) {
                 setPreviewImage(parsed.image_url);
               } else {
-                getSignedImageUrl('recipe-images', parsed.image_url).then(setPreviewImage);
+                getSignedImageUrl('recipe-images', parsed.image_url).then(
+                  setPreviewImage
+                );
               }
             }
           } else {
@@ -504,7 +509,7 @@ function RecipeForm({
       instructions: Array.isArray(formData.instructions)
         ? formData.instructions.filter((line) => line.trim() !== '')
         : [],
-      is_public: formData.visibility === 'public',
+      visibility: formData.visibility,
       estimated_price: estimated !== null ? estimated : undefined,
     };
 
@@ -590,7 +595,9 @@ function RecipeForm({
 
     try {
       const endpoint =
-        type === 'description' ? '/api/generate-description' : '/api/generate-image';
+        type === 'description'
+          ? '/api/generate-description'
+          : '/api/generate-image';
 
       const response = await fetch(endpoint, {
         method: 'POST',

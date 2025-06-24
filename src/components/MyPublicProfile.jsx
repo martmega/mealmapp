@@ -47,10 +47,10 @@ export default function MyPublicProfile({
       const { data: recipeData, error: recipeError } = await supabase
         .from('recipes')
         .select(
-          'id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, is_public'
+          'id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, visibility'
         )
         .eq('user_id', session.user.id)
-        .in('is_public', [true, false])
+        .in('visibility', ['private', 'public', 'friends_only'])
         .order('created_at', { ascending: false });
 
       if (recipeError) throw recipeError;
