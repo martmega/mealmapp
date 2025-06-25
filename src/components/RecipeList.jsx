@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Edit2, Trash2, Star, Clock, Eye } from 'lucide-react';
 import { RECIPE_CARD_COLORS_CLASSES } from '@/lib/colors';
 import SignedImage from '@/components/SignedImage';
-import { SUPABASE_BUCKETS } from '@/config/constants';
+import { SUPABASE_BUCKETS } from '@/config/constants.client';
 
 const MemoizedRecipeCard = React.memo(function RecipeCard({
   recipe,

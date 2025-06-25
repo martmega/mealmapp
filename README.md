@@ -21,8 +21,9 @@ These values are injected by Vite and used by the app at runtime.
 Additional documentation is available in the [docs](docs) directory.
 
 All Supabase URLs used by the application are defined in
-`src/config/constants.ts`. Any new interaction with Supabase should import these
-constants instead of hard coding URLs. The buckets currently in use are
+`src/config/constants.client.ts` for the frontend and
+`api/config/constants.server.ts` for the backend. Any new interaction with
+Supabase should import these constants instead of hard coding URLs. The buckets currently in use are
 `recipe-images` and `avatars`.
 
 `STRIPE_PUBLISHABLE_KEY` is the public key used by the browser to initialize Stripe.
@@ -56,7 +57,7 @@ npx ts-node scripts/test-zod.ts
 Some tests rely on a small image stored in Supabase. Upload any PNG to the
 `recipe-images` bucket at `public/test-image.png`.
 The bucket name corresponds to `SUPABASE_BUCKETS.recipes` from
-`src/config/constants.ts`.
+`src/config/constants.client.ts`.
 
 Example with the Supabase CLI:
 

@@ -15,7 +15,7 @@ import {
 import { Link } from 'react-router-dom';
 import SignedImage from '@/components/SignedImage';
 import { DEFAULT_AVATAR_URL } from '@/lib/images';
-import { SUPABASE_BUCKETS } from '@/config/constants';
+import { SUPABASE_BUCKETS } from '@/config/constants.client';
 import {
   Dialog,
   DialogContent,

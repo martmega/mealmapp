@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { X, Clock, Users, Tag, ClipboardList, Soup } from 'lucide-react';
 import { MEAL_TYPE_OPTIONS_MAP } from '@/lib/mealTypes';
 import SignedImage from '@/components/SignedImage';
-import { SUPABASE_BUCKETS } from '@/config/constants';
+import { SUPABASE_BUCKETS } from '@/config/constants.client';
 
 function RecipeDetailModal({ recipe, onClose, userProfile }) {
   const servingsPerMealPreference = useMemo(() => {

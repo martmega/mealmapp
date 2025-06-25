@@ -5,7 +5,7 @@ import LoadingScreen from '@/components/layout/LoadingScreen';
 import { UserCircle, ShieldCheck } from 'lucide-react';
 import SignedImage from '@/components/SignedImage';
 import { DEFAULT_AVATAR_URL } from '@/lib/images';
-import { SUPABASE_BUCKETS } from '@/config/constants';
+import { SUPABASE_BUCKETS } from '@/config/constants.client';
 import { useToast } from '@/components/ui/use-toast';
 import RecipeDetailModal from '@/components/RecipeDetailModal';
 import { useNavigate, useLocation } from 'react-router-dom';

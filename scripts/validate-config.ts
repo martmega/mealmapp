@@ -9,7 +9,13 @@ const patterns = [
 
 async function main() {
   const files = await glob('**/*.{js,jsx,ts,tsx,json}', {
-    ignore: ['node_modules/**', 'dist/**', 'build/**', '**/src/config/constants.ts'],
+    ignore: [
+      'node_modules/**',
+      'dist/**',
+      'build/**',
+      '**/src/config/constants.client.ts',
+      '**/api/config/constants.server.ts',
+    ],
   });
 
   let hasHardcoded = false;
@@ -17,7 +23,11 @@ async function main() {
   for (const file of files) {
     const content = fs.readFileSync(file, 'utf8');
     for (const pattern of patterns) {
-      if (pattern.test(content) && file !== 'src/config/constants.ts') {
+      if (
+        pattern.test(content) &&
+        file !== 'src/config/constants.client.ts' &&
+        file !== 'api/config/constants.server.ts'
+      ) {
         console.error(`Hardcoded Supabase URL found in ${file}`);
         hasHardcoded = true;
         break;
@@ -26,7 +36,9 @@ async function main() {
   }
 
   if (hasHardcoded) {
-    console.error('Supabase URLs should be defined in src/config/constants.ts');
+    console.error(
+      'Supabase URLs should be defined in src/config/constants.client.ts or api/config/constants.server.ts'
+    );
     process.exit(1);
   } else {
     console.log('No hardcoded Supabase URLs found.');

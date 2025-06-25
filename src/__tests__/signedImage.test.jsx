@@ -5,7 +5,7 @@ import '@testing-library/jest-dom';
 import SignedImage from '../components/SignedImage.jsx';
 import * as images from '../lib/images.js';
 import recipeImage from '../../tests/fixtures/recipe-image.json';
-import { SUPABASE_BUCKETS } from '../config/constants';
+import { SUPABASE_BUCKETS } from '../config/constants.client';
 const { DEFAULT_IMAGE_URL } = images;
 
 // Helper to mock fetch responses
