@@ -16,7 +16,7 @@ import RecipeInstructionsManager from '@/components/form/RecipeInstructionsManag
 import RecipeMetaFields from '@/components/form/RecipeMetaFields';
 import { estimateRecipePrice } from '@/lib/openai';
 import { getSignedImageUrl } from '@/lib/images';
-import { SUPABASE_BUCKETS } from '@/config/constants';
+import { SUPABASE_BUCKETS } from '@/config/constants.client';
 
 const supabase = getSupabase();
 import {

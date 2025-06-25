@@ -6,7 +6,7 @@ import LoadingScreen from '@/components/layout/LoadingScreen';
 import { UserCircle, ArrowLeft } from 'lucide-react';
 import SignedImage from '@/components/SignedImage';
 import { DEFAULT_AVATAR_URL } from '@/lib/images';
-import { SUPABASE_BUCKETS } from '@/config/constants';
+import { SUPABASE_BUCKETS } from '@/config/constants.client';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import RecipeDetailModal from '@/components/RecipeDetailModal';

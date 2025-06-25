@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Search, Loader2, UserCircle } from 'lucide-react';
 import SignedImage from '@/components/SignedImage';
 import { DEFAULT_AVATAR_URL } from '@/lib/images';
-import { SUPABASE_BUCKETS } from '@/config/constants';
+import { SUPABASE_BUCKETS } from '@/config/constants.client';
 import { Link } from 'react-router-dom';
 import { useUserSearch } from '@/hooks/useUserSearch';
 

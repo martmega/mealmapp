@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { getSupabase } from '@/lib/supabase';
 import { getSignedImageUrl, DEFAULT_AVATAR_URL } from '@/lib/images';
-import { SUPABASE_BUCKETS } from '@/config/constants';
+import { SUPABASE_BUCKETS } from '@/config/constants.client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
