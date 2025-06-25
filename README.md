@@ -21,8 +21,7 @@ These values are injected by Vite and used by the app at runtime.
 Additional documentation is available in the [docs](docs) directory.
 
 All Supabase URLs used by the application are defined in
-`src/config/constants.client.ts` for the frontend and
-`api/config/constants.server.ts` for the backend. Any new interaction with
+`src/config/constants.client.ts`. Any new interaction with
 Supabase should import these constants instead of hard coding URLs. The buckets currently in use are
 `recipe-images` and `avatars`.
 

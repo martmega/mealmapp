@@ -1,14 +1,9 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 import { getUserFromRequest } from '../src/utils/auth.js';
-import {
-  SUPABASE_URL,
-  SUPABASE_SERVICE_ROLE_KEY,
-} from '../config/constants.server';
-
-const supabaseUrl = SUPABASE_URL;
-if (!supabaseUrl) throw new Error('SUPABASE_URL is not defined');
-const serviceRoleKey = SUPABASE_SERVICE_ROLE_KEY;
+const supabaseUrl = process.env.VITE_SUPABASE_URL;
+if (!supabaseUrl) throw new Error('VITE_SUPABASE_URL is not defined');
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!serviceRoleKey)
   throw new Error('SUPABASE_SERVICE_ROLE_KEY is not defined');
 

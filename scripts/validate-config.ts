@@ -14,7 +14,6 @@ async function main() {
       'dist/**',
       'build/**',
       '**/src/config/constants.client.ts',
-      '**/api/config/constants.server.ts',
     ],
   });
 
@@ -25,8 +24,7 @@ async function main() {
     for (const pattern of patterns) {
       if (
         pattern.test(content) &&
-        file !== 'src/config/constants.client.ts' &&
-        file !== 'api/config/constants.server.ts'
+        file !== 'src/config/constants.client.ts'
       ) {
         console.error(`Hardcoded Supabase URL found in ${file}`);
         hasHardcoded = true;
@@ -37,7 +35,7 @@ async function main() {
 
   if (hasHardcoded) {
     console.error(
-      'Supabase URLs should be defined in src/config/constants.client.ts or api/config/constants.server.ts'
+      'Supabase URLs should be defined in src/config/constants.client.ts'
     );
     process.exit(1);
   } else {
