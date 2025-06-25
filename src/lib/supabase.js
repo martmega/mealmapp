@@ -1,24 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/config/constants.client';
 
 let supabase = null;
 
-export const getSupabase = (accessToken) => {
+export const getSupabase = () => {
   if (!supabase) {
-    const supabaseUrl = SUPABASE_URL;
-    if (!supabaseUrl) throw new Error('SUPABASE_URL is not defined');
-    const supabaseAnonKey = SUPABASE_ANON_KEY;
-    if (!supabaseAnonKey) throw new Error('SUPABASE_ANON_KEY is not defined');
-
-    const options = accessToken !== undefined ? {
-      global: {
-        headers: accessToken
-          ? { Authorization: `Bearer ${accessToken}` }
-          : undefined,
-      },
-    } : undefined;
-
-    supabase = createClient(supabaseUrl, supabaseAnonKey, options);
+    supabase = createClient(
+      import.meta.env.VITE_SUPABASE_URL!,
+      import.meta.env.VITE_SUPABASE_ANON_KEY!
+    );
   }
   return supabase;
 };
@@ -26,7 +15,7 @@ export const getSupabase = (accessToken) => {
 let currentSession = null;
 
 export function initializeSupabase(session) {
-  const client = getSupabase(session?.access_token);
+  const client = getSupabase();
 
   if (session?.access_token && session?.refresh_token) {
     const tokensChanged =

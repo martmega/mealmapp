@@ -20,10 +20,10 @@ STRIPE_PREMIUM_PRICE_ID=<your-premium-price-id>
 These values are injected by Vite and used by the app at runtime.
 Additional documentation is available in the [docs](docs) directory.
 
-All Supabase URLs used by the application are defined in
-`src/config/constants.client.ts` for the frontend and
-`api/config/constants.server.ts` for the backend. Any new interaction with
-Supabase should import these constants instead of hard coding URLs. The buckets currently in use are
+Frontend code reads the Supabase credentials directly from the Vite
+environment variables `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
+via `import.meta.env`. Backend code uses the values defined in
+`api/config/constants.server.ts`. The buckets currently in use are
 `recipe-images` and `avatars`.
 
 `STRIPE_PUBLISHABLE_KEY` is the public key used by the browser to initialize Stripe.
