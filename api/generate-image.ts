@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import { getUserFromRequest } from '../src/utils/auth.js';
 import generateRecipeImagePrompt from '../src/lib/recipeImagePrompt.js';
 import { createClient } from '@supabase/supabase-js';
-import { SUPABASE_BUCKETS } from '../config/buckets';
+import { SUPABASE_BUCKETS } from './config/buckets';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 if (!supabaseUrl) throw new Error('VITE_SUPABASE_URL is not defined');
