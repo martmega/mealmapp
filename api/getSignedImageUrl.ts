@@ -21,7 +21,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Invalid path or bucket' });
   }
 
-  if (bucket !== SUPABASE_BUCKETS.recipes) {
+  if (
+    bucket !== SUPABASE_BUCKETS.recipes &&
+    bucket !== SUPABASE_BUCKETS.avatars
+  ) {
     return res.status(403).json({ error: 'Bucket not allowed' });
   }
 
