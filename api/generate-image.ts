@@ -7,7 +7,7 @@ import {
   SUPABASE_BUCKETS,
   SUPABASE_URL,
   SUPABASE_SERVICE_ROLE_KEY,
-} from '../src/config/constants';
+} from '../config/constants';
 
 const supabaseUrl = SUPABASE_URL;
 if (!supabaseUrl) throw new Error('VITE_SUPABASE_URL is not defined');
