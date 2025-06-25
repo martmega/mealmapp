@@ -3,11 +3,15 @@ import OpenAI from 'openai';
 import { getUserFromRequest } from '../src/utils/auth.js';
 import generateRecipeImagePrompt from '../src/lib/recipeImagePrompt.js';
 import { createClient } from '@supabase/supabase-js';
-import { SUPABASE_BUCKETS } from '../src/config/constants';
+import {
+  SUPABASE_BUCKETS,
+  SUPABASE_URL,
+  SUPABASE_SERVICE_ROLE_KEY,
+} from '../src/config/constants';
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const supabaseUrl = SUPABASE_URL;
 if (!supabaseUrl) throw new Error('VITE_SUPABASE_URL is not defined');
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const serviceRoleKey = SUPABASE_SERVICE_ROLE_KEY;
 if (!serviceRoleKey) throw new Error('SUPABASE_SERVICE_ROLE_KEY is not defined');
 
 const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
