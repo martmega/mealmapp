@@ -35,6 +35,13 @@ The `supabase/functions` directory contains SQL scripts used to configure
 the database. In particular, `handle_new_user_signup.sql` defines a function
 that assigns the default `standard` subscription tier to new users.
 
+SQL migrations live under `supabase/migrations`. Run them with the Supabase CLI
+when setting up the database:
+
+```bash
+supabase db execute < supabase/migrations/0001_enable_recipes_rls.sql
+```
+
 ## Running tests
 
 Execute the following command to run the Vitest suite:
