@@ -18,10 +18,16 @@ vi.mock('../lib/supabase', () => {
     q.select = vi.fn(() => q);
     q.eq = vi.fn((col, val) => {
       if (col === 'visibility') recipeFilterCalls.eq = [col, val];
+      if (col === 'visibility') {
+        returnData = returnData.filter((r) => r.visibility === val);
+      }
       return q;
     });
     q.in = vi.fn((col, val) => {
       if (col === 'visibility') recipeFilterCalls.in = [col, val];
+      if (col === 'visibility') {
+        returnData = returnData.filter((r) => val.includes(r.visibility));
+      }
       return q;
     });
     q.or = vi.fn(() => q);
@@ -82,9 +88,9 @@ vi.mock('../components/FriendActionButton.jsx', () => ({
 }));
 
 describe('UserProfilePage recipe visibility', () => {
-  it('shows private recipes when users are friends', async () => {
+  it('does not show private recipes when users are friends', async () => {
     const session = { user: { id: 'user1' } };
-    const { findByText } = render(
+    const { queryByText, findByText } = render(
       <MemoryRouter initialEntries={['/user2']}>
         <Routes>
           <Route
@@ -95,10 +101,11 @@ describe('UserProfilePage recipe visibility', () => {
       </MemoryRouter>
     );
 
-    expect(await findByText('Private Recipe')).toBeInTheDocument();
+    await findByText('Public Recipe');
+    expect(queryByText('Private Recipe')).not.toBeInTheDocument();
     expect(recipeFilterCalls.in).toEqual([
       'visibility',
-      ['private', 'public', 'friends_only'],
+      ['public', 'friends_only'],
     ]);
   });
 });
