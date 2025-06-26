@@ -5,6 +5,7 @@ import {
   preloadSignedImageUrl,
   DEFAULT_IMAGE_URL,
 } from '@/lib/images';
+import { cn } from '@/lib/utils';
 
 export default function SignedImage({
   bucket,
@@ -16,6 +17,7 @@ export default function SignedImage({
 }) {
   const cached = peekCachedSignedUrl(bucket, path);
   const [url, setUrl] = useState(cached || fallback);
+  const [loaded, setLoaded] = useState(!!cached);
 
   useEffect(() => {
     let isMounted = true;
@@ -31,17 +33,24 @@ export default function SignedImage({
   }, [bucket, path, fallback]);
 
   return (
-    <img
-      src={url}
-      alt={alt}
-      loading="lazy"
-      onError={(e) => {
-        if (e.target.src !== fallback) {
-          e.target.src = fallback;
-        }
-      }}
-      className={`bg-muted ${className}`}
-      {...props}
-    />
+    <div className={cn('relative overflow-hidden', className)}>
+      <img
+        src={url}
+        alt={alt}
+        loading="lazy"
+        onLoad={() => setLoaded(true)}
+        onError={(e) => {
+          if (e.target.src !== fallback) {
+            e.target.src = fallback;
+          }
+        }}
+        className={cn(
+          'w-full h-full object-cover transition-all duration-300',
+          loaded ? 'opacity-100 blur-0' : 'opacity-0 blur-sm'
+        )}
+        {...props}
+      />
+      {!loaded && <div className="absolute inset-0 bg-muted animate-pulse" />}
+    </div>
   );
 }
