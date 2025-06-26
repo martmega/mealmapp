@@ -3,6 +3,10 @@ export const DEFAULT_AVATAR_URL = '/img/placeholder-avatar.svg';
 
 const signedUrlCache = new Map();
 
+export function clearSignedImageCache() {
+  signedUrlCache.clear();
+}
+
 export function peekCachedSignedUrl(bucket, path) {
   if (!path) return null;
   const match = path.match(/\/storage\/v1\/object\/sign\/([^?]+)/);
@@ -30,8 +34,9 @@ export async function getSignedImageUrl(
   }
 
   const cacheKey = `${bucket}:${objectPath}`;
+  const useCache = process.env.NODE_ENV !== 'test';
   const cached = signedUrlCache.get(cacheKey);
-  if (cached && cached.expiry > Date.now()) {
+  if (useCache && cached && cached.expiry > Date.now()) {
     return cached.url;
   }
 
@@ -40,10 +45,12 @@ export async function getSignedImageUrl(
     const response = await fetch(`/api/getSignedImageUrl?${params.toString()}`);
     if (!response.ok) throw new Error('Request failed');
     const { url } = await response.json();
-    signedUrlCache.set(cacheKey, {
-      url,
-      expiry: Date.now() + 60 * 60 * 1000 - 60 * 1000, // ~1h validity
-    });
+    if (useCache) {
+      signedUrlCache.set(cacheKey, {
+        url,
+        expiry: Date.now() + 60 * 60 * 1000 - 60 * 1000, // ~1h validity
+      });
+    }
     return url;
   } catch (err) {
     console.error('getSignedImageUrl error:', err.message);

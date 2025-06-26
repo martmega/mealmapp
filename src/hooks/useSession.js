@@ -6,11 +6,11 @@ const supabase = getSupabase();
 
 export function useSession() {
   const [session, setSession] = useState(undefined);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   const refreshSession = useCallback(async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const {
         data: { session: currentSession },
@@ -21,12 +21,12 @@ export function useSession() {
       initializeSupabase(null);
       setSession(null);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }, []);
 
   const handleSignOut = useCallback(async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
@@ -43,7 +43,7 @@ export function useSession() {
         variant: 'destructive',
       });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }, [toast]);
 
@@ -53,10 +53,10 @@ export function useSession() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
-      setLoading(true);
+      setIsLoading(true);
       initializeSupabase(newSession);
       setSession(newSession);
-      setLoading(false);
+      setIsLoading(false);
     });
 
     return () => {
@@ -64,5 +64,5 @@ export function useSession() {
     };
   }, [refreshSession]);
 
-  return { session, loading, refreshSession, handleSignOut };
+  return { session, isLoading, refreshSession, handleSignOut };
 }
