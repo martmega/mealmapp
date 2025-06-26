@@ -104,14 +104,25 @@ export default function UserProfilePage({
       );
       if (recipeError) throw recipeError;
 
-      const userIds = [...new Set(recipeData.map((r) => r.user_id))];
+      let filteredRecipes = recipeData;
+      if (session?.user?.id !== userId) {
+        if (currentRelationshipStatus === 'friends') {
+          filteredRecipes = recipeData.filter((r) =>
+            ['public', 'friends_only'].includes(r.visibility)
+          );
+        } else {
+          filteredRecipes = recipeData.filter((r) => r.visibility === 'public');
+        }
+      }
+
+      const userIds = [...new Set(filteredRecipes.map((r) => r.user_id))];
       const { data: users } = await supabase
         .from('public_user_view')
         .select('id, username, avatar_url, bio, subscription_tier')
         .in('id', userIds);
       const usersMap = Object.fromEntries((users || []).map((u) => [u.id, u]));
 
-      const formattedRecipes = recipeData.map((r) =>
+      const formattedRecipes = filteredRecipes.map((r) =>
         formatRecipe({ ...r, user: usersMap[r.user_id] ?? null })
       );
       setRecipes(formattedRecipes || []);
