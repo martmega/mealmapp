@@ -1,14 +1,14 @@
 import React from 'react';
 import { useSession } from '@/hooks/useSession.js';
 import useHydrated from '@/hooks/useHydrated.js';
-import LoadingScreen from './LoadingScreen.jsx';
+import FullScreenLoader from './FullScreenLoader.jsx';
 
 export default function AppBootstrapGuard({ children }) {
-  const { loading } = useSession();
+  const { isLoading } = useSession();
   const hydrated = useHydrated();
 
-  if (loading || !hydrated) {
-    return <LoadingScreen />;
+  if (isLoading || !hydrated) {
+    return <FullScreenLoader />;
   }
 
   return <>{children}</>;

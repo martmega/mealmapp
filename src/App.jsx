@@ -20,7 +20,7 @@ import AppRoutes from '@/components/AppRoutes.jsx';
 function App() {
   const {
     session,
-    loading: sessionLoading,
+    isLoading: sessionLoading,
     refreshSession,
     handleSignOut,
   } = useSession();
