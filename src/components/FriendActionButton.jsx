@@ -149,8 +149,8 @@ export default function FriendActionButton({
       >
         {isFriend
           ? hover
-            ? '❌ Retirer l\u2019ami'
-            : '✔️ Vous êtes amis'
+            ? 'Retirer l\u2019ami'
+            : 'Vous êtes amis'
           : '➕ Demander en ami'}
       </Button>
     );
