@@ -91,7 +91,6 @@ export default function UserProfilePage({
         // Owner can see all their recipes
       } else if (currentRelationshipStatus === 'friends') {
         recipesQuery = recipesQuery.in('visibility', [
-          'private',
           'public',
           'friends_only',
         ]);
