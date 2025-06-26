@@ -15,9 +15,8 @@ export function usePublicRecipes(session) {
         .eq('visibility', 'public')
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
-      if (session?.user?.id) {
-        baseQuery = baseQuery.neq('user_id', session.user.id);
-      }
+      // The discovery section should include public recipes from the
+      // current user as well, so we no longer exclude them here.
 
       const { data: recipes, error } = await baseQuery;
       if (error) {
