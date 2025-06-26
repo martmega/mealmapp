@@ -587,10 +587,26 @@ function RecipeForm({
       ) {
         toast({
           title: 'Quota IA dépassé',
-          description: `Vous avez atteint la limite de ${
-            type === 'description' ? 'descriptions' : 'images'
-          } pour ce mois.`,
+          description: (
+            <div className="flex flex-col gap-2">
+              <span>{`Vous avez atteint la limite de ${
+                type === 'description' ? 'descriptions' : 'images'
+              } pour ce mois.`}</span>
+              <Button
+                size="sm"
+                variant="accent"
+                onClick={() => {
+                  onClose();
+                  navigate('/app/account');
+                }}
+                className="mt-2"
+              >
+                Acheter des crédits IA
+              </Button>
+            </div>
+          ),
           variant: 'destructive',
+          duration: 8000,
         });
         return;
       }
