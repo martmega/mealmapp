@@ -138,19 +138,21 @@ export default function FriendActionButton({
     );
   } else {
     const isFriend = status === 'friends';
+    const variant = isFriend ? (hover ? 'destructive' : 'secondary') : 'default';
     content = (
-      <button
+      <Button
         onClick={handleAction}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
-        className={`mt-4 flex items-center gap-2 px-4 py-1.5 rounded-md border transition-all ${isFriend ? 'bg-green-600 text-white hover:bg-red-600' : 'bg-purple-600 text-white hover:bg-purple-700'}`}
+        variant={variant}
+        className="mt-4 w-40 rounded-full px-3 py-1.5 flex items-center gap-2"
       >
         {isFriend
           ? hover
             ? '❌ Retirer l\u2019ami'
             : '✔️ Vous êtes amis'
           : '➕ Demander en ami'}
-      </button>
+      </Button>
     );
   }
 
