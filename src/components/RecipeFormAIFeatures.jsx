@@ -32,7 +32,9 @@ const RecipeFormAIFeatures = ({
           disabled={
             isGeneratingDescription ||
             !session ||
-            (subscription_tier === 'vip' && (iaUsage?.text_requests ?? 0) >= 20)
+            (subscription_tier === 'vip' &&
+              (iaUsage?.text_requests ?? 0) >= 20 &&
+              (iaUsage?.text_credits ?? 0) <= 0)
           }
           className="w-full sm:w-auto"
         >
@@ -52,7 +54,8 @@ const RecipeFormAIFeatures = ({
       </div>
       {subscription_tier === 'vip' && (
         <p className="text-xs text-pastel-muted-foreground text-right">
-          Descriptions IA : {iaUsage?.text_requests ?? 0} / 20
+          Descriptions IA : {iaUsage?.text_requests ?? 0} / 20 (crédits :{' '}
+          {iaUsage?.text_credits ?? 0})
         </p>
       )}
       <Textarea

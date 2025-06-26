@@ -58,3 +58,11 @@ create table ia_usage (
   image_requests integer default 0,
   primary key (user_id, month)
 );
+
+create table ia_credits (
+  user_id uuid references auth.users(id) on delete cascade,
+  text_credits integer default 0,
+  image_credits integer default 0,
+  updated_at timestamptz default now(),
+  primary key (user_id)
+);

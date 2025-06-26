@@ -16,6 +16,7 @@
 ## AI Features
 - OpenAI integration for recipe generation, description writing, cost estimation and image generation.
 - Usage of these features is limited via the `ia_usage` table based on subscription tier.
+- Additional paid credits are tracked in the `ia_credits` table.
 
 ## Social
 - Friend requests stored in `user_relationships` allow sharing recipes among friends.

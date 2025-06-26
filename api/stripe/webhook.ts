@@ -55,12 +55,39 @@ serve(async (req) => {
         }
 
         if (id) {
-          const { error } = await supabase.auth.admin.updateUserById(id, {
-            app_metadata: { subscription_tier: "premium" },
-          });
-          if (error) {
-            console.error("Supabase update error:", error.message);
-            return new Response("Supabase update failed", { status: 500 });
+          if (session.mode === "subscription") {
+            const { error } = await supabase.auth.admin.updateUserById(id, {
+              app_metadata: { subscription_tier: "premium" },
+            });
+            if (error) {
+              console.error("Supabase update error:", error.message);
+              return new Response("Supabase update failed", { status: 500 });
+            }
+          } else if (session.mode === "payment" && session.metadata?.credits_type) {
+            const column =
+              session.metadata.credits_type === "text" ? "text_credits" : "image_credits";
+            const increment =
+              session.metadata.credits_type === "text" ? 10 : 5;
+            const { data: row, error: fetchErr } = await supabase
+              .from("ia_credits")
+              .select(column)
+              .eq("user_id", id)
+              .maybeSingle();
+            if (fetchErr) {
+              console.error("ia_credits fetch error:", fetchErr.message);
+            }
+            const current = row?.[column] ?? 0;
+            const { error: upsertErr } = await supabase.from("ia_credits").upsert(
+              {
+                user_id: id,
+                [column]: current + increment,
+                updated_at: new Date().toISOString(),
+              },
+              { onConflict: "user_id" }
+            );
+            if (upsertErr) {
+              console.error("ia_credits upsert error:", upsertErr.message);
+            }
           }
         }
         break;

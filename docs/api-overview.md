@@ -9,4 +9,5 @@ All API routes are under `api/` and are deployed as serverless functions.
 | `api/generate-description` | Generates a short recipe description with OpenAI. |
 | `api/generate-image` | Generates a DALL·E image, uploads it to Supabase and returns the file path. |
 | `api/update-profile` | Updates fields in `public_user_view` for the current user. |
+| `api/purchase-credits` | Starts a Stripe Checkout session to buy extra AI credits. |
 | `api/stripe/webhook` | Deno function that updates subscription metadata after Stripe events. |

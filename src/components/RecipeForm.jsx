@@ -92,14 +92,26 @@ function RecipeForm({
     }
     const now = new Date();
     const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    const { data, error } = await supabase
+    const { data: usage } = await supabase
       .from('ia_usage')
       .select('text_requests, image_requests')
       .eq('user_id', session.user.id)
       .eq('month', month)
-      .single();
-    if (!error) {
-      setIaUsage(data);
+      .maybeSingle();
+
+    const { data: credits } = await supabase
+      .from('ia_credits')
+      .select('text_credits, image_credits')
+      .eq('user_id', session.user.id)
+      .maybeSingle();
+
+    if (usage || credits) {
+      setIaUsage({
+        text_requests: usage?.text_requests ?? 0,
+        image_requests: usage?.image_requests ?? 0,
+        text_credits: credits?.text_credits ?? 0,
+        image_credits: credits?.image_credits ?? 0,
+      });
     } else {
       setIaUsage(null);
     }
@@ -567,9 +579,11 @@ function RecipeForm({
     }
 
     if (subscriptionTier === 'vip') {
+      const textExceeded = (iaUsage?.text_requests ?? 0) >= 20;
+      const imageExceeded = (iaUsage?.image_requests ?? 0) >= 5;
       if (
-        (type === 'description' && (iaUsage?.text_requests ?? 0) >= 20) ||
-        (type === 'image' && (iaUsage?.image_requests ?? 0) >= 5)
+        (type === 'description' && textExceeded && (iaUsage?.text_credits ?? 0) <= 0) ||
+        (type === 'image' && imageExceeded && (iaUsage?.image_credits ?? 0) <= 0)
       ) {
         toast({
           title: 'Quota IA dépassé',
@@ -580,6 +594,8 @@ function RecipeForm({
         });
         return;
       }
+      // store for later
+      var quotaFlags = { textExceeded, imageExceeded };
     }
 
     if (!formData.name || !formData.ingredients.some((i) => i.name)) {
@@ -640,7 +656,14 @@ function RecipeForm({
         if (subscriptionTier === 'vip') {
           setIaUsage((prev) => ({
             ...prev,
-            text_requests: (prev?.text_requests ?? 0) + 1,
+            text_requests:
+              quotaFlags?.textExceeded
+                ? prev?.text_requests ?? 0
+                : (prev?.text_requests ?? 0) + 1,
+            text_credits:
+              quotaFlags?.textExceeded
+                ? (prev?.text_credits ?? 0) - 1
+                : prev?.text_credits ?? 0,
           }));
         }
       } else if (type === 'image') {
@@ -655,7 +678,14 @@ function RecipeForm({
         if (subscriptionTier === 'vip') {
           setIaUsage((prev) => ({
             ...prev,
-            image_requests: (prev?.image_requests ?? 0) + 1,
+            image_requests:
+              quotaFlags?.imageExceeded
+                ? prev?.image_requests ?? 0
+                : (prev?.image_requests ?? 0) + 1,
+            image_credits:
+              quotaFlags?.imageExceeded
+                ? (prev?.image_credits ?? 0) - 1
+                : prev?.image_credits ?? 0,
           }));
         }
       }

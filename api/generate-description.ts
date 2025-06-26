@@ -84,9 +84,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (quotaExceeded) {
-    return res
-      .status(429)
-      .json({ error: 'Quota IA (description) atteint pour ce mois.' });
+    const { data: credits, error: creditErr } = await supabaseAdmin
+      .from('ia_credits')
+      .select('text_credits')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (creditErr) {
+      console.error('ia_credits fetch error:', creditErr.message);
+    }
+    const available = credits?.text_credits ?? 0;
+    if (available > 0) {
+      const { error: updateErr } = await supabaseAdmin
+        .from('ia_credits')
+        .update({
+          text_credits: available - 1,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', user.id);
+      if (updateErr) {
+        console.error('ia_credits update error:', updateErr.message);
+      }
+      quotaExceeded = false;
+    } else {
+      return res
+        .status(429)
+        .json({ error: 'Quota IA (description) atteint pour ce mois.' });
+    }
   }
 
   const apiKey = process.env.OPENAI_API_KEY;
