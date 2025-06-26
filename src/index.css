@@ -188,3 +188,13 @@
     @apply border-pastel-mint text-pastel-mint hover:bg-pastel-mint/10;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation: none !important;
+    transition-duration: 0s !important;
+  }
+  html {
+    transition: none;
+  }
+}

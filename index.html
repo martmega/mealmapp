@@ -10,6 +10,15 @@
     <title>Mealmapp - Alpha</title>
   </head>
   <body class="bg-white text-black dark:bg-[#121212] dark:text-white transition-colors duration-300">
+    <script>
+      (function () {
+        const saved = localStorage.getItem('darkMode');
+        const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (saved === null ? prefers : JSON.parse(saved)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
