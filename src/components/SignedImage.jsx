@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { getSignedImageUrl, DEFAULT_IMAGE_URL } from '@/lib/images';
+import {
+  getSignedImageUrl,
+  peekCachedSignedUrl,
+  preloadSignedImageUrl,
+  DEFAULT_IMAGE_URL,
+} from '@/lib/images';
 
 export default function SignedImage({
   bucket,
@@ -9,10 +14,12 @@ export default function SignedImage({
   fallback = DEFAULT_IMAGE_URL,
   ...props
 }) {
-  const [url, setUrl] = useState(fallback);
+  const cached = peekCachedSignedUrl(bucket, path);
+  const [url, setUrl] = useState(cached || fallback);
 
   useEffect(() => {
     let isMounted = true;
+    preloadSignedImageUrl(bucket, path, fallback);
     async function fetchUrl() {
       const signed = await getSignedImageUrl(bucket, path, fallback);
       if (isMounted) setUrl(signed);
@@ -23,5 +30,18 @@ export default function SignedImage({
     };
   }, [bucket, path, fallback]);
 
-  return <img src={url} alt={alt} className={className} {...props} />;
+  return (
+    <img
+      src={url}
+      alt={alt}
+      loading="lazy"
+      onError={(e) => {
+        if (e.target.src !== fallback) {
+          e.target.src = fallback;
+        }
+      }}
+      className={`bg-muted ${className}`}
+      {...props}
+    />
+  );
 }

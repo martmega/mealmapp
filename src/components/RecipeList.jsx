@@ -1,10 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Edit2, Trash2, Star, Clock, Eye } from 'lucide-react';
 import { RECIPE_CARD_COLORS_CLASSES } from '@/lib/colors';
 import SignedImage from '@/components/SignedImage';
 import { SUPABASE_BUCKETS } from '@/config/constants.client';
+import { preloadSignedImageUrl } from '@/lib/images';
 
 const MemoizedRecipeCard = React.memo(function RecipeCard({
   recipe,
@@ -13,6 +14,11 @@ const MemoizedRecipeCard = React.memo(function RecipeCard({
   onDelete,
   onSelectRecipe,
 }) {
+  useEffect(() => {
+    if (recipe.image_url) {
+      preloadSignedImageUrl(SUPABASE_BUCKETS.recipes, recipe.image_url);
+    }
+  }, [recipe.image_url]);
   const handleCardClick = (e) => {
     if (e.target.closest('button')) {
       return;
