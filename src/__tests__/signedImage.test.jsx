@@ -26,6 +26,7 @@ describe('SignedImage', () => {
 
     const img = await screen.findByRole('img');
     expect(img).toHaveAttribute('src', signedUrl);
+    expect(img).toHaveAttribute('loading', 'lazy');
   });
 
   it('falls back to default image when API fails', async () => {
