@@ -35,6 +35,30 @@ export default function IACredits({ session }) {
     fetchCredits();
   }, [session]);
 
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    if (query.get('credits_success')) {
+      toast({
+        title: 'Crédits achetés !',
+        description: 'Vos crédits ont été ajoutés à votre compte.',
+      });
+      fetchCredits();
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete('credits_success');
+      window.history.replaceState({}, '', newUrl.toString());
+    }
+    if (query.get('credits_canceled')) {
+      toast({
+        title: 'Achat annulé',
+        description: "Le processus d'achat a été annulé.",
+        variant: 'default',
+      });
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete('credits_canceled');
+      window.history.replaceState({}, '', newUrl.toString());
+    }
+  }, [toast]);
+
   const handlePurchase = async (type) => {
     setLoading(type);
     try {
