@@ -4,6 +4,7 @@ import ProfileInformationForm from '@/components/account/ProfileInformationForm'
 import EmailForm from '@/components/account/EmailForm';
 import PasswordChangeForm from '@/components/account/PasswordChangeForm';
 import SubscriptionManagement from '@/components/account/SubscriptionManagement';
+import IACredits from '@/components/account/IACredits';
 
 export default function AccountPage({ session, userProfile, onProfileUpdate }) {
   if (!session) {
@@ -52,6 +53,12 @@ export default function AccountPage({ session, userProfile, onProfileUpdate }) {
           onProfileUpdate={onProfileUpdate}
         />
       </section>
+
+      {userProfile.subscription_tier === 'vip' && (
+        <section className="bg-muted/10 p-6 rounded-xl space-y-6">
+          <IACredits session={session} />
+        </section>
+      )}
     </div>
   );
 }

@@ -35,3 +35,6 @@ create policy "allow menu participants" on weekly_menus
 ## ia_usage
 - Usage rows are created and updated by server functions.
 - Users may read their own usage statistics.
+
+## ia_credits
+- Users can read and modify their own credit balance only.

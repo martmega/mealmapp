@@ -62,7 +62,9 @@ const RecipeFormImageHandler = ({
           disabled={
             isGeneratingImage ||
             !session ||
-            (subscription_tier === 'vip' && (iaUsage?.image_requests ?? 0) >= 5)
+            (subscription_tier === 'vip' &&
+              (iaUsage?.image_requests ?? 0) >= 5 &&
+              (iaUsage?.image_credits ?? 0) <= 0)
           }
           className="h-auto py-3"
         >
@@ -82,7 +84,8 @@ const RecipeFormImageHandler = ({
       </div>
       {subscription_tier === 'vip' && (
         <p className="text-xs text-pastel-muted-foreground text-right">
-          Images IA : {iaUsage?.image_requests ?? 0} / 5
+          Images IA : {iaUsage?.image_requests ?? 0} / 5 (crédits :{' '}
+          {iaUsage?.image_credits ?? 0})
         </p>
       )}
       {previewImage && (
