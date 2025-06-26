@@ -51,7 +51,7 @@ export default function MyPublicProfile({
           'id, user_id, name, description, servings, ingredients, instructions, calories, meal_types, tags, created_at, image_url, visibility'
         )
         .eq('user_id', session.user.id)
-        .in('visibility', ['private', 'public', 'friends_only'])
+        .in('visibility', ['public', 'friends_only'])
         .order('created_at', { ascending: false });
 
       if (recipeError) throw recipeError;
