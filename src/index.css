@@ -183,11 +183,8 @@
 }
 
 @layer components {
-  /* Mint and salmon helpers for shared menus */
+  /* Mint helpers for shared menus */
   .shared-menu {
     @apply border-pastel-mint text-pastel-mint hover:bg-pastel-mint/10;
-  }
-  .shared-menu-active {
-    @apply bg-pastel-salmon text-white;
   }
 }

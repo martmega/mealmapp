@@ -128,7 +128,7 @@ describe('MenuTabs', () => {
 
     const tab = screen.getByRole('tab', { name: 'Menu 1' });
     expect(tab).toHaveClass('shared-menu');
-    expect(tab).toHaveClass('data-[state=active]:shared-menu-active');
+    expect(tab).toHaveClass('data-[state=active]:bg-pastel-mint');
   });
 
   it("n'affiche pas le bouton supprimer pour un menu partagé par un autre utilisateur", () => {

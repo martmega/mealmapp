@@ -75,7 +75,6 @@ Once uploaded, the image will be publicly available at
 Its location is referenced in `tests/fixtures/recipe-image.json` and used by the
 `SignedImage` tests.
 
-
 ## Price estimation
 
 Recipe prices are estimated with OpenAI only when required. A new estimate is
@@ -87,29 +86,28 @@ change during editing. Existing estimates are reused otherwise.
 Two utility classes in `src/index.css` style shared menus:
 
 - `.shared-menu` applies mint colors.
-- `.shared-menu-active` switches the background to salmon when active.
 
-The `MenuTabs` component uses these classes to highlight menus shared with you.
+The `MenuTabs` component uses `.shared-menu` and the
+`data-[state=active]:bg-pastel-mint` utility to highlight the active shared
+menu with a full green background.
 
 ## 🔐 Configuration des variables d'environnement
 
 La clé `OPENAI_API_KEY` doit être fournie uniquement aux fonctions côté serveur.
 
 - **Vercel** : ajoutez `OPENAI_API_KEY` dans les variables d'environnement du projet pour les routes API Node.js.
-- **Supabase** : renseignez `OPENAI_API_KEY` dans *Project Settings > Functions > Environment Variables* pour les fonctions Deno.
+- **Supabase** : renseignez `OPENAI_API_KEY` dans _Project Settings > Functions > Environment Variables_ pour les fonctions Deno.
 
 Cette clé ne doit jamais être exposée au client ; n'utilisez donc pas de préfixe `VITE_`.
 
 # ENV
-OPENAI_API_KEY=sk-...
 
+OPENAI_API_KEY=sk-...
 
 ## Prompt templates
 
 Des exemples de prompts pour générer des images de recettes sont disponibles dans [prompt-templates.md](docs/prompt-templates.md).
 
-
 ## License
 
 This project is released under the [MIT License](LICENSE).
-
