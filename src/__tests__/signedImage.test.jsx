@@ -32,7 +32,7 @@ describe('SignedImage', () => {
   it('falls back to default image when API fails', async () => {
     mockFetch({ ok: false });
 
-    render(<SignedImage bucket={SUPABASE_BUCKETS.recipes} path="image.jpg" alt="image" />);
+    render(<SignedImage bucket={SUPABASE_BUCKETS.recipes} path="image-fail.jpg" alt="image" />);
 
     const img = await screen.findByRole('img');
     expect(img).toHaveAttribute('src', DEFAULT_IMAGE_URL);
