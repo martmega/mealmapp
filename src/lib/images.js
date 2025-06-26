@@ -1,5 +1,5 @@
-export const DEFAULT_IMAGE_URL = 'https://placehold.co/600x400?text=Image';
-export const DEFAULT_AVATAR_URL = 'https://placehold.co/100x100?text=Avatar';
+export const DEFAULT_IMAGE_URL = '/img/placeholder-image.svg';
+export const DEFAULT_AVATAR_URL = '/img/placeholder-avatar.svg';
 
 const signedUrlCache = new Map();
 
