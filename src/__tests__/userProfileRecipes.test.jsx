@@ -8,7 +8,13 @@ import UserProfilePage from '../pages/UserProfilePage.jsx';
 var recipeFilterCalls;
 const recipesData = [
   { id: '1', user_id: 'user2', name: 'Public Recipe', visibility: 'public' },
-  { id: '2', user_id: 'user2', name: 'Private Recipe', visibility: 'private' },
+  {
+    id: '2',
+    user_id: 'user2',
+    name: 'Friends Recipe',
+    visibility: 'friends_only',
+  },
+  { id: '3', user_id: 'user2', name: 'Private Recipe', visibility: 'private' },
 ];
 
 vi.mock('../lib/supabase', () => {
@@ -88,7 +94,7 @@ vi.mock('../components/FriendActionButton.jsx', () => ({
 }));
 
 describe('UserProfilePage recipe visibility', () => {
-  it('does not show private recipes when users are friends', async () => {
+  it('shows public and friends_only recipes for friends', async () => {
     const session = { user: { id: 'user1' } };
     const { queryByText, findByText } = render(
       <MemoryRouter initialEntries={['/user2']}>
@@ -102,10 +108,26 @@ describe('UserProfilePage recipe visibility', () => {
     );
 
     await findByText('Public Recipe');
+    await findByText('Friends Recipe');
     expect(queryByText('Private Recipe')).not.toBeInTheDocument();
     expect(recipeFilterCalls.in).toEqual([
       'visibility',
       ['public', 'friends_only'],
     ]);
+  });
+
+  it('shows only public recipes when not logged in', async () => {
+    const { queryByText, findByText } = render(
+      <MemoryRouter initialEntries={['/user2']}>
+        <Routes>
+          <Route path="/:userId" element={<UserProfilePage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await findByText('Public Recipe');
+    expect(queryByText('Friends Recipe')).not.toBeInTheDocument();
+    expect(queryByText('Private Recipe')).not.toBeInTheDocument();
+    expect(recipeFilterCalls.eq).toEqual(['visibility', 'public']);
   });
 });
