@@ -32,9 +32,9 @@ export default function MenuTabs({
       <TabsList className="flex overflow-x-auto items-center gap-2">
         {menus.map((menu) => {
           const isShared = menu.is_shared === true;
-          // Shared menus use mint and salmon helper classes
+          // Shared menus turn mint when active
           const colorClasses = isShared
-            ? 'shared-menu data-[state=active]:shared-menu-active'
+            ? 'shared-menu data-[state=active]:bg-pastel-mint data-[state=active]:text-white'
             : 'border-pastel-primary text-pastel-primary hover:bg-pastel-primary/10 data-[state=active]:bg-pastel-primary';
           return (
             <TabsTrigger
