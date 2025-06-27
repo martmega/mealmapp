@@ -340,7 +340,10 @@ export function useMenuGeneration(
           if (actualIndexInAvailable !== -1) {
             availableRecipes.splice(actualIndexInAvailable, 1);
           }
-          if (recipeUsageCount[baseId] < 3 || candidateStageUsed > 0) {
+          if (
+            recipeUsageCount[baseId] > 1 &&
+            (recipeUsageCount[baseId] <= 3 || candidateStageUsed > 0)
+          ) {
             availableRecipes.push(bestRecipeForMeal);
           }
         } else {
