@@ -94,6 +94,9 @@ export function useWeeklyMenu(session, currentMenuId = null) {
 
   const fetchWeeklyMenu = useCallback(
     async (id = menuId) => {
+      if (!id) {
+        console.warn('Menu ID is null — impossible de charger les préférences');
+      }
       if (!id && !userId) return;
       setLoading(true);
       try {
