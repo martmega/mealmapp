@@ -4,12 +4,43 @@ import { useToast } from '@/components/ui/use-toast';
 import { initialWeeklyMenuState } from '@/lib/menu';
 
 const defaultPrefs = {
-  portions_per_meal: 4,
-  daily_calories_limit: 2200,
-  weekly_budget: 35,
-  daily_meal_structure: [],
-  tag_preferences: [],
+  servingsPerMeal: 4,
+  maxCalories: 2200,
+  weeklyBudget: 35,
+  meals: [],
+  tagPreferences: [],
 };
+
+function fromDbPrefs(pref) {
+  if (!pref) return { ...defaultPrefs };
+  const meals = (pref.daily_meal_structure || []).map((t, idx) => ({
+    id: idx + 1,
+    mealNumber: idx + 1,
+    types: t ? [t] : [],
+    enabled: true,
+  }));
+  return {
+    servingsPerMeal: pref.portions_per_meal ?? 4,
+    maxCalories: pref.daily_calories_limit ?? 2200,
+    weeklyBudget: pref.weekly_budget ?? 35,
+    meals,
+    tagPreferences: pref.tag_preferences || [],
+  };
+}
+
+function toDbPrefs(pref) {
+  return {
+    portions_per_meal: pref.servingsPerMeal,
+    daily_calories_limit: pref.maxCalories,
+    weekly_budget: pref.weeklyBudget,
+    daily_meal_structure: Array.isArray(pref.meals)
+      ? pref.meals
+          .filter((m) => m.enabled)
+          .map((m) => (m.types && m.types[0] ? m.types[0] : ''))
+      : [],
+    tag_preferences: pref.tagPreferences || [],
+  };
+}
 
 const supabase = getSupabase();
 
@@ -89,14 +120,14 @@ export function useWeeklyMenu(session, currentMenuId = null) {
           if (prefError && prefError.code !== 'PGRST116') throw prefError;
 
           if (pref) {
-            setPreferences({ ...defaultPrefs, ...pref });
+            setPreferences(fromDbPrefs(pref));
           } else {
             const { data: inserted, error: insertErr } = await supabase
               .from('weekly_menu_preferences')
-              .insert({ menu_id: data.id, ...defaultPrefs })
+              .insert({ menu_id: data.id, ...toDbPrefs(defaultPrefs) })
               .select('*')
               .single();
-            if (!insertErr && inserted) setPreferences(inserted);
+            if (!insertErr && inserted) setPreferences(fromDbPrefs(inserted));
           }
         }
       } catch (err) {
@@ -244,22 +275,12 @@ export function useWeeklyMenu(session, currentMenuId = null) {
       try {
         const { data: updated, error } = await supabase
           .from('weekly_menu_preferences')
-          .upsert(
-            {
-              menu_id: id,
-              portions_per_meal: newPrefs.portions_per_meal,
-              daily_calories_limit: newPrefs.daily_calories_limit,
-              weekly_budget: newPrefs.weekly_budget,
-              daily_meal_structure: newPrefs.daily_meal_structure,
-              tag_preferences: newPrefs.tag_preferences,
-            },
-            { onConflict: 'menu_id' }
-          )
+          .upsert({ menu_id: id, ...toDbPrefs(newPrefs) }, { onConflict: 'menu_id' })
           .select('*')
           .single();
 
         if (error) throw error;
-        if (updated) setPreferences(updated);
+        if (updated) setPreferences(fromDbPrefs(updated));
         return true;
       } catch (err) {
         console.error('Error updating preferences:', err);

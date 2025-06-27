@@ -1,65 +1,85 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button.jsx';
 import { Input } from '@/components/ui/input.jsx';
 import { Label } from '@/components/ui/label.jsx';
-import { Button } from '@/components/ui/button.jsx';
-import { Checkbox } from '@/components/ui/Checkbox.jsx';
+import { motion } from 'framer-motion';
+import {
+  Plus,
+  ChevronUp,
+  ChevronDown,
+  Trash2,
+  Users,
+} from 'lucide-react';
 import MealTypeSelector from '@/components/MealTypeSelector.jsx';
+import TagPreferencesForm from '@/components/menu_planner/TagPreferencesForm.jsx';
 import CommonMenuSettings from '@/components/menu_planner/CommonMenuSettings.jsx';
 import { useLinkedUsers } from '@/hooks/useLinkedUsers.js';
 
-function MenuPreferencesPanel({
-  preferences,
-  setPreferences,
-  availableTags,
-  userProfile,
-}) {
-  const update = (field, value) => {
-    setPreferences({ ...preferences, [field]: value });
+function MenuPreferencesPanel({ preferences, setPreferences, availableTags, userProfile }) {
+  const addMeal = () => {
+    const newMealNumber = (preferences.meals?.length || 0) + 1;
+    setPreferences({
+      ...preferences,
+      meals: [
+        ...(preferences.meals || []),
+        { id: Date.now(), types: [], enabled: true, mealNumber: newMealNumber },
+      ],
+    });
   };
 
-  const toggleMeal = (type) => {
-    const arr = [...(preferences.daily_meal_structure || [])];
-    if (arr.includes(type)) {
-      update('daily_meal_structure', arr.filter((t) => t !== type));
+  const removeMeal = (index) => {
+    const newMeals = [...(preferences.meals || [])];
+    newMeals.splice(index, 1);
+    const renumberedMeals = newMeals.map((meal, idx) => ({ ...meal, mealNumber: idx + 1 }));
+    setPreferences({ ...preferences, meals: renumberedMeals });
+  };
+
+  const toggleMealType = (mealIndex, type) => {
+    const newMeals = [...(preferences.meals || [])];
+    const current = newMeals[mealIndex].types || [];
+    if (current.includes(type)) {
+      newMeals[mealIndex].types = current.filter((t) => t !== type);
     } else {
-      update('daily_meal_structure', [...arr, type]);
+      newMeals[mealIndex].types = [...current, type];
     }
+    setPreferences({ ...preferences, meals: newMeals });
+  };
+
+  const moveMeal = (index, direction) => {
+    const newMeals = [...(preferences.meals || [])];
+    let target = null;
+    if (direction === 'up' && index > 0) target = index - 1;
+    if (direction === 'down' && index < newMeals.length - 1) target = index + 1;
+    if (target === null) return;
+    [newMeals[index], newMeals[target]] = [newMeals[target], newMeals[index]];
+    const renumbered = newMeals.map((m, idx) => ({ ...m, mealNumber: idx + 1 }));
+    setPreferences({ ...preferences, meals: renumbered });
+  };
+
+  const handleServingsChange = (e) => {
+    const val = parseInt(e.target.value, 10);
+    setPreferences({ ...preferences, servingsPerMeal: val > 0 ? val : 1 });
   };
 
   const [tagInput, setTagInput] = useState('');
 
-  const savedLimit = useRef(preferences.daily_calories_limit ?? 2200);
-  const [limitCalories, setLimitCalories] = useState(
-    preferences.daily_calories_limit !== null &&
-      preferences.daily_calories_limit !== undefined
-  );
-
-  useEffect(() => {
-    if (
-      preferences.daily_calories_limit !== null &&
-      preferences.daily_calories_limit !== undefined
-    ) {
-      savedLimit.current = preferences.daily_calories_limit;
-      setLimitCalories(true);
-    } else {
-      setLimitCalories(false);
-    }
-  }, [preferences.daily_calories_limit]);
-
-  const addTag = () => {
+  const addSimpleTag = () => {
     const tag = tagInput.trim();
     if (!tag) return;
-    if (!preferences.tag_preferences?.includes(tag)) {
-      update('tag_preferences', [...(preferences.tag_preferences || []), tag]);
+    if (!(preferences.tagPreferences || []).includes(tag)) {
+      setPreferences({
+        ...preferences,
+        tagPreferences: [...(preferences.tagPreferences || []), tag],
+      });
     }
     setTagInput('');
   };
 
-  const removeTag = (tag) => {
-    update(
-      'tag_preferences',
-      (preferences.tag_preferences || []).filter((t) => t !== tag)
-    );
+  const removeSimpleTag = (tag) => {
+    setPreferences({
+      ...preferences,
+      tagPreferences: (preferences.tagPreferences || []).filter((t) => t !== tag),
+    });
   };
 
   const {
@@ -73,76 +93,146 @@ function MenuPreferencesPanel({
   } = useLinkedUsers(userProfile, preferences, setPreferences);
 
   return (
-    <div className="space-y-8">
-      <section className="space-y-4">
-        <h3 className="font-semibold text-pastel-text">Quantités</h3>
+    <motion.div
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: 'auto' }}
+      exit={{ opacity: 0, height: 0 }}
+      transition={{ duration: 0.3 }}
+      className="bg-pastel-card p-6 rounded-xl shadow-pastel-soft mb-8 space-y-6 overflow-hidden"
+    >
+      <h3 className="text-xl font-semibold text-pastel-primary">Préférences du menu</h3>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label htmlFor="portions">Portions par repas</Label>
+          <Label htmlFor="servingsPerMeal" className="block text-base font-medium mb-1.5 flex items-center">
+            <Users className="w-4 h-4 mr-2 text-pastel-secondary" /> Portions par repas (défaut)
+          </Label>
           <Input
-            id="portions"
+            id="servingsPerMeal"
             type="number"
+            value={preferences.servingsPerMeal || 4}
+            onChange={handleServingsChange}
             min="1"
-            value={preferences.portions_per_meal ?? 4}
-            onChange={(e) => update('portions_per_meal', parseInt(e.target.value) || 0)}
+            step="1"
+            className="max-w-xs"
           />
         </div>
         <div className="space-y-2">
-          <label className="flex items-center space-x-2">
-            <Checkbox
-              checked={limitCalories}
-              onChange={(checked) => {
-                setLimitCalories(checked);
-                if (!checked) {
-                  savedLimit.current = preferences.daily_calories_limit ?? 2200;
-                  update('daily_calories_limit', null);
-                } else {
-                  update('daily_calories_limit', savedLimit.current ?? 2200);
-                }
-              }}
-            />
-            <span>Limiter les calories ?</span>
-          </label>
+          <Label htmlFor="maxCalories" className="block text-base font-medium mb-1.5">
+            Calories max. par jour
+          </Label>
           <Input
-            id="calories"
+            id="maxCalories"
             type="number"
-            disabled={!limitCalories}
-            value={
-              limitCalories
-                ? preferences.daily_calories_limit ?? 2200
-                : savedLimit.current ?? 2200
+            value={preferences.maxCalories || 2200}
+            onChange={(e) => setPreferences({ ...preferences, maxCalories: parseInt(e.target.value) || 0 })}
+            min="500"
+            step="50"
+            className="max-w-xs"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="weeklyBudget" className="block text-base font-medium mb-1.5">
+            Budget hebdomadaire (€)
+          </Label>
+          <Input
+            id="weeklyBudget"
+            type="number"
+            value={preferences.weeklyBudget || 35}
+            onChange={(e) =>
+              setPreferences({ ...preferences, weeklyBudget: parseFloat(e.target.value) || 0 })
             }
-            onChange={(e) => {
-              const val = parseInt(e.target.value) || 0;
-              savedLimit.current = val;
-              update('daily_calories_limit', val);
-            }}
+            min="0"
+            step="0.5"
+            className="max-w-xs"
           />
         </div>
-      </section>
+      </div>
 
-      <section className="space-y-4">
-        <h3 className="font-semibold text-pastel-text">Budget</h3>
-        <div className="space-y-2">
-          <Label htmlFor="budget">Budget hebdo (€)</Label>
-          <Input
-            id="budget"
-            type="number"
-            value={preferences.weekly_budget ?? 35}
-            onChange={(e) => update('weekly_budget', parseFloat(e.target.value) || 0)}
-          />
+      <div className="space-y-4 pt-4 border-t border-pastel-border/70">
+        <div className="flex justify-between items-center">
+          <Label className="text-base font-medium">Composition des repas quotidiens</Label>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={addMeal}
+            className="shadow-pastel-button hover:shadow-pastel-button-hover"
+          >
+            <Plus className="w-4 h-4 mr-1.5" /> Ajouter un repas
+          </Button>
         </div>
-      </section>
 
-      <section className="space-y-4">
-        <h3 className="font-semibold text-pastel-text">Structure quotidienne</h3>
-        <MealTypeSelector
-          selectedTypes={preferences.daily_meal_structure || []}
-          onToggle={toggleMeal}
-        />
-      </section>
+        <div className="space-y-4">
+          {(preferences.meals || []).map((meal, index) => (
+            <motion.div
+              key={meal.id || index}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-4 bg-pastel-card p-4 rounded-xl shadow-pastel-soft"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="flex flex-col">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => moveMeal(index, 'up')}
+                      disabled={index === 0}
+                      className="h-7 w-7"
+                    >
+                      <ChevronUp className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => moveMeal(index, 'down')}
+                      disabled={index === (preferences.meals || []).length - 1}
+                      className="h-7 w-7"
+                    >
+                      <ChevronDown className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <Label className="font-medium text-pastel-text/90">Repas {meal.mealNumber}</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant={meal.enabled ? 'secondary' : 'outline'}
+                    size="sm"
+                    onClick={() => {
+                      const newMeals = [...(preferences.meals || [])];
+                      newMeals[index] = { ...newMeals[index], enabled: !meal.enabled };
+                      setPreferences({ ...preferences, meals: newMeals });
+                    }}
+                    className="min-w-[90px]"
+                  >
+                    {meal.enabled ? 'Activé' : 'Désactivé'}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeMeal(index)}
+                    className="text-red-500 hover:bg-red-500/10 hover:text-red-600 h-8 w-8"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
 
-      <section className="space-y-4">
-        <h3 className="font-semibold text-pastel-text">Tags préférés</h3>
+              <div className="pt-2 border-t border-pastel-border/70">
+                <MealTypeSelector selectedTypes={meal.types || []} onToggle={(t) => toggleMealType(index, t)} />
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-4 pt-4 border-t border-pastel-border/70">
+        <h4 className="font-medium text-pastel-text">Tags préférés</h4>
         <div className="flex gap-2">
           <Input
             value={tagInput}
@@ -150,24 +240,18 @@ function MenuPreferencesPanel({
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
-                addTag();
+                addSimpleTag();
               }
             }}
-            list="tag-suggestions"
             placeholder="Ajouter un tag"
             className="flex-grow"
           />
-          <datalist id="tag-suggestions">
-            {(availableTags || []).map((tag) => (
-              <option key={tag} value={tag} />
-            ))}
-          </datalist>
-          <Button type="button" variant="outline" size="sm" onClick={addTag}>
+          <Button type="button" variant="outline" size="sm" onClick={addSimpleTag}>
             Ajouter
           </Button>
         </div>
         <div className="flex flex-wrap gap-2">
-          {(preferences.tag_preferences || []).map((tag) => (
+          {(preferences.tagPreferences || []).map((tag) => (
             <span
               key={tag}
               className="flex items-center bg-pastel-primary/20 text-pastel-primary text-xs font-medium px-2.5 py-1 rounded-full"
@@ -175,7 +259,7 @@ function MenuPreferencesPanel({
               {tag}
               <button
                 type="button"
-                onClick={() => removeTag(tag)}
+                onClick={() => removeSimpleTag(tag)}
                 className="ml-1.5 text-pastel-primary hover:text-red-500"
               >
                 &times;
@@ -183,22 +267,21 @@ function MenuPreferencesPanel({
             </span>
           ))}
         </div>
-      </section>
+      </div>
 
-      <section className="space-y-4">
-        <h3 className="font-semibold text-pastel-text">Participants (si partagé)</h3>
-        <CommonMenuSettings
-          preferences={preferences}
-          newLinkedUserTag={newLinkedUserTag}
-          setNewLinkedUserTag={setNewLinkedUserTag}
-          isLinkingUser={isLinkingUser}
-          handleAddLinkedUser={handleAddLinkedUser}
-          handleToggleCommonMenu={handleToggleCommonMenu}
-          handleLinkedUserRatioChange={handleLinkedUserRatioChange}
-          handleRemoveLinkedUser={handleRemoveLinkedUser}
-        />
-      </section>
-    </div>
+      <CommonMenuSettings
+        preferences={preferences}
+        newLinkedUserTag={newLinkedUserTag}
+        setNewLinkedUserTag={setNewLinkedUserTag}
+        isLinkingUser={isLinkingUser}
+        handleAddLinkedUser={handleAddLinkedUser}
+        handleToggleCommonMenu={handleToggleCommonMenu}
+        handleLinkedUserRatioChange={handleLinkedUserRatioChange}
+        handleRemoveLinkedUser={handleRemoveLinkedUser}
+      />
+
+      <TagPreferencesForm preferences={preferences} setPreferences={setPreferences} availableTags={availableTags} />
+    </motion.div>
   );
 }
 
