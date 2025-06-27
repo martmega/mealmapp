@@ -10,6 +10,11 @@ function shuffleArray(array) {
   return newArray;
 }
 
+function getBaseRecipeId(id) {
+  const str = id?.toString ? id.toString() : String(id);
+  return str.startsWith('local_') ? str : str.split('_')[0];
+}
+
 /**
  * Custom hook to generate a weekly menu from recipes and user preferences.
  * @param {Array} recipes - Available recipe objects.
@@ -90,7 +95,7 @@ export function useMenuGeneration(
     let availableRecipes = [...shuffledRecipes];
     const recipeUsageCount = {};
     baseRecipes.forEach((r) => {
-      const baseId = r.id.split('_')[0];
+      const baseId = getBaseRecipeId(r.id);
       recipeUsageCount[baseId] = 0;
     });
 
@@ -132,8 +137,8 @@ export function useMenuGeneration(
           availableRecipes = shuffleArray(
             baseRecipes.filter(
               (r) =>
-                recipeUsageCount[r.id.split('_')[0]] < 3 &&
-                !usedRecipeOriginalIdsThisDay.has(r.id.split('_')[0])
+                recipeUsageCount[getBaseRecipeId(r.id)] < 3 &&
+                !usedRecipeOriginalIdsThisDay.has(getBaseRecipeId(r.id))
             )
           );
         }
@@ -187,7 +192,7 @@ export function useMenuGeneration(
           if (mealTypeFilteredRecipes.length === 0) break;
           for (let i = 0; i < mealTypeFilteredRecipes.length; i++) {
             const recipe = mealTypeFilteredRecipes[i];
-            const baseId = recipe.id.split('_')[0];
+            const baseId = getBaseRecipeId(recipe.id);
             if (filterFn(recipe, baseId)) {
               const originalIndexInAvailable = availableRecipes.findIndex(
                 (r) => r.id === recipe.id
@@ -219,7 +224,7 @@ export function useMenuGeneration(
 
         for (const candidate of candidateRecipesForSlot) {
           const recipe = candidate.recipe;
-          const baseId = recipe.id.split('_')[0];
+          const baseId = getBaseRecipeId(recipe.id);
           let score = 1 + Math.random() * 0.2;
           const timesUsed = recipeUsageCount[baseId] || 0;
           score /= 1 + timesUsed * 0.5;
@@ -325,7 +330,7 @@ export function useMenuGeneration(
             budgetUsed += costPerPortion * defaultServingsPerMealGlobal;
           }
           dailyCalories += scaledCalories;
-          const baseId = bestRecipeForMeal.id.split('_')[0];
+          const baseId = getBaseRecipeId(bestRecipeForMeal.id);
           usedRecipeOriginalIdsThisDay.add(baseId);
           recipeUsageCount[baseId] = (recipeUsageCount[baseId] || 0) + 1;
 
@@ -348,7 +353,7 @@ export function useMenuGeneration(
               : baseRecipes;
           if (fallbackPool.length > 0) {
             const fallbackRecipe = shuffleArray(fallbackPool)[0];
-            const baseId = fallbackRecipe.id.split('_')[0];
+            const baseId = getBaseRecipeId(fallbackRecipe.id);
             const recipeBaseServings =
               fallbackRecipe.servings && fallbackRecipe.servings > 0
                 ? fallbackRecipe.servings
