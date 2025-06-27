@@ -55,8 +55,8 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
   );
 
   const handleToggleCommonMenu = async () => {
-    const newEnabledState = !preferences.commonMenuSettings.enabled;
-    let newLinkedUsers = preferences.commonMenuSettings.linkedUsers || [];
+    const newEnabledState = !(preferences?.commonMenuSettings?.enabled);
+    let newLinkedUsers = preferences?.commonMenuSettings?.linkedUsers || [];
     let newLinkedUserRecipes = [];
 
     if (newEnabledState && newLinkedUsers.length === 0 && userProfile?.id) {
@@ -85,7 +85,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
     setPreferences((prev) => ({
       ...prev,
       commonMenuSettings: {
-        ...prev.commonMenuSettings,
+        ...(prev.commonMenuSettings || {}),
         enabled: newEnabledState,
         linkedUsers: newLinkedUsers,
         linkedUserRecipes: newLinkedUserRecipes,
@@ -98,7 +98,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
     if (isNaN(newRatio)) return;
 
     const updatedUsers = [
-      ...(preferences.commonMenuSettings.linkedUsers || []),
+      ...(preferences?.commonMenuSettings?.linkedUsers || []),
     ];
     if (updatedUsers[index]) {
       updatedUsers[index].ratio = Math.max(0, Math.min(100, newRatio));
@@ -107,7 +107,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
     setPreferences((prev) => ({
       ...prev,
       commonMenuSettings: {
-        ...prev.commonMenuSettings,
+        ...(prev.commonMenuSettings || {}),
         linkedUsers: updatedUsers,
       },
     }));
@@ -147,7 +147,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
       const peerUser = usersData;
 
       const currentLinkedUsers =
-        preferences.commonMenuSettings.linkedUsers || [];
+        preferences?.commonMenuSettings?.linkedUsers || [];
       if (currentLinkedUsers.some((u) => u.id === peerUser.id)) {
         toast({
           title: 'Déjà lié',
@@ -190,12 +190,12 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
         peerUsername
       );
       const currentLinkedUserRecipes =
-        preferences.commonMenuSettings.linkedUserRecipes || [];
+        preferences?.commonMenuSettings?.linkedUserRecipes || [];
 
       setPreferences((prev) => ({
         ...prev,
         commonMenuSettings: {
-          ...prev.commonMenuSettings,
+          ...(prev.commonMenuSettings || {}),
           linkedUsers: [...currentLinkedUsers, newLinkedUserEntry],
           linkedUserRecipes: [...currentLinkedUserRecipes, ...fetchedRecipes],
         },
@@ -223,12 +223,12 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
       setPreferences((prev) => ({
         ...prev,
         commonMenuSettings: {
-          ...prev.commonMenuSettings,
-          linkedUsers: (prev.commonMenuSettings.linkedUsers || []).filter(
+          ...(prev.commonMenuSettings || {}),
+          linkedUsers: (prev.commonMenuSettings?.linkedUsers || []).filter(
             (u) => u.id !== userIdToRemove
           ),
           linkedUserRecipes: (
-            prev.commonMenuSettings.linkedUserRecipes || []
+            prev.commonMenuSettings?.linkedUserRecipes || []
           ).filter((r) => r.sourceUserId !== userIdToRemove),
         },
       }));
@@ -248,7 +248,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
 
   useEffect(() => {
     const fetchInitialLinks = async () => {
-      if (!userProfile?.id || !preferences.commonMenuSettings.enabled) return;
+      if (!userProfile?.id || !preferences?.commonMenuSettings?.enabled) return;
 
       try {
         const { data: friendsData, error: friendsError } = await supabase
@@ -328,7 +328,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
         setPreferences((prev) => ({
           ...prev,
           commonMenuSettings: {
-            ...prev.commonMenuSettings,
+            ...(prev.commonMenuSettings || {}),
             linkedUsers: allLinkedUsersSetup.filter((u) => u && u.id),
             linkedUserRecipes: allLinkedUserRecipes.filter((r) => r && r.id),
           },
@@ -338,13 +338,13 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
       }
     };
 
-    if (preferences.commonMenuSettings.enabled) {
+    if (preferences?.commonMenuSettings?.enabled) {
       fetchInitialLinks();
     }
   }, [
     userProfile?.id,
     userProfile?.username,
-    preferences.commonMenuSettings.enabled,
+    preferences?.commonMenuSettings?.enabled,
     fetchLinkedUserRecipes,
   ]);
 
