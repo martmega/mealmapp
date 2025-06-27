@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input.jsx';
 import { Label } from '@/components/ui/label.jsx';
 import { Button } from '@/components/ui/button.jsx';
+import { Checkbox } from '@/components/ui/Checkbox.jsx';
 import MealTypeSelector from '@/components/MealTypeSelector.jsx';
 import CommonMenuSettings from '@/components/menu_planner/CommonMenuSettings.jsx';
 import { useLinkedUsers } from '@/hooks/useLinkedUsers.js';
@@ -26,6 +27,24 @@ function MenuPreferencesPanel({
   };
 
   const [tagInput, setTagInput] = useState('');
+
+  const savedLimit = useRef(preferences.daily_calories_limit ?? 2200);
+  const [limitCalories, setLimitCalories] = useState(
+    preferences.daily_calories_limit !== null &&
+      preferences.daily_calories_limit !== undefined
+  );
+
+  useEffect(() => {
+    if (
+      preferences.daily_calories_limit !== null &&
+      preferences.daily_calories_limit !== undefined
+    ) {
+      savedLimit.current = preferences.daily_calories_limit;
+      setLimitCalories(true);
+    } else {
+      setLimitCalories(false);
+    }
+  }, [preferences.daily_calories_limit]);
 
   const addTag = () => {
     const tag = tagInput.trim();
@@ -68,12 +87,35 @@ function MenuPreferencesPanel({
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="calories">Calories max par jour</Label>
+          <label className="flex items-center space-x-2">
+            <Checkbox
+              checked={limitCalories}
+              onChange={(checked) => {
+                setLimitCalories(checked);
+                if (!checked) {
+                  savedLimit.current = preferences.daily_calories_limit ?? 2200;
+                  update('daily_calories_limit', null);
+                } else {
+                  update('daily_calories_limit', savedLimit.current ?? 2200);
+                }
+              }}
+            />
+            <span>Limiter les calories ?</span>
+          </label>
           <Input
             id="calories"
             type="number"
-            value={preferences.daily_calories_limit ?? 2200}
-            onChange={(e) => update('daily_calories_limit', parseInt(e.target.value) || 0)}
+            disabled={!limitCalories}
+            value={
+              limitCalories
+                ? preferences.daily_calories_limit ?? 2200
+                : savedLimit.current ?? 2200
+            }
+            onChange={(e) => {
+              const val = parseInt(e.target.value) || 0;
+              savedLimit.current = val;
+              update('daily_calories_limit', val);
+            }}
           />
         </div>
       </section>
