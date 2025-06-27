@@ -51,7 +51,7 @@ export default function MainAppLayout({
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <Link
-              to="/recettes"
+              to="/recipes"
               className="text-2xl sm:text-3xl font-bold text-pastel-primary dark:text-pastel-primary-hover flex items-center"
             >
               <Utensils className="h-7 w-7 mr-2 text-pastel-secondary dark:text-pastel-secondary-hover" />
