@@ -44,6 +44,13 @@ export default function MenuPage({
   updateMenuName,
   deleteMenu,
 }) {
+  if (!preferences) {
+    return <div>Chargement des préférences...</div>;
+  }
+
+  if (!preferences?.commonMenuSettings?.enabled) {
+    return <div>Les préférences de ce menu sont désactivées.</div>;
+  }
   const friends = useFriendsList(session);
 
   const participants = useMenuParticipants(isShared ? selectedMenuId : null);
