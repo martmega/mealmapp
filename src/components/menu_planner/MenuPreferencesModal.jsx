@@ -20,6 +20,7 @@ function MenuPreferencesModal({
   preferences,
   setPreferences,
   availableTags,
+  userProfile,
 }) {
 
   return (
@@ -45,6 +46,7 @@ function MenuPreferencesModal({
             preferences={preferences}
             setPreferences={setPreferences}
             availableTags={availableTags}
+            userProfile={userProfile}
           />
         </ScrollArea>
         <DialogFooter>
