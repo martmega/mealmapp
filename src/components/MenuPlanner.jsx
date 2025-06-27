@@ -64,22 +64,22 @@ function MenuPlanner({
 
   const [internalPreferences, setInternalPreferences] = useState(
     preferences || {
-      portions_per_meal: 4,
-      daily_calories_limit: 2200,
-      weekly_budget: 35,
-      daily_meal_structure: [],
-      tag_preferences: [],
+      servingsPerMeal: 4,
+      maxCalories: 2200,
+      weeklyBudget: 35,
+      meals: [],
+      tagPreferences: [],
     }
   );
 
   useEffect(() => {
     setInternalPreferences(
       preferences || {
-        portions_per_meal: 4,
-        daily_calories_limit: 2200,
-        weekly_budget: 35,
-        daily_meal_structure: [],
-        tag_preferences: [],
+        servingsPerMeal: 4,
+        maxCalories: 2200,
+        weeklyBudget: 35,
+        meals: [],
+        tagPreferences: [],
       }
     );
   }, [preferences]);

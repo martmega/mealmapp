@@ -9,6 +9,24 @@ import ParticipantWeights from '@/components/ParticipantWeights.jsx';
 
 const supabase = getSupabase();
 
+const mapPrefsToDb = (p) => ({
+  portions_per_meal: p.servingsPerMeal,
+  daily_calories_limit: p.maxCalories,
+  weekly_budget: p.weeklyBudget,
+  daily_meal_structure: Array.isArray(p.meals)
+    ? p.meals.filter((m) => m.enabled).map((m) => (m.types && m.types[0] ? m.types[0] : ''))
+    : [],
+  tag_preferences: p.tagPreferences || [],
+});
+
+const DEFAULT_PREF = {
+  servingsPerMeal: 4,
+  maxCalories: 2200,
+  weeklyBudget: 35,
+  meals: [],
+  tagPreferences: [],
+};
+
 export default function MenuPage({
   session,
   userProfile,
@@ -88,14 +106,9 @@ export default function MenuPage({
     }
 
     if (data?.id) {
-      await supabase.from('weekly_menu_preferences').insert({
-        menu_id: data.id,
-        portions_per_meal: 4,
-        daily_calories_limit: 2200,
-        weekly_budget: 35,
-        daily_meal_structure: [],
-        tag_preferences: [],
-      });
+      await supabase
+        .from('weekly_menu_preferences')
+        .insert({ menu_id: data.id, ...mapPrefsToDb(DEFAULT_PREF) });
     }
 
     if (isShared && Array.isArray(participantIds)) {
