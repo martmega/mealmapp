@@ -99,6 +99,23 @@ export function useMenuGeneration(
       recipeUsageCount[baseId] = 0;
     });
 
+    const recipesByUser = {};
+    const usedRecipesByUser = {};
+    const uniqueRecipeCountsByUser = {};
+    baseRecipes.forEach((r) => {
+      const userId = r.sourceUserId || 'currentUser';
+      if (!recipesByUser[userId]) {
+        recipesByUser[userId] = [];
+        usedRecipesByUser[userId] = new Set();
+        uniqueRecipeCountsByUser[userId] = new Set();
+      }
+      recipesByUser[userId].push(r);
+      uniqueRecipeCountsByUser[userId].add(getBaseRecipeId(r.id));
+    });
+    Object.keys(uniqueRecipeCountsByUser).forEach((u) => {
+      uniqueRecipeCountsByUser[u] = uniqueRecipeCountsByUser[u].size;
+    });
+
     const dailyCalorieTarget = preferences.maxCalories || 2200;
 
     const activeMealsPreferences =
@@ -108,6 +125,66 @@ export function useMenuGeneration(
       mealCount > 0 ? dailyCalorieTarget / mealCount : dailyCalorieTarget;
 
     let totalSlotsToFill = days.length * activeMealsPreferences.length;
+
+    // Determine participant weights for shared menus
+    let participantSchedule = [];
+    if (
+      preferences.commonMenuSettings?.enabled &&
+      Array.isArray(preferences.commonMenuSettings.linkedUsers) &&
+      preferences.commonMenuSettings.linkedUsers.length > 0
+    ) {
+      const participants = preferences.commonMenuSettings.linkedUsers.map((u) => ({
+        userId: u.id,
+        ratio: typeof u.ratio === 'number' ? u.ratio : 0,
+      }));
+
+      const ratioSum = participants.reduce((sum, p) => sum + p.ratio, 0);
+      const normalized = participants.map((p) => ({
+        userId: p.userId,
+        weight:
+          ratioSum > 0
+            ? p.ratio / ratioSum
+            : 1 / participants.length,
+      }));
+
+      const quotaMap = {};
+      let used = 0;
+      const remainders = [];
+      normalized.forEach((p) => {
+        const exact = p.weight * totalSlotsToFill;
+        const base = Math.floor(exact);
+        quotaMap[p.userId] = base;
+        used += base;
+        remainders.push({ userId: p.userId, rem: exact - base });
+      });
+
+      remainders.sort((a, b) => b.rem - a.rem);
+      let remaining = totalSlotsToFill - used;
+      let idx = 0;
+      while (remaining > 0) {
+        const target = remainders[idx % remainders.length];
+        quotaMap[target.userId] += 1;
+        remaining -= 1;
+        idx += 1;
+      }
+
+      const quotasLeft = { ...quotaMap };
+      let lastUser = null;
+      while (participantSchedule.length < totalSlotsToFill) {
+        let candidates = Object.keys(quotasLeft).filter(
+          (id) => quotasLeft[id] > 0 && id !== lastUser
+        );
+        if (candidates.length === 0) {
+          candidates = Object.keys(quotasLeft).filter((id) => quotasLeft[id] > 0);
+        }
+        const chosen =
+          candidates[Math.floor(Math.random() * candidates.length)];
+        participantSchedule.push(chosen);
+        quotasLeft[chosen] -= 1;
+        lastUser = chosen;
+      }
+    }
+    let participantIndex = 0;
     const weeklyBudget =
       preferences.weeklyBudget !== undefined
         ? preferences.weeklyBudget
@@ -132,6 +209,8 @@ export function useMenuGeneration(
         mealPrefIndex++
       ) {
         const mealPreference = activeMealsPreferences[mealPrefIndex];
+        const targetUserId = participantSchedule[participantIndex] || null;
+        participantIndex++;
 
         if (availableRecipes.length === 0 && baseRecipes.length > 0) {
           availableRecipes = shuffleArray(
@@ -158,10 +237,20 @@ export function useMenuGeneration(
 
         let mealTypeFilteredRecipes = availableRecipes.filter((r) => {
           const recipeMealTypes = Array.isArray(r.meal_types) ? r.meal_types : [];
-          return mealPreference.types.some((prefType) =>
+          const matchesType = mealPreference.types.some((prefType) =>
             recipeMealTypes.includes(prefType)
           );
+          const matchesUser = !targetUserId || r.sourceUserId === targetUserId;
+          return matchesType && matchesUser;
         });
+        if (mealTypeFilteredRecipes.length === 0 && targetUserId) {
+          mealTypeFilteredRecipes = availableRecipes.filter((r) => {
+            const recipeMealTypes = Array.isArray(r.meal_types) ? r.meal_types : [];
+            return mealPreference.types.some((prefType) =>
+              recipeMealTypes.includes(prefType)
+            );
+          });
+        }
 
         if (mealTypeFilteredRecipes.length === 0) {
           console.warn(
@@ -179,10 +268,17 @@ export function useMenuGeneration(
 
         const candidateStages = [
           (r, baseId) =>
-            !avoidDuplicates ||
-            (!usedRecipeOriginalIdsThisDay.has(baseId) &&
-              recipeUsageCount[baseId] < 3),
-          (r, baseId) => !avoidDuplicates || !usedRecipeOriginalIdsThisDay.has(baseId),
+            (!avoidDuplicates ||
+              (!usedRecipeOriginalIdsThisDay.has(baseId) &&
+                recipeUsageCount[baseId] < 3)) &&
+            (!usedRecipesByUser[r.sourceUserId].has(baseId) ||
+              usedRecipesByUser[r.sourceUserId].size >=
+                uniqueRecipeCountsByUser[r.sourceUserId]),
+          (r, baseId) =>
+            (!avoidDuplicates || !usedRecipeOriginalIdsThisDay.has(baseId)) &&
+            (!usedRecipesByUser[r.sourceUserId].has(baseId) ||
+              usedRecipesByUser[r.sourceUserId].size >=
+                uniqueRecipeCountsByUser[r.sourceUserId]),
           () => true,
         ];
 
@@ -207,6 +303,14 @@ export function useMenuGeneration(
             candidateStageUsed = stage;
             break;
           }
+        }
+
+        const unusedCandidates = candidateRecipesForSlot.filter(({ recipe }) => {
+          const baseId = getBaseRecipeId(recipe.id);
+          return !usedRecipesByUser[recipe.sourceUserId].has(baseId);
+        });
+        if (unusedCandidates.length > 0) {
+          candidateRecipesForSlot = unusedCandidates;
         }
 
         if (weeklyBudget > 0) {
@@ -333,6 +437,7 @@ export function useMenuGeneration(
           const baseId = getBaseRecipeId(bestRecipeForMeal.id);
           usedRecipeOriginalIdsThisDay.add(baseId);
           recipeUsageCount[baseId] = (recipeUsageCount[baseId] || 0) + 1;
+          usedRecipesByUser[bestRecipeForMeal.sourceUserId].add(baseId);
 
           const actualIndexInAvailable = availableRecipes.findIndex(
             (r) => r.id === bestRecipeForMeal.id
@@ -380,6 +485,7 @@ export function useMenuGeneration(
             dailyCalories += scaledCalories;
             usedRecipeOriginalIdsThisDay.add(baseId);
             recipeUsageCount[baseId] = (recipeUsageCount[baseId] || 0) + 1;
+            usedRecipesByUser[fallbackRecipe.sourceUserId].add(baseId);
           }
         }
       }
