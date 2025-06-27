@@ -2,6 +2,7 @@ import React from 'react';
 import {
   useLocation,
   useNavigate as useRouterNavigate,
+  Link,
 } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
@@ -49,13 +50,16 @@ export default function MainAppLayout({
       <header className="border-b border-pastel-border/50 shadow-sm sticky top-0 z-40 bg-white dark:bg-[#1e1e1e] text-black dark:text-white transition-colors backdrop-blur">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl sm:text-3xl font-bold text-pastel-primary dark:text-pastel-primary-hover flex items-center">
+            <Link
+              to="/recettes"
+              className="text-2xl sm:text-3xl font-bold text-pastel-primary dark:text-pastel-primary-hover flex items-center"
+            >
               <Utensils className="h-7 w-7 mr-2 text-pastel-secondary dark:text-pastel-secondary-hover" />
               Mealmapp{' '}
               <span className="text-xs font-normal text-pastel-muted-foreground dark:text-pastel-muted-foreground/80 ml-2 tracking-wider">
                 Alpha
               </span>
-            </h1>
+            </Link>
             <div className="flex items-center gap-2 sm:gap-3">
               {['premium', 'vip'].includes(userProfile?.subscription_tier) && (
                 <span className="flex items-center text-sm font-medium text-pastel-accent bg-pastel-accent/10 px-2.5 py-1 rounded-full">
