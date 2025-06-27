@@ -61,6 +61,9 @@ export const toast = ({ ...props }) => {
   };
 };
 
+toast.success = (message) => toast({ description: message });
+toast.warning = (message) => toast({ description: message });
+
 export function useToast() {
   const [state, setState] = useState(toastStore.getState());
 

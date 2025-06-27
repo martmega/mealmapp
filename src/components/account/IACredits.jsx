@@ -38,21 +38,14 @@ export default function IACredits({ session }) {
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
     if (query.get('credits_success')) {
-      toast({
-        title: 'Crédits achetés !',
-        description: 'Vos crédits ont été ajoutés à votre compte.',
-      });
+      toast.success('Crédits IA ajoutés à votre compte.');
       fetchCredits();
       const newUrl = new URL(window.location.href);
       newUrl.searchParams.delete('credits_success');
       window.history.replaceState({}, '', newUrl.toString());
     }
     if (query.get('credits_canceled')) {
-      toast({
-        title: 'Achat annulé',
-        description: "Le processus d'achat a été annulé.",
-        variant: 'default',
-      });
+      toast.warning('Paiement annulé.');
       const newUrl = new URL(window.location.href);
       newUrl.searchParams.delete('credits_canceled');
       window.history.replaceState({}, '', newUrl.toString());
@@ -95,14 +88,14 @@ export default function IACredits({ session }) {
         Crédits IA
       </h3>
       <p className="text-sm text-pastel-muted-foreground">
-        Texte : {credits.text_credits ?? 0} / Images : {credits.image_credits ?? 0}
+        Crédits restants – Texte : {credits.text_credits ?? 0} / Images : {credits.image_credits ?? 0}
       </p>
       <div className="flex gap-3">
         <Button variant="secondary" onClick={() => handlePurchase('text')} disabled={loading === 'text'}>
-          {loading === 'text' ? 'Chargement...' : 'Acheter 10 crédits texte'}
+          {loading === 'text' ? 'Chargement...' : 'Acheter 150 crédits description – 0,20 €'}
         </Button>
         <Button variant="accent" onClick={() => handlePurchase('image')} disabled={loading === 'image'}>
-          {loading === 'image' ? 'Chargement...' : 'Acheter 5 crédits image'}
+          {loading === 'image' ? 'Chargement...' : 'Acheter 50 crédits image – 0,90 €'}
         </Button>
       </div>
     </div>
