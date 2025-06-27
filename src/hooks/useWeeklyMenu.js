@@ -244,14 +244,17 @@ export function useWeeklyMenu(session, currentMenuId = null) {
       try {
         const { data: updated, error } = await supabase
           .from('weekly_menu_preferences')
-          .update({
-            portions_per_meal: newPrefs.portions_per_meal,
-            daily_calories_limit: newPrefs.daily_calories_limit,
-            weekly_budget: newPrefs.weekly_budget,
-            daily_meal_structure: newPrefs.daily_meal_structure,
-            tag_preferences: newPrefs.tag_preferences,
-          })
-          .eq('menu_id', id)
+          .upsert(
+            {
+              menu_id: id,
+              portions_per_meal: newPrefs.portions_per_meal,
+              daily_calories_limit: newPrefs.daily_calories_limit,
+              weekly_budget: newPrefs.weekly_budget,
+              daily_meal_structure: newPrefs.daily_meal_structure,
+              tag_preferences: newPrefs.tag_preferences,
+            },
+            { onConflict: 'menu_id' }
+          )
           .select('*')
           .single();
 
@@ -263,7 +266,8 @@ export function useWeeklyMenu(session, currentMenuId = null) {
         toast({
           title: 'Erreur',
           description:
-            "Impossible de mettre \xC3\xA0 jour les pr\xC3\xA9f\xC3\xA9rences: " + err.message,
+            'Impossible de mettre \xC3\xA0 jour les pr\xC3\xA9f\xC3\xA9rences: ' +
+            err.message,
           variant: 'destructive',
         });
         return false;
