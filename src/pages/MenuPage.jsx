@@ -59,6 +59,10 @@ export default function MenuPage({
   const [participantWeights, setParticipantWeights] = useState({});
 
   useEffect(() => {
+    console.log('preferences:', preferences);
+  }, [preferences]);
+
+  useEffect(() => {
     if (participants.length > 0) {
       setParticipantWeights((prev) => {
         const count = participants.length;
