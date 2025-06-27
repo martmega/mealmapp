@@ -69,6 +69,7 @@ function MenuPlanner({
       weekly_budget: 35,
       daily_meal_structure: [],
       tag_preferences: [],
+      meals: [],
     }
   );
 
@@ -80,6 +81,7 @@ function MenuPlanner({
         weekly_budget: 35,
         daily_meal_structure: [],
         tag_preferences: [],
+        meals: [],
       }
     );
   }, [preferences]);

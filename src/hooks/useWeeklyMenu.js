@@ -9,6 +9,7 @@ const defaultPrefs = {
   weekly_budget: 35,
   daily_meal_structure: [],
   tag_preferences: [],
+  meals: [],
 };
 
 const supabase = getSupabase();
