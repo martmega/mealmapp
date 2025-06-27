@@ -1,13 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import MenuPlanner from '@/components/MenuPlanner';
 import MenuTabs from '@/components/MenuTabs.jsx';
 import { getSupabase } from '@/lib/supabase';
 import { initialWeeklyMenuState } from '@/lib/menu';
 import { useFriendsList } from '@/hooks/useFriendsList.js';
 import { useMenuParticipants } from '@/hooks/useMenuParticipants.js';
-import SignedImage from '@/components/SignedImage';
-import { DEFAULT_AVATAR_URL } from '@/lib/images';
-import { SUPABASE_BUCKETS } from '@/config/constants.client';
+import ParticipantWeights from '@/components/ParticipantWeights.jsx';
 
 const supabase = getSupabase();
 
@@ -31,6 +29,27 @@ export default function MenuPage({
   const friends = useFriendsList(session);
 
   const participants = useMenuParticipants(isShared ? selectedMenuId : null);
+  const [participantWeights, setParticipantWeights] = useState({});
+
+  useEffect(() => {
+    if (participants.length > 0) {
+      setParticipantWeights((prev) => {
+        const count = participants.length;
+        const defaultWeight = count > 0 ? 1 / count : 0;
+        const updated = { ...prev };
+        participants.forEach((p) => {
+          if (typeof updated[p.id] !== 'number') {
+            updated[p.id] = defaultWeight;
+          }
+        });
+        return updated;
+      });
+    }
+  }, [participants]);
+
+  const handleWeightChange = (userId, weight) => {
+    setParticipantWeights((prev) => ({ ...prev, [userId]: weight }));
+  };
 
   const handleRename = async (id, name) => {
     await updateMenuName(name, id);
@@ -103,27 +122,11 @@ export default function MenuPage({
         friends={friends}
       />
       {isShared && participants.length > 0 && (
-        <div className="bg-pastel-card p-4 rounded-lg shadow-pastel-soft flex flex-wrap items-center gap-3">
-          <span className="font-semibold text-pastel-text">Participants :</span>
-          {participants.map((p) => (
-            <div key={p.id} className="flex items-center gap-2">
-              {p.avatar_url ? (
-                <SignedImage
-                  bucket={SUPABASE_BUCKETS.avatars}
-                  path={p.avatar_url}
-                  alt={p.username}
-                  fallback={DEFAULT_AVATAR_URL}
-                  className="w-8 h-8 rounded-full object-cover border border-pastel-border"
-                />
-              ) : (
-                <span className="w-8 h-8 rounded-full bg-pastel-muted flex items-center justify-center text-xs text-pastel-muted-foreground">
-                  {p.username?.charAt(0) || 'U'}
-                </span>
-              )}
-              <span className="text-sm">{p.username}</span>
-            </div>
-          ))}
-        </div>
+        <ParticipantWeights
+          participants={participants}
+          weights={participantWeights}
+          onWeightChange={handleWeightChange}
+        />
       )}
       <MenuPlanner
         recipes={recipes}
