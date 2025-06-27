@@ -5,7 +5,7 @@ import { initialWeeklyMenuState } from '@/lib/menu';
 
 const defaultPrefs = {
   portions_per_meal: 4,
-  daily_calories_limit: 2200,
+  daily_calories_limit: 0,
   weekly_budget: 35,
   daily_meal_structure: [],
   tag_preferences: [],

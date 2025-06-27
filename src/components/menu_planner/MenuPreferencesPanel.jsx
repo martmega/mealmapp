@@ -2,6 +2,7 @@ import React from 'react';
 import { Input } from '@/components/ui/input.jsx';
 import { Label } from '@/components/ui/label.jsx';
 import { Button } from '@/components/ui/button.jsx';
+import { Checkbox } from '@/components/ui/Checkbox.jsx';
 
 function MenuPreferencesPanel({ preferences, setPreferences, availableTags }) {
   const update = (field, value) => {
@@ -43,12 +44,36 @@ function MenuPreferencesPanel({ preferences, setPreferences, availableTags }) {
         />
       </div>
       <div className="space-y-2">
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="limit-calories"
+            checked={preferences.daily_calories_limit > 0}
+            onChange={(checked) =>
+              update(
+                'daily_calories_limit',
+                checked
+                  ? preferences.daily_calories_limit > 0
+                    ? preferences.daily_calories_limit
+                    : 2200
+                  : 0
+              )
+            }
+          />
+          <Label htmlFor="limit-calories">Limiter les calories ?</Label>
+        </div>
         <Label htmlFor="calories">Calories max par jour</Label>
         <Input
           id="calories"
           type="number"
-          value={preferences.daily_calories_limit ?? 2200}
-          onChange={(e) => update('daily_calories_limit', parseInt(e.target.value) || 0)}
+          disabled={!(preferences.daily_calories_limit > 0)}
+          value={
+            preferences.daily_calories_limit > 0
+              ? preferences.daily_calories_limit
+              : 2200
+          }
+          onChange={(e) =>
+            update('daily_calories_limit', parseInt(e.target.value) || 0)
+          }
         />
       </div>
       <div className="space-y-2">

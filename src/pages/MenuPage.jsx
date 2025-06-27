@@ -72,7 +72,7 @@ export default function MenuPage({
       await supabase.from('weekly_menu_preferences').insert({
         menu_id: data.id,
         portions_per_meal: 4,
-        daily_calories_limit: 2200,
+        daily_calories_limit: 0,
         weekly_budget: 35,
         daily_meal_structure: [],
         tag_preferences: [],

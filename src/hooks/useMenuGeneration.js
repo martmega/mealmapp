@@ -116,7 +116,16 @@ export function useMenuGeneration(
       uniqueRecipeCountsByUser[u] = uniqueRecipeCountsByUser[u].size;
     });
 
-    const dailyCalorieTarget = preferences.maxCalories || 2200;
+    const dailyCalorieTarget =
+      typeof preferences.maxCalories === 'number'
+        ? preferences.maxCalories > 0
+          ? preferences.maxCalories
+          : Infinity
+        : typeof preferences.daily_calories_limit === 'number'
+          ? preferences.daily_calories_limit > 0
+            ? preferences.daily_calories_limit
+            : Infinity
+          : Infinity;
 
     const activeMealsPreferences =
       preferences.meals?.filter((m) => m.enabled) || [];
