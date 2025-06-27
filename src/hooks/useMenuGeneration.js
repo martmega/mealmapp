@@ -45,8 +45,8 @@ export function useMenuGeneration(
     let baseRecipes = Array.isArray(recipes) ? recipes : [];
 
     if (
-      preferences.commonMenuSettings?.enabled &&
-      preferences.commonMenuSettings.linkedUserRecipes?.length > 0
+      preferences?.commonMenuSettings?.enabled &&
+      preferences?.commonMenuSettings?.linkedUserRecipes?.length > 0
     ) {
       const combined = [
         ...baseRecipes.map((r) => ({
@@ -54,7 +54,7 @@ export function useMenuGeneration(
           author: userProfile?.username || 'Moi',
           sourceUserId: userProfile?.id || 'currentUser',
         })),
-        ...preferences.commonMenuSettings.linkedUserRecipes,
+        ...(preferences?.commonMenuSettings?.linkedUserRecipes || []),
       ];
       baseRecipes = Array.from(
         new Map(combined.map((r) => [r.id, r])).values()
@@ -129,11 +129,11 @@ export function useMenuGeneration(
     // Determine participant weights for shared menus
     let participantSchedule = [];
     if (
-      preferences.commonMenuSettings?.enabled &&
-      Array.isArray(preferences.commonMenuSettings.linkedUsers) &&
-      preferences.commonMenuSettings.linkedUsers.length > 0
+      preferences?.commonMenuSettings?.enabled &&
+      Array.isArray(preferences?.commonMenuSettings?.linkedUsers) &&
+      preferences?.commonMenuSettings?.linkedUsers?.length > 0
     ) {
-      const participants = preferences.commonMenuSettings.linkedUsers.map((u) => ({
+      const participants = (preferences?.commonMenuSettings?.linkedUsers || []).map((u) => ({
         userId: u.id,
         ratio: typeof u.ratio === 'number' ? u.ratio : 0,
       }));
@@ -382,24 +382,24 @@ export function useMenuGeneration(
           }
 
           if (
-            preferences.commonMenuSettings?.enabled &&
-            preferences.commonMenuSettings.linkedUsers?.length > 0
+            preferences?.commonMenuSettings?.enabled &&
+            preferences?.commonMenuSettings?.linkedUsers?.length > 0
           ) {
-            const totalRatioSum =
-              preferences.commonMenuSettings.linkedUsers.reduce(
-                (sum, u) => sum + u.ratio,
-                0
+              const totalRatioSum =
+                preferences?.commonMenuSettings?.linkedUsers?.reduce(
+                  (sum, u) => sum + u.ratio,
+                  0
+                );
+              const userSetting = preferences?.commonMenuSettings?.linkedUsers?.find(
+                (u) => u.id === recipe.sourceUserId
               );
-            const userSetting = preferences.commonMenuSettings.linkedUsers.find(
-              (u) => u.id === recipe.sourceUserId
-            );
             if (userSetting && totalRatioSum > 0) {
               const normalizedRatio = userSetting.ratio / totalRatioSum;
               score *= 1 + normalizedRatio; // Poids plus important pour les ratios plus élevés
             } else if (
               userSetting &&
               totalRatioSum === 0 &&
-              preferences.commonMenuSettings.linkedUsers.length === 1
+              preferences?.commonMenuSettings?.linkedUsers?.length === 1
             ) {
               score *= 1.5; // Si un seul utilisateur et ratio 0, on le favorise quand même un peu
             }
