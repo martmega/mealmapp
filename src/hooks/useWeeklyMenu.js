@@ -9,7 +9,38 @@ const defaultPrefs = {
   weekly_budget: 35,
   daily_meal_structure: [],
   tag_preferences: [],
+  meals: [],
 };
+
+function parseMeals(structure) {
+  if (!Array.isArray(structure)) return [];
+  return structure.map((item, idx) => {
+    if (typeof item === 'string') {
+      try {
+        const obj = JSON.parse(item);
+        if (obj && typeof obj === 'object') return obj;
+      } catch (_) {
+        return {
+          id: Date.now() + idx,
+          types: [item],
+          enabled: true,
+          mealNumber: idx + 1,
+        };
+      }
+    }
+    if (item && typeof item === 'object') return item;
+    return {
+      id: Date.now() + idx,
+      types: [],
+      enabled: true,
+      mealNumber: idx + 1,
+    };
+  });
+}
+
+function serializeMeals(meals) {
+  return (Array.isArray(meals) ? meals : []).map((m) => JSON.stringify(m));
+}
 
 const supabase = getSupabase();
 
@@ -89,14 +120,26 @@ export function useWeeklyMenu(session, currentMenuId = null) {
           if (prefError && prefError.code !== 'PGRST116') throw prefError;
 
           if (pref) {
-            setPreferences({ ...defaultPrefs, ...pref });
+            setPreferences({
+              ...defaultPrefs,
+              ...pref,
+              meals: parseMeals(pref.daily_meal_structure),
+            });
           } else {
             const { data: inserted, error: insertErr } = await supabase
               .from('weekly_menu_preferences')
-              .insert({ menu_id: data.id, ...defaultPrefs })
+              .insert({
+                menu_id: data.id,
+                ...defaultPrefs,
+                daily_meal_structure: serializeMeals(defaultPrefs.meals),
+              })
               .select('*')
               .single();
-            if (!insertErr && inserted) setPreferences(inserted);
+            if (!insertErr && inserted)
+              setPreferences({
+                ...inserted,
+                meals: parseMeals(inserted.daily_meal_structure),
+              });
           }
         }
       } catch (err) {
@@ -248,7 +291,7 @@ export function useWeeklyMenu(session, currentMenuId = null) {
             portions_per_meal: newPrefs.portions_per_meal,
             daily_calories_limit: newPrefs.daily_calories_limit,
             weekly_budget: newPrefs.weekly_budget,
-            daily_meal_structure: newPrefs.daily_meal_structure,
+            daily_meal_structure: serializeMeals(newPrefs.meals),
             tag_preferences: newPrefs.tag_preferences,
           })
           .eq('menu_id', id)
@@ -256,7 +299,11 @@ export function useWeeklyMenu(session, currentMenuId = null) {
           .single();
 
         if (error) throw error;
-        if (updated) setPreferences(updated);
+        if (updated)
+          setPreferences({
+            ...updated,
+            meals: parseMeals(updated.daily_meal_structure),
+          });
         return true;
       } catch (err) {
         console.error('Error updating preferences:', err);

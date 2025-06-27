@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button.jsx';
 import MealTypeSelector from '@/components/MealTypeSelector.jsx';
 import CommonMenuSettings from '@/components/menu_planner/CommonMenuSettings.jsx';
 import { useLinkedUsers } from '@/hooks/useLinkedUsers.js';
+import { Plus, ChevronUp, ChevronDown, Trash2 } from 'lucide-react';
+import { MEAL_TYPE_OPTIONS_MAP } from '@/lib/mealTypes';
 
 function MenuPreferencesPanel({
   preferences,
@@ -22,6 +24,59 @@ function MenuPreferencesPanel({
       update('daily_meal_structure', arr.filter((t) => t !== type));
     } else {
       update('daily_meal_structure', [...arr, type]);
+    }
+  };
+
+  const addMeal = () => {
+    const newMealNumber = (preferences.meals?.length || 0) + 1;
+    update('meals', [
+      ...(preferences.meals || []),
+      {
+        id: Date.now(),
+        types: [],
+        enabled: true,
+        mealNumber: newMealNumber,
+      },
+    ]);
+  };
+
+  const removeMeal = (index) => {
+    const arr = [...(preferences.meals || [])];
+    arr.splice(index, 1);
+    const renum = arr.map((m, idx) => ({ ...m, mealNumber: idx + 1 }));
+    update('meals', renum);
+  };
+
+  const moveMeal = (index, dir) => {
+    const arr = [...(preferences.meals || [])];
+    if (dir === 'up' && index > 0) {
+      [arr[index - 1], arr[index]] = [arr[index], arr[index - 1]];
+    } else if (dir === 'down' && index < arr.length - 1) {
+      [arr[index + 1], arr[index]] = [arr[index], arr[index + 1]];
+    }
+    const renum = arr.map((m, idx) => ({ ...m, mealNumber: idx + 1 }));
+    update('meals', renum);
+  };
+
+  const toggleMealTypeFor = (mealIndex, type) => {
+    const arr = [...(preferences.meals || [])];
+    const meal = arr[mealIndex];
+    if (!meal) return;
+    const types = meal.types || [];
+    arr[mealIndex] = {
+      ...meal,
+      types: types.includes(type)
+        ? types.filter((t) => t !== type)
+        : [...types, type],
+    };
+    update('meals', arr);
+  };
+
+  const toggleMealEnabled = (index) => {
+    const arr = [...(preferences.meals || [])];
+    if (arr[index]) {
+      arr[index] = { ...arr[index], enabled: !arr[index].enabled };
+      update('meals', arr);
     }
   };
 
@@ -97,6 +152,52 @@ function MenuPreferencesPanel({
           selectedTypes={preferences.daily_meal_structure || []}
           onToggle={toggleMeal}
         />
+      </section>
+
+      <section className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h3 className="font-semibold text-pastel-text">Composition des repas quotidiens</h3>
+          <Button type="button" variant="outline" size="sm" onClick={addMeal} className="shadow-pastel-button hover:shadow-pastel-button-hover">
+            <Plus className="w-4 h-4 mr-1.5" /> Ajouter un repas
+          </Button>
+        </div>
+
+        {(preferences.meals || []).map((meal, index) => (
+          <div key={meal.id || index} className="space-y-3 bg-pastel-card-alt p-4 rounded-lg shadow-pastel-card-item">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="flex flex-col">
+                  <Button type="button" variant="ghost" size="icon" onClick={() => moveMeal(index, 'up')} disabled={index === 0} className="h-7 w-7">
+                    <ChevronUp className="w-4 h-4" />
+                  </Button>
+                  <Button type="button" variant="ghost" size="icon" onClick={() => moveMeal(index, 'down')} disabled={index === (preferences.meals || []).length - 1} className="h-7 w-7">
+                    <ChevronDown className="w-4 h-4" />
+                  </Button>
+                </div>
+                <Label className="font-medium text-pastel-text/90">Repas {meal.mealNumber}</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button type="button" variant={meal.enabled ? 'secondary' : 'outline'} size="sm" onClick={() => toggleMealEnabled(index)} className="min-w-[90px]">
+                  {meal.enabled ? 'Activé' : 'Désactivé'}
+                </Button>
+                <Button type="button" variant="ghost" size="icon" onClick={() => removeMeal(index)} className="text-red-500 hover:bg-red-500/10 hover:text-red-600 h-8 w-8">
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 pt-2 border-t border-pastel-border/70">
+              {Object.entries(MEAL_TYPE_OPTIONS_MAP).map(([typeKey, label]) => {
+                const isActive = (meal.types || []).includes(typeKey);
+                return (
+                  <Button key={typeKey} type="button" size="sm" variant={isActive ? 'default' : 'outline'} onClick={() => toggleMealTypeFor(index, typeKey)} className="rounded-full px-3 py-1 text-xs">
+                    {label}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </section>
 
       <section className="space-y-4">
