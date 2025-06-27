@@ -8,6 +8,7 @@ const defaultPrefs = {
   daily_calories_limit: 2200,
   weekly_budget: 35,
   daily_meal_structure: [],
+  meals: [],
   tag_preferences: [],
 };
 
@@ -251,6 +252,7 @@ export function useWeeklyMenu(session, currentMenuId = null) {
               daily_calories_limit: newPrefs.daily_calories_limit,
               weekly_budget: newPrefs.weekly_budget,
               daily_meal_structure: newPrefs.daily_meal_structure,
+              meals: newPrefs.meals,
               tag_preferences: newPrefs.tag_preferences,
             },
             { onConflict: 'menu_id' }

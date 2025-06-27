@@ -4,5 +4,6 @@ export type WeeklyMenuPreferences = {
   daily_calories_limit: number;
   weekly_budget: number;
   daily_meal_structure: string[];
+  meals: any[];
   tag_preferences: string[];
 };

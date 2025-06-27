@@ -68,6 +68,7 @@ function MenuPlanner({
       daily_calories_limit: 2200,
       weekly_budget: 35,
       daily_meal_structure: [],
+      meals: [],
       tag_preferences: [],
     }
   );
@@ -79,6 +80,7 @@ function MenuPlanner({
         daily_calories_limit: 2200,
         weekly_budget: 35,
         daily_meal_structure: [],
+        meals: [],
         tag_preferences: [],
       }
     );

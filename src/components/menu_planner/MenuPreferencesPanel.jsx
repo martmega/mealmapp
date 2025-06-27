@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Input } from '@/components/ui/input.jsx';
 import { Label } from '@/components/ui/label.jsx';
 import { Button } from '@/components/ui/button.jsx';
-import MealTypeSelector from '@/components/MealTypeSelector.jsx';
+import MealPreferencesManager from '@/components/menu_planner/MealPreferencesManager.jsx';
 import CommonMenuSettings from '@/components/menu_planner/CommonMenuSettings.jsx';
 import { useLinkedUsers } from '@/hooks/useLinkedUsers.js';
 
@@ -14,15 +14,6 @@ function MenuPreferencesPanel({
 }) {
   const update = (field, value) => {
     setPreferences({ ...preferences, [field]: value });
-  };
-
-  const toggleMeal = (type) => {
-    const arr = [...(preferences.daily_meal_structure || [])];
-    if (arr.includes(type)) {
-      update('daily_meal_structure', arr.filter((t) => t !== type));
-    } else {
-      update('daily_meal_structure', [...arr, type]);
-    }
   };
 
   const [tagInput, setTagInput] = useState('');
@@ -93,9 +84,9 @@ function MenuPreferencesPanel({
 
       <section className="space-y-4">
         <h3 className="font-semibold text-pastel-text">Structure quotidienne</h3>
-        <MealTypeSelector
-          selectedTypes={preferences.daily_meal_structure || []}
-          onToggle={toggleMeal}
+        <MealPreferencesManager
+          meals={preferences.meals || []}
+          onChange={(newMeals) => update('meals', newMeals)}
         />
       </section>
 

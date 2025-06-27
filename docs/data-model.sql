@@ -40,6 +40,7 @@ create table weekly_menu_preferences (
   daily_calories_limit integer default 2200,
   weekly_budget numeric default 0,
   daily_meal_structure text[],
+  meals jsonb,
   tag_preferences text[]
 );
 
