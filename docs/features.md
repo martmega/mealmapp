@@ -11,6 +11,7 @@
 
 ## Menu Planner
 - Weekly menu stored in the `weekly_menus` table.
+- Menu specific preferences stored in `weekly_menu_preferences`.
 - Calculates total cost and calories per week.
 
 ## AI Features

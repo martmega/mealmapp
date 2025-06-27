@@ -54,7 +54,7 @@ function WeeklyMenuView({
 
     const defaultPlannedServings =
       userProfile?.preferences?.servingsPerMeal ||
-      preferences.servingsPerMeal ||
+      preferences.portions_per_meal ||
       4;
 
     if (updatedMenu[dayIndex]?.[mealIndex]) {
@@ -62,8 +62,6 @@ function WeeklyMenuView({
         ...newRecipe,
         mealNumber:
           updatedMenu[dayIndex][mealIndex][recipeIndex]?.mealNumber ||
-          preferences.meals.find((m) => m.mealNumber === mealIndex + 1)
-            ?.mealNumber ||
           mealIndex + 1,
         plannedServings: defaultPlannedServings,
       };
@@ -85,13 +83,6 @@ function WeeklyMenuView({
     if (!recipeToReplaceInfo) return [];
 
     const { mealIndex } = recipeToReplaceInfo;
-    const mealPreference = preferences.meals.find(
-      (m) => m.mealNumber === mealIndex + 1
-    );
-    const allowedMealTypes = Array.isArray(mealPreference?.types)
-      ? mealPreference.types
-      : [];
-
     const recipesToFilter = [...safeRecipes];
 
     const uniqueRecipeMap = new Map();
@@ -105,19 +96,12 @@ function WeeklyMenuView({
       const nameMatch = recipe.name
         .toLowerCase()
         .includes(searchTermModal.toLowerCase());
-      const recipeMealTypes = Array.isArray(recipe.meal_types)
-        ? recipe.meal_types
-        : [];
-      const typeMatch =
-        allowedMealTypes.length === 0 ||
-        recipeMealTypes.some((rt) => allowedMealTypes.includes(rt));
-      return nameMatch && typeMatch;
+      return nameMatch;
     });
   }, [
     safeRecipes,
     recipeToReplaceInfo,
     searchTermModal,
-    preferences.meals,
   ]);
 
   const totalMenuCost = useMemo(
@@ -126,8 +110,8 @@ function WeeklyMenuView({
   );
 
   const weeklyBudget =
-    preferences.weeklyBudget !== undefined
-      ? preferences.weeklyBudget
+    preferences.weekly_budget !== undefined
+      ? preferences.weekly_budget
       : userProfile?.preferences?.weeklyBudget ?? 0;
   const TOLERANCE = 0.1;
   const maxBudget = weeklyBudget * (1 + TOLERANCE);

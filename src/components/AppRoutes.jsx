@@ -28,6 +28,8 @@ export default function AppRoutes({
   weeklyMenuLoading,
   menuName,
   isShared,
+  menuPreferences,
+  updateMenuPreferences,
   saveUserWeeklyMenuHook,
   updateMenuName,
   deleteWeeklyMenu,
@@ -134,6 +136,8 @@ export default function AppRoutes({
               weeklyMenu={weeklyMenu}
               menuName={menuName}
               isShared={isShared}
+              preferences={menuPreferences}
+              updatePreferences={updateMenuPreferences}
               setWeeklyMenu={saveUserWeeklyMenuHook}
               updateMenuName={updateMenuName}
               deleteMenu={deleteWeeklyMenu}

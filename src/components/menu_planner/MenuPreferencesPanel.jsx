@@ -1,275 +1,101 @@
 import React from 'react';
-import { Button } from '@/components/ui/button.jsx';
 import { Input } from '@/components/ui/input.jsx';
 import { Label } from '@/components/ui/label.jsx';
-import { Switch } from '@/components/ui/switch.jsx';
-import {
-  Plus,
-  ChevronDown,
-  ChevronUp,
-  Trash2,
-  Users,
-} from 'lucide-react';
-import { motion } from 'framer-motion';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogTrigger,
-} from '@/components/ui/dialog.jsx';
-import MealTypeSelector from '@/components/MealTypeSelector';
-import TagPreferencesForm from '@/components/menu_planner/TagPreferencesForm.jsx';
+import { Button } from '@/components/ui/button.jsx';
 
 function MenuPreferencesPanel({ preferences, setPreferences, availableTags }) {
+  const update = (field, value) => {
+    setPreferences({ ...preferences, [field]: value });
+  };
+
+  const updateMeal = (index, value) => {
+    const arr = [...(preferences.daily_meal_structure || [])];
+    arr[index] = value;
+    update('daily_meal_structure', arr);
+  };
+
   const addMeal = () => {
-    const newMealNumber = (preferences.meals?.length || 0) + 1;
-    setPreferences({
-      ...preferences,
-      meals: [
-        ...(preferences.meals || []),
-        {
-          id: Date.now(),
-          types: [],
-          enabled: true,
-          mealNumber: newMealNumber,
-        },
-      ],
-    });
+    update('daily_meal_structure', [...(preferences.daily_meal_structure || []), '']);
   };
 
   const removeMeal = (index) => {
-    const newMeals = [...(preferences.meals || [])];
-    newMeals.splice(index, 1);
-    const renumberedMeals = newMeals.map((meal, idx) => ({
-      ...meal,
-      mealNumber: idx + 1,
-    }));
-    setPreferences({ ...preferences, meals: renumberedMeals });
+    const arr = [...(preferences.daily_meal_structure || [])];
+    arr.splice(index, 1);
+    update('daily_meal_structure', arr);
   };
 
-  const toggleMealType = (mealIndex, type) => {
-    const newMeals = [...(preferences.meals || [])];
-    const currentTypes = newMeals[mealIndex].types || [];
-    const typeIndex = currentTypes.indexOf(type);
-
-    if (typeIndex === -1) {
-      newMeals[mealIndex].types = [...currentTypes, type];
-    } else {
-      newMeals[mealIndex].types = currentTypes.filter((t) => t !== type);
-    }
-
-    setPreferences({ ...preferences, meals: newMeals });
-  };
-
-  const moveMeal = (index, direction) => {
-    const newMeals = [...(preferences.meals || [])];
-    let targetIndex;
-    if (direction === 'up' && index > 0) {
-      targetIndex = index - 1;
-    } else if (direction === 'down' && index < newMeals.length - 1) {
-      targetIndex = index + 1;
-    } else {
-      return;
-    }
-    [newMeals[index], newMeals[targetIndex]] = [
-      newMeals[targetIndex],
-      newMeals[index],
-    ];
-    const renumberedMeals = newMeals.map((meal, idx) => ({
-      ...meal,
-      mealNumber: idx + 1,
-    }));
-    setPreferences({ ...preferences, meals: renumberedMeals });
-  };
-
-  const handleServingsPerMealChange = (e) => {
-    const value = parseInt(e.target.value, 10);
-    setPreferences({ ...preferences, servingsPerMeal: value > 0 ? value : 1 });
+  const toggleTag = (tag) => {
+    const set = new Set(preferences.tag_preferences || []);
+    if (set.has(tag)) set.delete(tag); else set.add(tag);
+    update('tag_preferences', Array.from(set));
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: 'auto' }}
-      exit={{ opacity: 0, height: 0 }}
-      transition={{ duration: 0.3 }}
-      className="bg-pastel-card p-6 rounded-xl shadow-pastel-soft mb-8 space-y-6 overflow-hidden"
-    >
-      <h3 className="text-xl font-semibold text-pastel-primary">
-        Préférences du menu
-      </h3>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label
-            htmlFor="servingsPerMeal"
-            className="block text-base font-medium mb-1.5 flex items-center"
-          >
-            <Users className="w-4 h-4 mr-2 text-pastel-secondary" /> Portions
-            par repas (défaut)
-          </Label>
-          <Input
-            id="servingsPerMeal"
-            type="number"
-            value={preferences.servingsPerMeal || 4}
-            onChange={handleServingsPerMealChange}
-            min="1"
-            step="1"
-            className="max-w-xs"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label
-            htmlFor="maxCalories"
-            className="block text-base font-medium mb-1.5"
-          >
-            Calories max. par jour
-          </Label>
-          <Input
-            id="maxCalories"
-            type="number"
-            value={preferences.maxCalories || 2200}
-            onChange={(e) =>
-              setPreferences({
-                ...preferences,
-                maxCalories: parseInt(e.target.value) || 0,
-              })
-            }
-            min="500"
-            step="50"
-            className="max-w-xs"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label
-            htmlFor="weeklyBudget"
-            className="block text-base font-medium mb-1.5"
-          >
-            Budget hebdomadaire (€)
-          </Label>
-          <Input
-            id="weeklyBudget"
-            type="number"
-            value={preferences.weeklyBudget || 35}
-            onChange={(e) =>
-              setPreferences({
-                ...preferences,
-                weeklyBudget: parseFloat(e.target.value) || 0,
-              })
-            }
-            min="0"
-            step="0.5"
-            className="max-w-xs"
-          />
-        </div>
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <Label htmlFor="portions">Portions par repas</Label>
+        <Input
+          id="portions"
+          type="number"
+          min="1"
+          value={preferences.portions_per_meal ?? 4}
+          onChange={(e) => update('portions_per_meal', parseInt(e.target.value) || 0)}
+        />
       </div>
-
-
-
-      <div className="space-y-4 pt-4 border-t border-pastel-border/70">
-        <div className="flex justify-between items-center">
-          <Label className="text-base font-medium">
-            Composition des repas quotidiens
-          </Label>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={addMeal}
-            className="shadow-pastel-button hover:shadow-pastel-button-hover"
-          >
-            <Plus className="w-4 h-4 mr-1.5" /> Ajouter un repas
-          </Button>
-        </div>
-
-        <div className="space-y-4">
-          {(preferences.meals || []).map((meal, index) => (
-            <motion.div
-              key={meal.id || index}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-4 bg-pastel-card p-4 rounded-xl shadow-pastel-soft"
+      <div className="space-y-2">
+        <Label htmlFor="calories">Calories max par jour</Label>
+        <Input
+          id="calories"
+          type="number"
+          value={preferences.daily_calories_limit ?? 2200}
+          onChange={(e) => update('daily_calories_limit', parseInt(e.target.value) || 0)}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="budget">Budget hebdo (€)</Label>
+        <Input
+          id="budget"
+          type="number"
+          value={preferences.weekly_budget ?? 35}
+          onChange={(e) => update('weekly_budget', parseFloat(e.target.value) || 0)}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Structure des repas quotidiens</Label>
+        {(preferences.daily_meal_structure || []).map((m, idx) => (
+          <div key={idx} className="flex gap-2 items-center">
+            <Input
+              type="text"
+              value={m}
+              onChange={(e) => updateMeal(idx, e.target.value)}
+              className="flex-grow"
+            />
+            <Button type="button" variant="ghost" onClick={() => removeMeal(idx)}>
+              X
+            </Button>
+          </div>
+        ))}
+        <Button type="button" variant="outline" size="sm" onClick={addMeal}>
+          Ajouter un élément
+        </Button>
+      </div>
+      <div className="space-y-2">
+        <Label>Tags préférés</Label>
+        <div className="flex flex-wrap gap-2">
+          {(availableTags || []).map((tag) => (
+            <Button
+              key={tag}
+              type="button"
+              variant={preferences.tag_preferences?.includes(tag) ? 'secondary' : 'outline'}
+              onClick={() => toggleTag(tag)}
+              className="px-2 py-1 text-sm"
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="flex flex-col">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => moveMeal(index, 'up')}
-                      disabled={index === 0}
-                      className="h-7 w-7"
-                    >
-                      {' '}
-                      <ChevronUp className="w-4 h-4" />{' '}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => moveMeal(index, 'down')}
-                      disabled={index === (preferences.meals || []).length - 1}
-                      className="h-7 w-7"
-                    >
-                      {' '}
-                      <ChevronDown className="w-4 h-4" />{' '}
-                    </Button>
-                  </div>
-                  <Label className="font-medium text-pastel-text/90">
-                    Repas {meal.mealNumber}
-                  </Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    type="button"
-                    variant={meal.enabled ? 'secondary' : 'outline'}
-                    size="sm"
-                    onClick={() => {
-                      const newMeals = [...(preferences.meals || [])];
-                      newMeals[index] = {
-                        ...newMeals[index],
-                        enabled: !meal.enabled,
-                      };
-                      setPreferences({ ...preferences, meals: newMeals });
-                    }}
-                    className="min-w-[90px]"
-                  >
-                    {meal.enabled ? 'Activé' : 'Désactivé'}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeMeal(index)}
-                    className="text-red-500 hover:bg-red-500/10 hover:text-red-600 h-8 w-8"
-                  >
-                    {' '}
-                    <Trash2 className="w-4 h-4" />{' '}
-                  </Button>
-                </div>
-              </div>
-
-              <div className="pt-2 border-t border-pastel-border/70">
-                <MealTypeSelector
-                  selectedTypes={meal.types || []}
-                  onToggle={(type) => toggleMealType(index, type)}
-                />
-              </div>
-            </motion.div>
+              {tag}
+            </Button>
           ))}
         </div>
       </div>
-
-      <TagPreferencesForm
-        preferences={preferences}
-        setPreferences={setPreferences}
-        availableTags={availableTags}
-      />
-    </motion.div>
+    </div>
   );
 }
 
