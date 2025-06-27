@@ -67,7 +67,7 @@ serve(async (req) => {
             const column =
               session.metadata.credits_type === "text" ? "text_credits" : "image_credits";
             const increment =
-              session.metadata.credits_type === "text" ? 10 : 5;
+              session.metadata.credits_type === "text" ? 150 : 50;
             const { data: row, error: fetchErr } = await supabase
               .from("ia_credits")
               .select(column)

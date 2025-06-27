@@ -48,6 +48,44 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.warn('access_keys update error:', updateError.message);
     }
 
+    const previousTier =
+      user.raw_user_meta_data?.subscription_tier || 'standard';
+
+    const { error: userUpdateErr } = await supabaseAdmin.auth.admin.updateUserById(
+      user.id,
+      {
+        app_metadata: { subscription_tier: data.grants },
+      }
+    );
+    if (userUpdateErr) {
+      console.warn('update user tier error:', userUpdateErr.message);
+    }
+
+    if (data.grants === 'vip' && previousTier !== 'vip') {
+      const { data: row, error: fetchErr } = await supabaseAdmin
+        .from('ia_credits')
+        .select('text_credits, image_credits')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (fetchErr) {
+        console.error('ia_credits fetch error:', fetchErr.message);
+      }
+      const currentText = row?.text_credits ?? 0;
+      const currentImage = row?.image_credits ?? 0;
+      const { error: creditErr } = await supabaseAdmin.from('ia_credits').upsert(
+        {
+          user_id: user.id,
+          text_credits: currentText + 100,
+          image_credits: currentImage + 10,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'user_id' }
+      );
+      if (creditErr) {
+        console.error('ia_credits upsert error:', creditErr.message);
+      }
+    }
+
     return res.status(200).json({ grants: data.grants });
   } catch (err) {
     console.error('access-key error:', err);
