@@ -69,6 +69,8 @@ function App() {
     weeklyMenu,
     menuName,
     isShared,
+    preferences,
+    updatePreferences,
     setWeeklyMenu: saveUserWeeklyMenuHook,
     updateMenuName,
     deleteMenu: deleteWeeklyMenu,
@@ -177,6 +179,8 @@ function App() {
           weeklyMenuLoading={weeklyMenuLoading}
           menuName={menuName}
           isShared={isShared}
+          menuPreferences={preferences}
+          updateMenuPreferences={updatePreferences}
           saveUserWeeklyMenuHook={saveUserWeeklyMenuHook}
           updateMenuName={updateMenuName}
           deleteWeeklyMenu={deleteWeeklyMenu}

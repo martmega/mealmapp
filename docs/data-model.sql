@@ -34,6 +34,15 @@ create table menu_participants (
   primary key (menu_id, user_id)
 );
 
+create table weekly_menu_preferences (
+  menu_id uuid primary key references weekly_menus(id) on delete cascade,
+  portions_per_meal integer default 4,
+  daily_calories_limit integer default 2200,
+  weekly_budget numeric default 0,
+  daily_meal_structure text[],
+  tag_preferences text[]
+);
+
 create table user_relationships (
   id uuid primary key default uuid_generate_v4(),
   requester_id uuid references auth.users(id) on delete cascade,

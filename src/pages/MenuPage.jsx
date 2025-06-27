@@ -22,6 +22,8 @@ export default function MenuPage({
   weeklyMenu,
   menuName,
   isShared,
+  preferences,
+  updatePreferences,
   setWeeklyMenu,
   updateMenuName,
   deleteMenu,
@@ -64,6 +66,17 @@ export default function MenuPage({
     if (error) {
       console.error('Erreur creation menu:', error);
       return;
+    }
+
+    if (data?.id) {
+      await supabase.from('weekly_menu_preferences').insert({
+        menu_id: data.id,
+        portions_per_meal: 4,
+        daily_calories_limit: 2200,
+        weekly_budget: 35,
+        daily_meal_structure: [],
+        tag_preferences: [],
+      });
     }
 
     if (isShared && Array.isArray(participantIds)) {
@@ -118,6 +131,8 @@ export default function MenuPage({
         setWeeklyMenu={setWeeklyMenu}
         userProfile={userProfile}
         menuName={menuName}
+        preferences={preferences}
+        updatePreferences={updatePreferences}
         onUpdateMenuName={(name) => handleRename(selectedMenuId, name)}
         onDeleteMenu={() => handleDelete(selectedMenuId)}
       />

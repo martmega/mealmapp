@@ -3,6 +3,14 @@ import { getSupabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
 import { initialWeeklyMenuState } from '@/lib/menu';
 
+const defaultPrefs = {
+  portions_per_meal: 4,
+  daily_calories_limit: 2200,
+  weekly_budget: 35,
+  daily_meal_structure: [],
+  tag_preferences: [],
+};
+
 const supabase = getSupabase();
 
 function isValidUUID(value) {
@@ -19,6 +27,7 @@ export function useWeeklyMenu(session, currentMenuId = null) {
   const [menuName, setMenuName] = useState('Menu de la semaine');
   const [menuId, setMenuId] = useState(currentMenuId);
   const [isShared, setIsShared] = useState(false);
+  const [preferences, setPreferences] = useState(defaultPrefs);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const userId = session?.user?.id;
@@ -69,7 +78,27 @@ export function useWeeklyMenu(session, currentMenuId = null) {
           throw error;
         }
 
-        if (data) safeSetWeeklyMenu(data);
+        if (data) {
+          safeSetWeeklyMenu(data);
+          const { data: pref, error: prefError } = await supabase
+            .from('weekly_menu_preferences')
+            .select('*')
+            .eq('menu_id', data.id)
+            .maybeSingle();
+
+          if (prefError && prefError.code !== 'PGRST116') throw prefError;
+
+          if (pref) {
+            setPreferences({ ...defaultPrefs, ...pref });
+          } else {
+            const { data: inserted, error: insertErr } = await supabase
+              .from('weekly_menu_preferences')
+              .insert({ menu_id: data.id, ...defaultPrefs })
+              .select('*')
+              .single();
+            if (!insertErr && inserted) setPreferences(inserted);
+          }
+        }
       } catch (err) {
         console.error('Erreur fetch weekly menu :', err);
         toast({
@@ -209,6 +238,40 @@ export function useWeeklyMenu(session, currentMenuId = null) {
     [userId, menuId, fetchWeeklyMenu, toast]
   );
 
+  const updateMenuPreferences = useCallback(
+    async (newPrefs, id = menuId) => {
+      if (!userId || !id) return false;
+      try {
+        const { data: updated, error } = await supabase
+          .from('weekly_menu_preferences')
+          .update({
+            portions_per_meal: newPrefs.portions_per_meal,
+            daily_calories_limit: newPrefs.daily_calories_limit,
+            weekly_budget: newPrefs.weekly_budget,
+            daily_meal_structure: newPrefs.daily_meal_structure,
+            tag_preferences: newPrefs.tag_preferences,
+          })
+          .eq('menu_id', id)
+          .select('*')
+          .single();
+
+        if (error) throw error;
+        if (updated) setPreferences(updated);
+        return true;
+      } catch (err) {
+        console.error('Error updating preferences:', err);
+        toast({
+          title: 'Erreur',
+          description:
+            "Impossible de mettre \xC3\xA0 jour les pr\xC3\xA9f\xC3\xA9rences: " + err.message,
+          variant: 'destructive',
+        });
+        return false;
+      }
+    },
+    [userId, menuId, toast]
+  );
+
   const deleteWeeklyMenu = useCallback(
     async (id = menuId) => {
       if (!userId || !id) return false;
@@ -243,6 +306,8 @@ export function useWeeklyMenu(session, currentMenuId = null) {
     isShared,
     setWeeklyMenu: saveWeeklyMenuToSupabase,
     updateMenuName: updateWeeklyMenuName,
+    preferences,
+    updatePreferences: updateMenuPreferences,
     deleteMenu: deleteWeeklyMenu,
     loading,
   };

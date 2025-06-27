@@ -25,6 +25,8 @@ function MenuPlanner({
   menuName,
   onUpdateMenuName,
   onDeleteMenu,
+  preferences,
+  updatePreferences,
 }) {
   const [internalWeeklyMenu, setInternalWeeklyMenu] = useState(
     Array.isArray(propWeeklyMenu) && propWeeklyMenu.length === 7
@@ -60,54 +62,32 @@ function MenuPlanner({
     setWeeklyMenu(validatedMenu);
   };
 
-  const [preferences, setPreferences] = useState(() => {
-    const saved = localStorage.getItem('menuPreferences');
-    const defaultPreferences = {
-      meals: [
-        { id: 1, types: ['petit-dejeuner'], enabled: true, mealNumber: 1 },
-        { id: 2, types: ['plat'], enabled: true, mealNumber: 2 },
-        {
-          id: 3,
-          types: ['encas-sucre', 'encas-sale'],
-          enabled: true,
-          mealNumber: 3,
-        },
-      ],
-      maxCalories: 2200,
-      weeklyBudget: 35,
-      tagPreferences: [],
-      servingsPerMeal: 4,
-    };
-
-    const profilePrefs = userProfile?.preferences || {};
-
-    let initialPrefs = {
-      ...defaultPreferences,
-      ...profilePrefs,
-    };
-
-    if (saved) {
-      try {
-        const savedPrefs = JSON.parse(saved);
-        initialPrefs = {
-          ...initialPrefs,
-          ...savedPrefs,
-        };
-      } catch (e) {
-        console.error('Error parsing saved menu preferences', e);
-      }
+  const [internalPreferences, setInternalPreferences] = useState(
+    preferences || {
+      portions_per_meal: 4,
+      daily_calories_limit: 2200,
+      weekly_budget: 35,
+      daily_meal_structure: [],
+      tag_preferences: [],
     }
-
-    if (initialPrefs.tolerance !== undefined) {
-      delete initialPrefs.tolerance;
-    }
-
-    return initialPrefs;
-  });
+  );
 
   useEffect(() => {
-    localStorage.setItem('menuPreferences', JSON.stringify(preferences));
+    setInternalPreferences(
+      preferences || {
+        portions_per_meal: 4,
+        daily_calories_limit: 2200,
+        weekly_budget: 35,
+        daily_meal_structure: [],
+        tag_preferences: [],
+      }
+    );
   }, [preferences]);
+
+  const handleSetPreferences = (newPrefs) => {
+    setInternalPreferences(newPrefs);
+    updatePreferences?.(newPrefs);
+  };
 
   const safeRecipes = useMemo(
     () => (Array.isArray(recipes) ? recipes : []),
@@ -127,7 +107,7 @@ function MenuPlanner({
 
   const { generateMenu, isGenerating } = useMenuGeneration(
     safeRecipes,
-    preferences,
+    internalPreferences,
     handleSetWeeklyMenu,
     userProfile
   );
@@ -191,8 +171,8 @@ function MenuPlanner({
           <MenuPreferencesModal
             isOpen={isPreferencesModalOpen}
             onOpenChange={setIsPreferencesModalOpen}
-            preferences={preferences}
-            setPreferences={setPreferences}
+            preferences={internalPreferences}
+            setPreferences={handleSetPreferences}
             availableTags={availableTags}
           />
           <Button
@@ -215,7 +195,7 @@ function MenuPlanner({
         weeklyMenu={internalWeeklyMenu}
         setWeeklyMenu={handleSetWeeklyMenu}
         safeRecipes={safeRecipes}
-        preferences={preferences}
+        preferences={internalPreferences}
         userProfile={userProfile}
       />
     </div>

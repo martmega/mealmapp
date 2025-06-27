@@ -25,6 +25,23 @@ create policy "allow menu participants" on weekly_menus
   );
 ```
 
+## weekly_menu_preferences
+- Linked one-to-one with `weekly_menus` via `menu_id`.
+- The menu owner and participants can read and update the preferences.
+
+```sql
+create policy "allow owner" on weekly_menu_preferences
+  for all using (
+    auth.uid() = (
+      select user_id from weekly_menus wm where wm.id = menu_id
+    )
+    or exists (
+      select 1 from menu_participants mp
+      where mp.menu_id = menu_id and mp.user_id = auth.uid()
+    )
+  );
+```
+
 ## user_relationships
 - Rows are visible to the requester and the addressee only.
 - Updates are restricted so that each participant can update the status of a relationship.
