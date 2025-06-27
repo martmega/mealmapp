@@ -57,9 +57,14 @@ export default function MainAppLayout({
               </span>
             </h1>
             <div className="flex items-center gap-2 sm:gap-3">
-              {userProfile?.subscription_tier === 'premium' && (
+              {['premium', 'vip'].includes(userProfile?.subscription_tier) && (
                 <span className="flex items-center text-sm font-medium text-pastel-accent bg-pastel-accent/10 px-2.5 py-1 rounded-full">
                   <Star className="h-4 w-4 mr-1.5 text-pastel-accent" /> Premium
+                  {userProfile?.subscription_tier === 'vip' && (
+                    <span className="bg-purple-700 text-white text-xs font-semibold ml-2 px-2 py-0.5 rounded-full">
+                      VIP
+                    </span>
+                  )}
                 </span>
               )}
               <Button
