@@ -1,5 +1,5 @@
 export const DEFAULT_IMAGE_URL = '/img/placeholder-image.svg';
-export const DEFAULT_AVATAR_URL = '/img/placeholder-avatar.svg';
+export const DEFAULT_AVATAR_URL = '/img/placeholder-avatar.png';
 
 const signedUrlCache = new Map();
 

@@ -8,7 +8,7 @@ export function useUserProfile(session) {
   const [userProfile, setUserProfile] = useState(undefined);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const DEFAULT_AVATAR_URL = '/img/placeholder-avatar.svg';
+  const DEFAULT_AVATAR_URL = '/img/placeholder-avatar.png';
 
   const fetchUserProfile = useCallback(async () => {
     const defaultProfileBase = {
