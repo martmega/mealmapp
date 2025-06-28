@@ -5,6 +5,7 @@ import MenuPreferencesModal from '@/components/menu_planner/MenuPreferencesModal
 import WeeklyMenuView from '@/components/menu_planner/WeeklyMenuView.jsx';
 import { useMenuGeneration } from '@/hooks/useMenuGeneration.js';
 import { initialWeeklyMenuState } from '@/lib/menu';
+import { DEFAULT_MENU_PREFS } from '@/lib/defaultPreferences.js';
 import {
   Dialog,
   DialogContent,
@@ -63,25 +64,11 @@ function MenuPlanner({
   };
 
   const [internalPreferences, setInternalPreferences] = useState(
-    preferences || {
-      servingsPerMeal: 4,
-      maxCalories: 2200,
-      weeklyBudget: 35,
-      meals: [],
-      tagPreferences: [],
-    }
+    preferences || { ...DEFAULT_MENU_PREFS }
   );
 
   useEffect(() => {
-    setInternalPreferences(
-      preferences || {
-        servingsPerMeal: 4,
-        maxCalories: 2200,
-        weeklyBudget: 35,
-        meals: [],
-        tagPreferences: [],
-      }
-    );
+    setInternalPreferences(preferences || { ...DEFAULT_MENU_PREFS });
   }, [preferences]);
 
   const handleSetPreferences = (newPrefs) => {

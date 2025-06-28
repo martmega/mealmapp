@@ -14,6 +14,7 @@ import MealTypeSelector from '@/components/MealTypeSelector.jsx';
 import TagPreferencesForm from '@/components/menu_planner/TagPreferencesForm.jsx';
 import CommonMenuSettings from '@/components/menu_planner/CommonMenuSettings.jsx';
 import { useLinkedUsers } from '@/hooks/useLinkedUsers.js';
+import { DEFAULT_MENU_PREFS } from '@/lib/defaultPreferences.js';
 
 function MenuPreferencesPanel({ preferences, setPreferences, availableTags, userProfile }) {
   const addMeal = () => {
@@ -110,7 +111,9 @@ function MenuPreferencesPanel({ preferences, setPreferences, availableTags, user
           <Input
             id="servingsPerMeal"
             type="number"
-            value={preferences.servingsPerMeal || 4}
+            value={
+              preferences.servingsPerMeal || DEFAULT_MENU_PREFS.servingsPerMeal
+            }
             onChange={handleServingsChange}
             min="1"
             step="1"
@@ -124,8 +127,10 @@ function MenuPreferencesPanel({ preferences, setPreferences, availableTags, user
           <Input
             id="maxCalories"
             type="number"
-            value={preferences.maxCalories || 2200}
-            onChange={(e) => setPreferences({ ...preferences, maxCalories: parseInt(e.target.value) || 0 })}
+            value={preferences.maxCalories || DEFAULT_MENU_PREFS.maxCalories}
+            onChange={(e) =>
+              setPreferences({ ...preferences, maxCalories: parseInt(e.target.value) || 0 })
+            }
             min="500"
             step="50"
             className="max-w-xs"
@@ -138,9 +143,12 @@ function MenuPreferencesPanel({ preferences, setPreferences, availableTags, user
           <Input
             id="weeklyBudget"
             type="number"
-            value={preferences.weeklyBudget || 35}
+            value={preferences.weeklyBudget || DEFAULT_MENU_PREFS.weeklyBudget}
             onChange={(e) =>
-              setPreferences({ ...preferences, weeklyBudget: parseFloat(e.target.value) || 0 })
+              setPreferences({
+                ...preferences,
+                weeklyBudget: parseFloat(e.target.value) || 0,
+              })
             }
             min="0"
             step="0.5"
