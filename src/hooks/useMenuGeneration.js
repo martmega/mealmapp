@@ -328,9 +328,9 @@ export function useMenuGeneration(
         for (const candidate of candidateRecipesForSlot) {
           const recipe = candidate.recipe;
           const baseId = getBaseRecipeId(recipe.id);
-          let score = 1 + Math.random() * 0.2;
+          let score = 1 + Math.random() * 0.05;
           const timesUsed = recipeUsageCount[baseId] || 0;
-          score /= 1 + timesUsed * 0.5;
+          score /= 1 + timesUsed * 1.2;
 
           const recipeBaseServings =
             recipe.servings && recipe.servings > 0 ? recipe.servings : 1;
