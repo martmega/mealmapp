@@ -80,7 +80,7 @@ export default function MenuPage({
     }
   };
 
-  const handleCreate = async ({ name, isShared, participantIds } = {}) => {
+  const handleCreate = async ({ name, participantIds } = {}) => {
     const userId = session?.user?.id;
     if (!userId) return;
 
@@ -89,8 +89,7 @@ export default function MenuPage({
       name: name || 'Menu sans titre',
       menu_data: initialWeeklyMenuState(),
     };
-    // Add is_shared flag if column exists
-    insertData.is_shared = isShared;
+    insertData.is_shared = false;
 
     const { data, error } = await supabase
       .from('weekly_menus')
@@ -108,12 +107,24 @@ export default function MenuPage({
         .insert({ menu_id: data.id, ...toDbPrefs(DEFAULT_MENU_PREFS) });
     }
 
-    if (isShared && Array.isArray(participantIds)) {
+    if (Array.isArray(participantIds) && participantIds.length > 0) {
       const rows = participantIds.map((userId) => ({
         menu_id: data.id,
         user_id: userId,
       }));
       await supabase.from('menu_participants').insert(rows);
+    }
+
+    if (data?.id) {
+      const { count } = await supabase
+        .from('menu_participants')
+        .select('user_id', { count: 'exact', head: false })
+        .eq('menu_id', data.id);
+      const shared = (count || 0) > 0;
+      await supabase
+        .from('weekly_menus')
+        .update({ is_shared: shared })
+        .eq('id', data.id);
     }
 
     await refreshMenus();

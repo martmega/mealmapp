@@ -16,7 +16,7 @@ export function useMenuList(session) {
     try {
       const { data: ownerMenus, error: ownerError } = await supabase
         .from('weekly_menus')
-        .select('id, user_id, name, updated_at, is_shared')
+        .select('id, user_id, name, updated_at')
         .eq('user_id', userId)
         .order('created_at');
 
@@ -38,7 +38,7 @@ export function useMenuList(session) {
       if (participantIds.length > 0) {
         const { data, error } = await supabase
           .from('weekly_menus')
-          .select('id, user_id, name, updated_at, is_shared')
+          .select('id, user_id, name, updated_at')
           .in('id', participantIds);
         if (error) throw error;
         participantMenus = data || [];
@@ -47,11 +47,27 @@ export function useMenuList(session) {
       const combined = [...(ownerMenus || []), ...participantMenus];
       const unique = [];
       const seen = new Set();
+      const menuIds = [];
       for (const m of combined) {
         if (!seen.has(m.id)) {
           seen.add(m.id);
           unique.push(m);
+          menuIds.push(m.id);
         }
+      }
+
+      if (menuIds.length > 0) {
+        const { data: rows } = await supabase
+          .from('menu_participants')
+          .select('menu_id')
+          .in('menu_id', menuIds);
+        const counts = {};
+        (rows || []).forEach((r) => {
+          counts[r.menu_id] = (counts[r.menu_id] || 0) + 1;
+        });
+        unique.forEach((m) => {
+          m.is_shared = (counts[m.id] || 0) > 0;
+        });
       }
 
       setMenus(unique);
