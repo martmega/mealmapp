@@ -173,7 +173,7 @@ describe('preferences integration', () => {
     await waitFor(() => {
       expect(result2.current.preferences).toEqual({
         ...updated,
-        commonMenuSettings: { linkedUsers: [], linkedUserRecipes: [] },
+        commonMenuSettings: { enabled: false, linkedUsers: [], linkedUserRecipes: [] },
       });
     });
   });
