@@ -99,7 +99,9 @@ export default function MenuPage({
     }
 
     if (data?.id) {
-      const dbPrefs = toDbPrefs({ ...DEFAULT_MENU_PREFS });
+      const basePrefs = { ...DEFAULT_MENU_PREFS };
+      if (!isShared) basePrefs.commonMenuSettings = {};
+      const dbPrefs = toDbPrefs(basePrefs);
       await supabase
         .from('weekly_menu_preferences')
         .insert({ menu_id: data.id, ...dbPrefs });
