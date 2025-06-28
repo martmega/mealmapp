@@ -1,7 +1,7 @@
 export interface CommonMenuSettings {
   enabled: boolean;
-  linkedUsers: any[];
-  linkedUserRecipes?: any[];
+  linkedUsers?: string[];
+  linkedUserRecipes?: string[];
 }
 
 export type WeeklyMenuPreferences = {
@@ -20,9 +20,5 @@ export type WeeklyMenuPreferences = {
   }[];
   /** Camel case tag preferences for generator */
   tagPreferences?: { tag: string; percentage: number }[] | string[];
-  common_menu_settings?: {
-    enabled: boolean;
-    linkedUsers?: string[];
-    linkedUsersReadOnly?: string[];
-  };
+  common_menu_settings?: CommonMenuSettings;
 };
