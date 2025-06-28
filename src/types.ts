@@ -20,5 +20,9 @@ export type WeeklyMenuPreferences = {
   }[];
   /** Camel case tag preferences for generator */
   tagPreferences?: { tag: string; percentage: number }[] | string[];
-  common_menu_settings?: CommonMenuSettings;
+  common_menu_settings?: {
+    enabled: boolean;
+    linkedUsers?: string[];
+    linkedUsersReadOnly?: string[];
+  };
 };

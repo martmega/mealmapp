@@ -24,7 +24,7 @@ export function useUserProfile(session) {
         weeklyBudget: 35,
         meals: [],
         tagPreferences: [],
-        commonMenuSettings: { enabled: false, linkedUsers: [] },
+        commonMenuSettings: { enabled: true, linkedUsers: [] },
       },
     };
 
@@ -91,7 +91,7 @@ export function useUserProfile(session) {
         weeklyBudget: 35,
         meals: [],
         tagPreferences: [],
-        commonMenuSettings: { enabled: false, linkedUsers: [] },
+        commonMenuSettings: { enabled: true, linkedUsers: [] },
       };
       finalProfileData.preferences = {
         ...defaultPreferences,
