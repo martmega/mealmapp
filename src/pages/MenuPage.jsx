@@ -104,16 +104,13 @@ export default function MenuPage({
     }
 
     if (data?.id) {
-      const prefs = {
+      const dbPrefs = toDbPrefs({
         ...DEFAULT_MENU_PREFS,
-        commonMenuSettings: {
-          ...DEFAULT_MENU_PREFS.commonMenuSettings,
-          enabled: isShared,
-        },
-      };
+        commonMenuSettings: { enabled: isShared },
+      });
       await supabase
         .from('weekly_menu_preferences')
-        .insert({ menu_id: data.id, ...toDbPrefs(prefs) });
+        .insert({ menu_id: data.id, ...dbPrefs });
     }
 
     if (isShared && data?.id) {
