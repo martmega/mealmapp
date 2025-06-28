@@ -142,8 +142,9 @@ describe('useWeeklyMenu.updateMenuPreferences', () => {
     });
 
     const expected = { ...DEFAULT_MENU_PREFS, weeklyBudget: 40 };
+    const expectedDb = toDbPrefs({ ...expected, commonMenuSettings: {} });
 
-    expect(global.__supabaseState.lastUpsert).toEqual({ menu_id: 'menu1', ...toDbPrefs(expected) });
+    expect(global.__supabaseState.lastUpsert).toEqual({ menu_id: 'menu1', ...expectedDb });
     expect(result.current.preferences).toEqual(expected);
   });
 });

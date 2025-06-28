@@ -280,6 +280,7 @@ export function useWeeklyMenu(session, currentMenuId = null) {
       if (!userId || !id) return false;
       try {
         const merged = { ...preferences, ...(newPrefs || {}) };
+        if (!isShared) merged.commonMenuSettings = {};
         const { data: updated, error } = await supabase
           .from('weekly_menu_preferences')
           .upsert({ menu_id: id, ...toDbPrefs(merged) }, { onConflict: 'menu_id' })
@@ -301,7 +302,7 @@ export function useWeeklyMenu(session, currentMenuId = null) {
         return false;
       }
     },
-    [userId, menuId, toast, preferences]
+    [userId, menuId, toast, preferences, isShared]
   );
 
 
