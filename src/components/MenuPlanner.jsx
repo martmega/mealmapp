@@ -85,8 +85,12 @@ function MenuPlanner({
   }, [preferences]);
 
   const handleSetPreferences = (newPrefs) => {
-    setInternalPreferences(newPrefs);
-    updatePreferences?.(newPrefs);
+    const computed =
+      typeof newPrefs === 'function'
+        ? newPrefs(internalPreferences)
+        : newPrefs;
+    setInternalPreferences(computed);
+    updatePreferences?.(computed);
   };
 
   const safeRecipes = useMemo(
