@@ -40,7 +40,8 @@ create table weekly_menu_preferences (
   daily_calories_limit integer default 2200,
   weekly_budget numeric default 0,
   daily_meal_structure text[],
-  tag_preferences text[]
+  tag_preferences text[],
+  common_menu_settings jsonb -- { enabled: boolean, linkedUsers: uuid[], linkedUserRecipes: uuid[] }
 );
 
 create table user_relationships (
