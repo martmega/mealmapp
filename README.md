@@ -9,6 +9,8 @@ VITE_ACCESS_KEYS=BETA2025
 VITE_STRIPE_PUBLISHABLE_KEY=<your-stripe-publishable-key>
 VITE_STANDARD_PRICE_ID=<your-standard-price-id>
 VITE_PREMIUM_PRICE_ID=<your-premium-price-id>
+VITE_STRIPE_PRICE_ID_IMAGE_CREDIT=price_XXXXXX
+VITE_STRIPE_PRICE_ID_TEXT_CREDIT=price_YYYYYY
 SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
 STRIPE_SECRET_KEY=<your-stripe-secret-key>
 STRIPE_WEBHOOK_SECRET=<your-stripe-webhook-secret>
@@ -30,6 +32,7 @@ Supabase should import these constants instead of hard coding URLs. The buckets 
 `STRIPE_PUBLISHABLE_KEY` is the public key used by the browser to initialize Stripe.
 `STRIPE_STANDARD_PRICE_ID` and `STRIPE_PREMIUM_PRICE_ID` correspond to the price identifiers for your Standard and Premium subscription plans.
 `STRIPE_TEXT_CREDIT_PRICE_ID` and `STRIPE_IMAGE_CREDIT_PRICE_ID` are the price identifiers for packs of AI text and image credits.
+`VITE_STRIPE_PRICE_ID_TEXT_CREDIT` and `VITE_STRIPE_PRICE_ID_IMAGE_CREDIT` are their frontend equivalents used when purchasing credits.
 You can find all three in the Stripe dashboard: the publishable key under **Developers > API keys** and the price IDs on each product's pricing page.
 
 ## Database

@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { loadStripe } from '@stripe/stripe-js';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 
-const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-let stripePromise;
-const getStripe = () => {
-  if (!stripePromise && STRIPE_PUBLISHABLE_KEY) {
-    stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
-  }
-  return stripePromise;
-};
+const TEXT_PRICE_ID = import.meta.env.VITE_STRIPE_PRICE_ID_TEXT_CREDIT;
+const IMAGE_PRICE_ID = import.meta.env.VITE_STRIPE_PRICE_ID_IMAGE_CREDIT;
 
 
 export default function IACredits({ session }) {
@@ -80,25 +73,16 @@ export default function IACredits({ session }) {
   const handlePurchase = async (type) => {
     setLoading(type);
     try {
-      const stripe = await getStripe();
-      if (!stripe) {
-        toast({ title: 'Stripe error', description: 'Configuration manquante', variant: 'destructive' });
-        setLoading(null);
-        return;
-      }
+      const priceId = type === 'text' ? TEXT_PRICE_ID : IMAGE_PRICE_ID;
       const res = await fetch('/api/purchase-credits', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
-          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-        },
-        body: JSON.stringify({ type }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Request failed');
-      const { sessionId } = data;
-      await stripe.redirectToCheckout({ sessionId });
+      const { url } = data;
+      window.location.href = url;
     } catch (err) {
       console.error('purchase credits error:', err);
       toast({ title: 'Erreur', description: err.message, variant: 'destructive' });

@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-import { loadStripe } from '@stripe/stripe-js';
 import {
   Loader2,
   UploadCloud,
@@ -27,39 +26,19 @@ const RecipeFormImageHandler = ({
   const { toast } = useToast();
   console.log('RecipeFormImageHandler subscription tier:', subscription_tier);
 
-  const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-  let stripePromise;
-  const getStripe = () => {
-    if (!stripePromise && STRIPE_PUBLISHABLE_KEY) {
-      stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
-    }
-    return stripePromise;
-  };
+  const PRICE_ID = import.meta.env.VITE_STRIPE_PRICE_ID_IMAGE_CREDIT;
 
   const handlePurchase = async () => {
     try {
-      const stripe = await getStripe();
-      if (!stripe) {
-        toast({
-          title: 'Stripe error',
-          description: 'Configuration manquante',
-          variant: 'destructive',
-        });
-        return;
-      }
       const res = await fetch('/api/purchase-credits', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
-          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-        },
-        body: JSON.stringify({ type: 'image' }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId: PRICE_ID }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Request failed');
-      const { sessionId } = data;
-      await stripe.redirectToCheckout({ sessionId });
+      const { url } = data;
+      window.location.href = url;
     } catch (err) {
       console.error('purchase credits error:', err);
       toast({ title: 'Erreur', description: err.message, variant: 'destructive' });
