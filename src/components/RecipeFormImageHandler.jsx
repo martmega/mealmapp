@@ -2,6 +2,8 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/components/ui/use-toast';
+import { loadStripe } from '@stripe/stripe-js';
 import {
   Loader2,
   UploadCloud,
@@ -22,7 +24,47 @@ const RecipeFormImageHandler = ({
   isGeneratingImage,
   iaUsage,
 }) => {
+  const { toast } = useToast();
   console.log('RecipeFormImageHandler subscription tier:', subscription_tier);
+
+  const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+  let stripePromise;
+  const getStripe = () => {
+    if (!stripePromise && STRIPE_PUBLISHABLE_KEY) {
+      stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
+    }
+    return stripePromise;
+  };
+
+  const handlePurchase = async () => {
+    try {
+      const stripe = await getStripe();
+      if (!stripe) {
+        toast({
+          title: 'Stripe error',
+          description: 'Configuration manquante',
+          variant: 'destructive',
+        });
+        return;
+      }
+      const res = await fetch('/api/purchase-credits', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify({ type: 'image' }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Request failed');
+      const { sessionId } = data;
+      await stripe.redirectToCheckout({ sessionId });
+    } catch (err) {
+      console.error('purchase credits error:', err);
+      toast({ title: 'Erreur', description: err.message, variant: 'destructive' });
+    }
+  };
   return (
     <div className="space-y-3">
       <Label className="text-sm font-medium text-pastel-text/90">
@@ -58,14 +100,14 @@ const RecipeFormImageHandler = ({
         <Button
           type="button"
           variant={subscription_tier === 'premium' ? 'premium' : 'accent'}
-          onClick={() => generateWithAI('image')}
-          disabled={
-            isGeneratingImage ||
-            !session ||
-            (subscription_tier === 'vip' &&
-              (iaUsage?.image_requests ?? 0) >= 5 &&
-              (iaUsage?.image_credits ?? 0) <= 0)
-          }
+          onClick={() => {
+            if (subscription_tier === 'vip' && (iaUsage?.image_credits ?? 0) <= 0) {
+              handlePurchase();
+            } else {
+              generateWithAI('image');
+            }
+          }}
+          disabled={isGeneratingImage || !session}
           className="h-auto py-3"
         >
           {isGeneratingImage ? (
@@ -77,9 +119,11 @@ const RecipeFormImageHandler = ({
           )}
           {isGeneratingImage
             ? 'Génération...'
-            : subscription_tier === 'premium'
-              ? 'IA Image'
-              : 'Premium Image'}
+            : subscription_tier === 'vip' && (iaUsage?.image_credits ?? 0) <= 0
+              ? 'Obtenir des crédits'
+              : subscription_tier === 'premium'
+                ? 'IA Image'
+                : 'Premium Image'}
         </Button>
       </div>
       {subscription_tier === 'vip' && (

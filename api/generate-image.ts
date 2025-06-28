@@ -42,6 +42,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(403).json({ error: 'Forbidden' });
   }
 
+  const { data: creditRow, error: creditErr } = await supabaseAdmin
+    .from('ia_credits')
+    .select('image_credits')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (creditErr) {
+    console.error('ia_credits fetch error:', creditErr.message);
+  }
+
+  const currentCredits = creditRow?.image_credits ?? 0;
+  if (currentCredits <= 0) {
+    return res.status(402).json({ error: 'Insufficient image credits' });
+  }
+
   const { recipe } = req.body;
   if (!recipe) {
     return res.status(400).json({ error: 'Missing recipe' });
