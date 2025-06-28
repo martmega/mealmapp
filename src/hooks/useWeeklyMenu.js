@@ -128,9 +128,16 @@ export function useWeeklyMenu(session, currentMenuId = null) {
           if (pref) {
             setPreferences(fromDbPrefs(pref));
           } else {
+            const safePrefs = isShared
+              ? toDbPrefs(DEFAULT_MENU_PREFS)
+              : toDbPrefs({
+                  ...DEFAULT_MENU_PREFS,
+                  commonMenuSettings: { enabled: false },
+                });
+
             const { data: inserted, error: insertErr } = await supabase
               .from('weekly_menu_preferences')
-              .insert({ menu_id: data.id, ...toDbPrefs(DEFAULT_MENU_PREFS) })
+              .insert({ menu_id: data.id, ...safePrefs })
               .select('*')
               .single();
             if (!insertErr && inserted) setPreferences(fromDbPrefs(inserted));
