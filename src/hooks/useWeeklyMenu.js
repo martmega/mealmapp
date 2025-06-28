@@ -301,6 +301,63 @@ export function useWeeklyMenu(session, currentMenuId = null) {
     [userId, menuId, toast]
   );
 
+  const toggleMenuShared = useCallback(
+    async (share = true, id = menuId) => {
+      if (!userId || !id) return false;
+      try {
+        const { data: updated, error } = await supabase
+          .from('weekly_menus')
+          .update({ is_shared: share })
+          .eq('id', id)
+          .select('id, is_shared')
+          .single();
+
+        if (error) throw error;
+
+        if (updated && id === menuId) setIsShared(updated.is_shared);
+
+        if (share) {
+          const { data: pref } = await supabase
+            .from('weekly_menu_preferences')
+            .select('*')
+            .eq('menu_id', id)
+            .maybeSingle();
+
+          if (pref) {
+            const prefsObj = fromDbPrefs(pref);
+            prefsObj.commonMenuSettings = {
+              ...(prefsObj.commonMenuSettings || {}),
+              enabled: true,
+            };
+
+            const { data: upserted } = await supabase
+              .from('weekly_menu_preferences')
+              .upsert({ menu_id: id, ...toDbPrefs(prefsObj) }, {
+                onConflict: 'menu_id',
+              })
+              .select('*')
+              .single();
+
+            if (upserted && id === menuId) {
+              setPreferences(fromDbPrefs(upserted));
+            }
+          }
+        }
+
+        return true;
+      } catch (err) {
+        console.error('Error toggling shared state:', err);
+        toast({
+          title: 'Erreur',
+          description: 'Impossible de mettre \xE0 jour le partage du menu: ' + err.message,
+          variant: 'destructive',
+        });
+        return false;
+      }
+    },
+    [userId, menuId, toast]
+  );
+
   const deleteWeeklyMenu = useCallback(
     async (id = menuId) => {
       if (!userId || !id) return false;
@@ -337,6 +394,7 @@ export function useWeeklyMenu(session, currentMenuId = null) {
     updateMenuName: updateWeeklyMenuName,
     preferences,
     updatePreferences: updateMenuPreferences,
+    toggleMenuShared,
     deleteMenu: deleteWeeklyMenu,
     loading,
   };
