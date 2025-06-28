@@ -664,6 +664,7 @@ function RecipeForm({
           description: 'La description a été mise à jour.',
         });
         if (subscriptionTier === 'vip') {
+          // Update UI optimistically but re-fetch from Supabase for accuracy
           setIaUsage((prev) => ({
             ...prev,
             text_requests:
@@ -676,6 +677,7 @@ function RecipeForm({
                 : prev?.text_credits ?? 0,
           }));
         }
+        fetchIaUsage();
         window.dispatchEvent(new Event('ai-action-complete'));
       } else if (type === 'image') {
         const filePath = data.path;
@@ -687,6 +689,7 @@ function RecipeForm({
           description: "L'image a été mise à jour.",
         });
         if (subscriptionTier === 'vip') {
+          // Update UI optimistically but re-fetch from Supabase for accuracy
           setIaUsage((prev) => ({
             ...prev,
             image_requests:
@@ -699,6 +702,7 @@ function RecipeForm({
                 : prev?.image_credits ?? 0,
           }));
         }
+        fetchIaUsage();
         window.dispatchEvent(new Event('ai-action-complete'));
       }
     } catch (error) {
