@@ -1,6 +1,8 @@
 import { useCallback, useState, useMemo } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 
+const MAX_RECIPE_OCCURRENCES = 1;
+
 function shuffleArray(array) {
   const newArray = [...array];
   for (let i = newArray.length - 1; i > 0; i--) {
@@ -94,6 +96,7 @@ export function useMenuGeneration(
     const shuffledRecipes = shuffleArray(baseRecipes);
     let availableRecipes = [...shuffledRecipes];
     const recipeUsageCount = {};
+    const usedThisWeek = new Set();
     baseRecipes.forEach((r) => {
       const baseId = getBaseRecipeId(r.id);
       recipeUsageCount[baseId] = 0;
@@ -202,6 +205,13 @@ export function useMenuGeneration(
         .fill(null)
         .map(() => []);
 
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          `Disponibles pour ${days[dayIndex]} :`,
+          availableRecipes.map((r) => r.name)
+        );
+      }
+
       for (
         let mealPrefIndex = 0;
         mealPrefIndex < activeMealsPreferences.length;
@@ -215,7 +225,7 @@ export function useMenuGeneration(
           availableRecipes = shuffleArray(
             baseRecipes.filter(
               (r) =>
-                recipeUsageCount[getBaseRecipeId(r.id)] < 3 &&
+                recipeUsageCount[getBaseRecipeId(r.id)] < MAX_RECIPE_OCCURRENCES &&
                 !usedRecipeOriginalIdsThisDay.has(getBaseRecipeId(r.id))
             )
           );
@@ -269,7 +279,8 @@ export function useMenuGeneration(
           (r, baseId) =>
             (!avoidDuplicates ||
               (!usedRecipeOriginalIdsThisDay.has(baseId) &&
-                recipeUsageCount[baseId] < 3)) &&
+                !usedThisWeek.has(baseId) &&
+                recipeUsageCount[baseId] < MAX_RECIPE_OCCURRENCES)) &&
             (!usedRecipesByUser[r.sourceUserId].has(baseId) ||
               usedRecipesByUser[r.sourceUserId].size >=
                 uniqueRecipeCountsByUser[r.sourceUserId]),
@@ -306,7 +317,10 @@ export function useMenuGeneration(
 
         const unusedCandidates = candidateRecipesForSlot.filter(({ recipe }) => {
           const baseId = getBaseRecipeId(recipe.id);
-          return !usedRecipesByUser[recipe.sourceUserId].has(baseId);
+          return (
+            !usedRecipesByUser[recipe.sourceUserId].has(baseId) &&
+            !usedThisWeek.has(baseId)
+          );
         });
         if (unusedCandidates.length > 0) {
           candidateRecipesForSlot = unusedCandidates;
@@ -325,10 +339,17 @@ export function useMenuGeneration(
           }
         }
 
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `Candidats pour ${days[dayIndex]} repas ${mealPreference.mealNumber} :`,
+            candidateRecipesForSlot.map((c) => c.recipe.name)
+          );
+        }
+
         for (const candidate of candidateRecipesForSlot) {
           const recipe = candidate.recipe;
           const baseId = getBaseRecipeId(recipe.id);
-          let score = 1 + Math.random() * 0.05;
+          let score = 1 + Math.random();
           const timesUsed = recipeUsageCount[baseId] || 0;
           score /= 1 + timesUsed * 1.2;
 
@@ -428,6 +449,12 @@ export function useMenuGeneration(
           };
 
           newWeeklyMenu[dayIndex][mealPrefIndex].push(recipeToAdd);
+          if (process.env.NODE_ENV === 'development') {
+            console.log(
+              `\u2192 Choisi pour ${days[dayIndex]} repas ${mealPreference.mealNumber}:`,
+              recipeToAdd.name
+            );
+          }
           if (weeklyBudget > 0 && typeof bestRecipeForMeal.estimated_price === 'number') {
             const costPerPortion = bestRecipeForMeal.estimated_price / recipeBaseServings;
             budgetUsed += costPerPortion * defaultServingsPerMealGlobal;
@@ -437,18 +464,13 @@ export function useMenuGeneration(
           usedRecipeOriginalIdsThisDay.add(baseId);
           recipeUsageCount[baseId] = (recipeUsageCount[baseId] || 0) + 1;
           usedRecipesByUser[bestRecipeForMeal.sourceUserId].add(baseId);
+          usedThisWeek.add(baseId);
 
           const actualIndexInAvailable = availableRecipes.findIndex(
             (r) => r.id === bestRecipeForMeal.id
           );
           if (actualIndexInAvailable !== -1) {
             availableRecipes.splice(actualIndexInAvailable, 1);
-          }
-          if (
-            recipeUsageCount[baseId] > 1 &&
-            (recipeUsageCount[baseId] <= 3 || candidateStageUsed > 0)
-          ) {
-            availableRecipes.push(bestRecipeForMeal);
           }
         } else {
           console.warn(
@@ -470,23 +492,30 @@ export function useMenuGeneration(
             const scaledCalories =
               (fallbackRecipe.calories || 0) * scaleFactorForCalorieEst;
 
-            const recipeToAdd = {
-              ...fallbackRecipe,
-              mealNumber: mealPreference.mealNumber,
-              plannedServings: defaultServingsPerMealGlobal,
-            };
+          const recipeToAdd = {
+            ...fallbackRecipe,
+            mealNumber: mealPreference.mealNumber,
+            plannedServings: defaultServingsPerMealGlobal,
+          };
 
-            newWeeklyMenu[dayIndex][mealPrefIndex].push(recipeToAdd);
-            if (weeklyBudget > 0 && typeof fallbackRecipe.estimated_price === 'number') {
-              const costPerPortion = fallbackRecipe.estimated_price / recipeBaseServings;
-              budgetUsed += costPerPortion * defaultServingsPerMealGlobal;
-            }
-            dailyCalories += scaledCalories;
-            usedRecipeOriginalIdsThisDay.add(baseId);
-            recipeUsageCount[baseId] = (recipeUsageCount[baseId] || 0) + 1;
-            usedRecipesByUser[fallbackRecipe.sourceUserId].add(baseId);
+          newWeeklyMenu[dayIndex][mealPrefIndex].push(recipeToAdd);
+          if (process.env.NODE_ENV === 'development') {
+            console.log(
+              `\u2192 Choisi pour ${days[dayIndex]} repas ${mealPreference.mealNumber}:`,
+              recipeToAdd.name
+            );
           }
+          if (weeklyBudget > 0 && typeof fallbackRecipe.estimated_price === 'number') {
+            const costPerPortion = fallbackRecipe.estimated_price / recipeBaseServings;
+            budgetUsed += costPerPortion * defaultServingsPerMealGlobal;
+          }
+          dailyCalories += scaledCalories;
+          usedRecipeOriginalIdsThisDay.add(baseId);
+          recipeUsageCount[baseId] = (recipeUsageCount[baseId] || 0) + 1;
+          usedRecipesByUser[fallbackRecipe.sourceUserId].add(baseId);
+          usedThisWeek.add(baseId);
         }
+      }
       }
     }
 
