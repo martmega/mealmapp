@@ -682,6 +682,7 @@ function RecipeForm({
                 : prev?.text_credits ?? 0,
           }));
         }
+        window.dispatchEvent(new Event('ai-action-complete'));
       } else if (type === 'image') {
         const filePath = data.path;
         setFormData((prev) => ({ ...prev, image_url: filePath }));
@@ -704,6 +705,7 @@ function RecipeForm({
                 : prev?.image_credits ?? 0,
           }));
         }
+        window.dispatchEvent(new Event('ai-action-complete'));
       }
     } catch (error) {
       console.error('Erreur IA:', error);

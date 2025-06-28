@@ -33,6 +33,26 @@ export default function IACredits({ session }) {
 
   useEffect(() => {
     fetchCredits();
+    const interval = setInterval(fetchCredits, 30000);
+    return () => clearInterval(interval);
+  }, [session]);
+
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (!document.hidden) fetchCredits();
+    };
+    window.addEventListener('focus', handleVisibility);
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => {
+      window.removeEventListener('focus', handleVisibility);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [session]);
+
+  useEffect(() => {
+    const handleAiAction = () => fetchCredits();
+    window.addEventListener('ai-action-complete', handleAiAction);
+    return () => window.removeEventListener('ai-action-complete', handleAiAction);
   }, [session]);
 
   useEffect(() => {
