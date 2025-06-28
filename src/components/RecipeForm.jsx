@@ -572,6 +572,19 @@ function RecipeForm({
       return;
     }
 
+    if (
+      subscriptionTier === 'vip' &&
+      type === 'image' &&
+      (iaUsage?.image_credits ?? 0) <= 0
+    ) {
+      toast({
+        title: 'Crédits image insuffisants',
+        description: 'Achetez des crédits pour continuer.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     if (subscriptionTier === 'vip') {
       const textExceeded = (iaUsage?.text_requests ?? 0) >= 20;
       const imageExceeded = (iaUsage?.image_requests ?? 0) >= 5;
