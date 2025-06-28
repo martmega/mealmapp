@@ -4,5 +4,5 @@ export const DEFAULT_MENU_PREFS = {
   weeklyBudget: 35,
   meals: [],
   tagPreferences: [],
-  commonMenuSettings: { linkedUsers: [], linkedUserRecipes: [] },
+  commonMenuSettings: { enabled: false, linkedUsers: [], linkedUserRecipes: [] },
 };
