@@ -27,4 +27,9 @@ describe('preferences conversion', () => {
     const restored = fromDbPrefs(dbShape);
     expect(restored).toEqual(prefs);
   });
+
+  it('defaults enabled=true when DB returns empty common_menu_settings', () => {
+    const restored = fromDbPrefs({ common_menu_settings: {} });
+    expect(restored.commonMenuSettings).toEqual({ enabled: true });
+  });
 });
