@@ -22,7 +22,7 @@ export function fromDbPrefs(pref) {
     weeklyBudget: pref.weekly_budget ?? 35,
     meals,
     tagPreferences: pref.tag_preferences || [],
-    commonMenuSettings: pref.common_menu_settings ?? { enabled: true },
+    commonMenuSettings: { enabled: true, ...(pref.common_menu_settings || {}) },
   };
 }
 
