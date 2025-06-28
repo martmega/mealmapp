@@ -70,13 +70,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const openai = new OpenAI({ apiKey });
 
     const prompt = `
-Tu es un assistant culinaire. 
-\u00c9cris une courte description attrayante (2 \u00e0 3 phrases max) pour un plat appel\u00e9 "${parsed.title || 'Recette'}". 
-Voici ses ingr\u00e9dients : ${parsed.ingredients.join(', ')}.
-Voici les instructions de pr\u00e9paration : ${parsed.instructions}.
-Ne recopie pas les instructions. Utilise-les uniquement pour savoir de quoi il s'agit.
-Fais une description app\u00e9tissante du plat final, comme on le lirait dans une carte de restaurant ou sur une fiche recette pour donner envie de le cuisiner.
+Tu es un assistant culinaire.
+Écris une courte description appétissante (2 à 3 phrases max) pour un plat appelé "${parsed.title || 'Recette'}".
+Voici ses ingrédients : ${parsed.ingredients.join(', ')}.
+Voici les instructions de préparation : ${parsed.instructions}.
+N'inclus pas les instructions ni de formulation directive.
+N’utilise pas de pronoms personnels (comme "notre", "vos", etc.).
+N’utilise pas de formules d’accroche comme “Découvrez”, “Succombez à”, etc.
+Ne termine pas par une formule type “Bon appétit”.
+Écris une description comme sur une fiche recette ou une carte de restaurant, en te concentrant sur le rendu final et l’intérêt gustatif du plat.
 `;
+
 
     const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
