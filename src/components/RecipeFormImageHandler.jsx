@@ -84,8 +84,7 @@ const RecipeFormImageHandler = ({
       </div>
       {subscription_tier === 'vip' && (
         <p className="text-xs text-pastel-muted-foreground text-right">
-          Images IA : {iaUsage?.image_requests ?? 0} / 5 (crédits :{' '}
-          {iaUsage?.image_credits ?? 0})
+          Crédits restants : {iaUsage?.image_credits ?? 0}
         </p>
       )}
       {previewImage && (
