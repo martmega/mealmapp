@@ -54,7 +54,7 @@ function WeeklyMenuView({
 
     const defaultPlannedServings =
       userProfile?.preferences?.servingsPerMeal ||
-      preferences.portions_per_meal ||
+      preferences.servingsPerMeal ||
       4;
 
     if (updatedMenu[dayIndex]?.[mealIndex]) {
@@ -110,8 +110,8 @@ function WeeklyMenuView({
   );
 
   const weeklyBudget =
-    preferences.weekly_budget !== undefined
-      ? preferences.weekly_budget
+    preferences.weeklyBudget !== undefined
+      ? preferences.weeklyBudget
       : userProfile?.preferences?.weeklyBudget ?? 0;
   const TOLERANCE = 0.1;
   const maxBudget = weeklyBudget * (1 + TOLERANCE);
