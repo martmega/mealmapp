@@ -45,8 +45,8 @@ export function useMenuGeneration(
     let baseRecipes = Array.isArray(recipes) ? recipes : [];
 
     if (
-      preferences?.commonMenuSettings?.enabled &&
-      preferences?.commonMenuSettings?.linkedUserRecipes?.length > 0
+      Array.isArray(preferences?.commonMenuSettings?.linkedUserRecipes) &&
+      preferences.commonMenuSettings.linkedUserRecipes.length > 0
     ) {
       const combined = [
         ...baseRecipes.map((r) => ({
@@ -129,9 +129,8 @@ export function useMenuGeneration(
     // Determine participant weights for shared menus
     let participantSchedule = [];
     if (
-      preferences?.commonMenuSettings?.enabled &&
       Array.isArray(preferences?.commonMenuSettings?.linkedUsers) &&
-      preferences?.commonMenuSettings?.linkedUsers?.length > 0
+      preferences.commonMenuSettings.linkedUsers.length > 0
     ) {
       const participants = (preferences?.commonMenuSettings?.linkedUsers || []).map((u) => ({
         userId: u.id,
@@ -382,8 +381,8 @@ export function useMenuGeneration(
           }
 
           if (
-            preferences?.commonMenuSettings?.enabled &&
-            preferences?.commonMenuSettings?.linkedUsers?.length > 0
+            Array.isArray(preferences?.commonMenuSettings?.linkedUsers) &&
+            preferences.commonMenuSettings.linkedUsers.length > 0
           ) {
               const totalRatioSum =
                 preferences?.commonMenuSettings?.linkedUsers?.reduce(

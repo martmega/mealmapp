@@ -4,7 +4,7 @@ import { useToast } from '@/components/ui/use-toast.js';
 
 const supabase = getSupabase();
 
-export function useLinkedUsers(userProfile, preferences, setPreferences) {
+export function useLinkedUsers(userProfile, preferences, setPreferences, isShared) {
   const { toast } = useToast();
   const [newLinkedUserTag, setNewLinkedUserTag] = useState('');
   const [isLinkingUser, setIsLinkingUser] = useState(false);
@@ -54,44 +54,6 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
     [toast]
   );
 
-  const handleToggleCommonMenu = async () => {
-    const newEnabledState = !(preferences?.commonMenuSettings?.enabled);
-    let newLinkedUsers = preferences?.commonMenuSettings?.linkedUsers || [];
-    let newLinkedUserRecipes = [];
-
-    if (newEnabledState && newLinkedUsers.length === 0 && userProfile?.id) {
-      newLinkedUsers = [
-        {
-          id: userProfile.id,
-          name: userProfile.username || 'Moi',
-          ratio: 100,
-          isOwner: true,
-        },
-      ];
-    }
-
-    if (newEnabledState && newLinkedUsers.length > 0) {
-      for (const user of newLinkedUsers) {
-        if (user?.id && user.id !== userProfile?.id) {
-          const fetchedRecipes = await fetchLinkedUserRecipes(
-            user.id,
-            user.name
-          );
-          newLinkedUserRecipes.push(...fetchedRecipes);
-        }
-      }
-    }
-
-    setPreferences((prev) => ({
-      ...prev,
-      commonMenuSettings: {
-        ...(prev.commonMenuSettings || {}),
-        enabled: newEnabledState,
-        linkedUsers: newLinkedUsers,
-        linkedUserRecipes: newLinkedUserRecipes,
-      },
-    }));
-  };
 
   const handleLinkedUserRatioChange = (index, newRatioStr) => {
     const newRatio = parseInt(newRatioStr, 10);
@@ -248,7 +210,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
 
   useEffect(() => {
     const fetchInitialLinks = async () => {
-      if (!userProfile?.id || !preferences?.commonMenuSettings?.enabled) return;
+      if (!userProfile?.id || !isShared) return;
 
       try {
         const { data: friendsData, error: friendsError } = await supabase
@@ -338,13 +300,13 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
       }
     };
 
-    if (preferences?.commonMenuSettings?.enabled) {
+    if (isShared) {
       fetchInitialLinks();
     }
   }, [
     userProfile?.id,
     userProfile?.username,
-    preferences?.commonMenuSettings?.enabled,
+    isShared,
     fetchLinkedUserRecipes,
   ]);
 
@@ -353,7 +315,6 @@ export function useLinkedUsers(userProfile, preferences, setPreferences) {
     setNewLinkedUserTag,
     isLinkingUser,
     handleAddLinkedUser,
-    handleToggleCommonMenu,
     handleLinkedUserRatioChange,
     handleRemoveLinkedUser,
   };

@@ -22,7 +22,10 @@ export function fromDbPrefs(pref) {
     weeklyBudget: pref.weekly_budget ?? 35,
     meals,
     tagPreferences: pref.tag_preferences || [],
-    commonMenuSettings: { enabled: true, ...(pref.common_menu_settings || {}) },
+    commonMenuSettings: {
+      ...DEFAULT_MENU_PREFS.commonMenuSettings,
+      ...(pref.common_menu_settings || {}),
+    },
   };
 }
 
@@ -38,9 +41,7 @@ export function toDbPrefs(pref) {
           .map((m) => (Array.isArray(m.types) ? m.types : []))
       : [],
     tag_preferences: effective.tagPreferences || [],
-    common_menu_settings: effective.commonMenuSettings ?? {
-      enabled: true,
-    },
+    common_menu_settings: effective.commonMenuSettings ?? {},
   };
 }
 

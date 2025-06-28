@@ -12,7 +12,6 @@ describe('preferences conversion', () => {
       ],
       tagPreferences: ['vegan'],
       commonMenuSettings: {
-        enabled: true,
         linkedUsers: [{ id: 'u1', name: 'Alice', ratio: 50 }],
         linkedUserRecipes: [],
       },
@@ -28,8 +27,8 @@ describe('preferences conversion', () => {
     expect(restored).toEqual(prefs);
   });
 
-  it('defaults enabled=true when DB returns empty common_menu_settings', () => {
+  it('defaults arrays when DB returns empty common_menu_settings', () => {
     const restored = fromDbPrefs({ common_menu_settings: {} });
-    expect(restored.commonMenuSettings).toEqual({ enabled: true });
+    expect(restored.commonMenuSettings).toEqual({ linkedUsers: [], linkedUserRecipes: [] });
   });
 });

@@ -21,6 +21,7 @@ function MenuPreferencesModal({
   setPreferences,
   availableTags,
   userProfile,
+  isShared,
 }) {
 
   return (
@@ -47,6 +48,7 @@ function MenuPreferencesModal({
             setPreferences={setPreferences}
             availableTags={availableTags}
             userProfile={userProfile}
+            isShared={isShared}
           />
         </ScrollArea>
         <DialogFooter>
