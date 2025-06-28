@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { loadStripe } from '@stripe/stripe-js';
 import { Button } from '@/components/ui/button';
-import { getSupabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
 
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
@@ -14,7 +13,6 @@ const getStripe = () => {
   return stripePromise;
 };
 
-const supabase = getSupabase();
 
 export default function IACredits({ session }) {
   const { toast } = useToast();
@@ -22,13 +20,20 @@ export default function IACredits({ session }) {
   const [loading, setLoading] = useState(null);
 
   const fetchCredits = async () => {
-    if (!session?.user?.id) return;
-    const { data } = await supabase
-      .from('ia_credits')
-      .select('text_credits, image_credits')
-      .eq('user_id', session.user.id)
-      .maybeSingle();
-    if (data) setCredits(data);
+    if (!session?.access_token) return;
+    try {
+      const res = await fetch('/api/get-ia-credits', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+        },
+      });
+      if (!res.ok) throw new Error('Request failed');
+      const data = await res.json();
+      if (data?.ia_credits) setCredits(data.ia_credits);
+    } catch (err) {
+      console.error('fetch ia credits error:', err);
+    }
   };
 
   useEffect(() => {

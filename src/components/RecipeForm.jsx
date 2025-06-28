@@ -86,33 +86,27 @@ function RecipeForm({
   const [iaUsage, setIaUsage] = useState(null);
 
   const fetchIaUsage = useCallback(async () => {
-    if (subscriptionTier !== 'vip' || !session?.user?.id) {
+    if (subscriptionTier !== 'vip' || !session?.access_token) {
       setIaUsage(null);
       return;
     }
-    const now = new Date();
-    const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    const { data: usage } = await supabase
-      .from('ia_usage')
-      .select('text_requests, image_requests')
-      .eq('user_id', session.user.id)
-      .eq('month', month)
-      .maybeSingle();
-
-    const { data: credits } = await supabase
-      .from('ia_credits')
-      .select('text_credits, image_credits')
-      .eq('user_id', session.user.id)
-      .maybeSingle();
-
-    if (usage || credits) {
-      setIaUsage({
-        text_requests: usage?.text_requests ?? 0,
-        image_requests: usage?.image_requests ?? 0,
-        text_credits: credits?.text_credits ?? 0,
-        image_credits: credits?.image_credits ?? 0,
+    try {
+      const res = await fetch('/api/get-ia-credits', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+        },
       });
-    } else {
+      if (!res.ok) throw new Error('Request failed');
+      const data = await res.json();
+      setIaUsage({
+        text_requests: data.ia_usage?.text_requests ?? 0,
+        image_requests: data.ia_usage?.image_requests ?? 0,
+        text_credits: data.ia_credits?.text_credits ?? 0,
+        image_credits: data.ia_credits?.image_credits ?? 0,
+      });
+    } catch (err) {
+      console.error('fetch ia credits error:', err);
       setIaUsage(null);
     }
   }, [session, subscriptionTier]);
