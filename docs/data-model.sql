@@ -41,7 +41,7 @@ create table weekly_menu_preferences (
   weekly_budget numeric default 0,
   daily_meal_structure text[],
   tag_preferences text[],
-  common_menu_settings jsonb -- { enabled: boolean, linkedUsers: uuid[], linkedUserRecipes: uuid[] }
+  common_menu_settings jsonb default '{}'::jsonb -- { enabled: boolean, linkedUsers: uuid[], linkedUserRecipes: uuid[] }
 );
 
 create table user_relationships (
