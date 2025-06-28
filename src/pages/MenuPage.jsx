@@ -5,24 +5,11 @@ import { getSupabase } from '@/lib/supabase';
 import { initialWeeklyMenuState } from '@/lib/menu';
 import { useFriendsList } from '@/hooks/useFriendsList.js';
 import { useMenuParticipants } from '@/hooks/useMenuParticipants.js';
+import { toDbPrefs } from '@/hooks/useWeeklyMenu.js';
 import ParticipantWeights from '@/components/ParticipantWeights.jsx';
 
 const supabase = getSupabase();
 
-const mapPrefsToDb = (p) => ({
-  portions_per_meal: p.servingsPerMeal,
-  daily_calories_limit: p.maxCalories,
-  weekly_budget: p.weeklyBudget,
-  daily_meal_structure: Array.isArray(p.meals)
-    ? p.meals.filter((m) => m.enabled).map((m) => (m.types && m.types[0] ? m.types[0] : ''))
-    : [],
-  tag_preferences: p.tagPreferences || [],
-  common_menu_settings: p.commonMenuSettings || {
-    enabled: false,
-    linkedUsers: [],
-    linkedUserRecipes: [],
-  },
-});
 
 const DEFAULT_PREF = {
   servingsPerMeal: 4,
@@ -30,7 +17,7 @@ const DEFAULT_PREF = {
   weeklyBudget: 35,
   meals: [],
   tagPreferences: [],
-  commonMenuSettings: { enabled: false, linkedUsers: [], linkedUserRecipes: [] },
+  commonMenuSettings: { enabled: true, linkedUsers: [], linkedUserRecipes: [] },
 };
 
 export default function MenuPage({
@@ -127,7 +114,7 @@ export default function MenuPage({
     if (data?.id) {
       await supabase
         .from('weekly_menu_preferences')
-        .insert({ menu_id: data.id, ...mapPrefsToDb(DEFAULT_PREF) });
+        .insert({ menu_id: data.id, ...toDbPrefs(DEFAULT_PREF) });
     }
 
     if (isShared && Array.isArray(participantIds)) {

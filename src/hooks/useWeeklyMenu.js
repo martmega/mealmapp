@@ -30,7 +30,7 @@ function fromDbPrefs(pref) {
   };
 }
 
-function toDbPrefs(pref) {
+export function toDbPrefs(pref) {
   return {
     portions_per_meal: pref.servingsPerMeal,
     daily_calories_limit: pref.maxCalories,
