@@ -57,5 +57,10 @@ serve(async (req) => {
     messages: [{ role: "user", content: prompt }],
   });
 
+  await supabase.rpc("decrement_ia_credit", {
+    user_uuid: user.id,
+    credit_type: "text",
+  });
+
   return new Response(JSON.stringify(result), { headers: corsHeaders });
 });

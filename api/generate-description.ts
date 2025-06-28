@@ -53,63 +53,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const subscriptionTier = profile?.subscription_tier || 'standard';
 
-  let quotaExceeded = false;
-  if (subscriptionTier === 'vip') {
-    const month = new Date().toISOString().slice(0, 7);
-    const { data: usage, error: usageError } = await supabaseAdmin
-      .from('ia_usage')
-      .select('text_requests')
-      .eq('user_id', user.id)
-      .eq('month', month)
-      .maybeSingle();
-
-    if (usageError) {
-      console.error('ia_usage fetch error:', usageError.message);
-    }
-
-    const count = usage?.text_requests ?? 0;
-    if (count >= 20) {
-      quotaExceeded = true;
-    } else {
-      const { error: upsertError } = await supabaseAdmin.from('ia_usage').upsert(
-        { user_id: user.id, month, text_requests: count + 1 },
-        { onConflict: 'user_id,month' }
-      );
-      if (upsertError) {
-        console.error('ia_usage upsert error:', upsertError.message);
-      }
-    }
-  } else if (subscriptionTier !== 'premium' && subscriptionTier !== 'standard') {
+  if (
+    subscriptionTier !== 'premium' &&
+    subscriptionTier !== 'standard' &&
+    subscriptionTier !== 'vip'
+  ) {
     return res.status(403).json({ error: 'Forbidden' });
-  }
-
-  if (quotaExceeded) {
-    const { data: credits, error: creditErr } = await supabaseAdmin
-      .from('ia_credits')
-      .select('text_credits')
-      .eq('user_id', user.id)
-      .maybeSingle();
-    if (creditErr) {
-      console.error('ia_credits fetch error:', creditErr.message);
-    }
-    const available = credits?.text_credits ?? 0;
-    if (available > 0) {
-      const { error: updateErr } = await supabaseAdmin
-        .from('ia_credits')
-        .update({
-          text_credits: available - 1,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('user_id', user.id);
-      if (updateErr) {
-        console.error('ia_credits update error:', updateErr.message);
-      }
-      quotaExceeded = false;
-    } else {
-      return res
-        .status(429)
-        .json({ error: 'Quota IA (description) atteint pour ce mois.' });
-    }
   }
 
   const apiKey = process.env.OPENAI_API_KEY;
@@ -134,6 +83,12 @@ Fais une description app\u00e9tissante du plat final, comme on le lirait dans un
       messages: [{ role: 'user', content: prompt }],
     });
     const description = response.choices[0].message.content || '';
+
+    await supabaseAdmin.rpc('decrement_ia_credit', {
+      user_uuid: user.id,
+      credit_type: 'text',
+    });
+
     return res.status(200).json({ description });
   } catch (err) {
     console.error('OpenAI error:', err);
