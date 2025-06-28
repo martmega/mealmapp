@@ -35,7 +35,18 @@ vi.mock('../src/lib/supabase', async () => {
       state.menus[data.id] = data;
       return { select: () => ({ single: () => Promise.resolve({ data, error: null }) }) };
     });
-    q.update = vi.fn(() => q);
+    q.update = vi.fn((data) => {
+      state.pendingUpdate = data;
+      const chain = {
+        eq: vi.fn(() => chain),
+        select: vi.fn(() => chain),
+        single: vi.fn(() => {
+          state.menus['menu1'] = { ...state.menus['menu1'], ...data };
+          return Promise.resolve({ data: state.menus['menu1'], error: null });
+        }),
+      };
+      return chain;
+    });
     q.delete = vi.fn(() => q);
     return q;
   }
@@ -149,6 +160,50 @@ describe('preferences integration', () => {
     await waitFor(() => {
       expect(result2.current.preferences).toEqual(updated);
     });
+  });
+});
+
+describe('useWeeklyMenu.toggleMenuShared', () => {
+  it('shares menu and forces common_menu_settings.enabled', async () => {
+    const session = { user: { id: 'user1' } };
+    global.__supabaseState.preferences.menu1 = {
+      menu_id: 'menu1',
+      ...toDbPrefs({
+        ...DEFAULT_MENU_PREFS,
+        commonMenuSettings: { enabled: false },
+      }),
+    };
+
+    const { result } = renderHook(() => useWeeklyMenu(session, 'menu1'));
+
+    await act(async () => {
+      await result.current.toggleMenuShared(true);
+    });
+
+    expect(global.__supabaseState.menus['menu1'].is_shared).toBe(true);
+    expect(global.__supabaseState.lastUpsert).toEqual({
+      menu_id: 'menu1',
+      ...toDbPrefs({
+        ...DEFAULT_MENU_PREFS,
+        commonMenuSettings: { enabled: true },
+      }),
+    });
+    expect(result.current.isShared).toBe(true);
+  });
+
+  it('unshares menu', async () => {
+    const session = { user: { id: 'user1' } };
+    const { result } = renderHook(() => useWeeklyMenu(session, 'menu1'));
+
+    await act(async () => {
+      await result.current.toggleMenuShared(true);
+    });
+    await act(async () => {
+      await result.current.toggleMenuShared(false);
+    });
+
+    expect(global.__supabaseState.menus['menu1'].is_shared).toBe(false);
+    expect(result.current.isShared).toBe(false);
   });
 });
 
