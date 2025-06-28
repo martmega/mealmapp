@@ -12,7 +12,7 @@ const defaultPrefs = {
   commonMenuSettings: { enabled: true, linkedUsers: [], linkedUserRecipes: [] },
 };
 
-function fromDbPrefs(pref) {
+export function fromDbPrefs(pref) {
   if (!pref) return { ...defaultPrefs };
   const meals = (pref.daily_meal_structure || []).map((t, idx) => ({
     id: idx + 1,
@@ -30,7 +30,7 @@ function fromDbPrefs(pref) {
   };
 }
 
-function toDbPrefs(pref) {
+export function toDbPrefs(pref) {
   return {
     portions_per_meal: pref.servingsPerMeal,
     daily_calories_limit: pref.maxCalories,
@@ -45,8 +45,6 @@ function toDbPrefs(pref) {
   };
 }
 
-const supabase = getSupabase();
-
 function isValidUUID(value) {
   return (
     typeof value === 'string' &&
@@ -57,6 +55,7 @@ function isValidUUID(value) {
 }
 
 export function useWeeklyMenu(session, currentMenuId = null) {
+  const supabase = getSupabase();
   const [weeklyMenu, setWeeklyMenu] = useState(initialWeeklyMenuState());
   const [menuName, setMenuName] = useState('Menu de la semaine');
   const [menuId, setMenuId] = useState(currentMenuId);
