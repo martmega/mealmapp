@@ -80,7 +80,7 @@ export default function MenuPage({
     }
   };
 
-  const handleCreate = async ({ name, participantIds } = {}) => {
+  const handleCreate = async ({ name, participantIds = [] } = {}) => {
     const userId = session?.user?.id;
     if (!userId) return;
 
@@ -90,7 +90,7 @@ export default function MenuPage({
       user_id: userId,
       name: name || 'Menu sans titre',
       menu_data: initialWeeklyMenuState(),
-      is_shared: isShared,
+      is_shared: Boolean(isShared),
     };
 
     const { data, error } = await supabase
@@ -114,7 +114,7 @@ export default function MenuPage({
     }
 
     if (isShared && data?.id) {
-      const ids = Array.from(new Set([userId, ...(participantIds || [])]));
+      const ids = Array.from(new Set([userId, ...participantIds]));
       const rows = ids.map((id) => ({ menu_id: data.id, user_id: id }));
       await supabase.from('menu_participants').insert(rows);
     }
