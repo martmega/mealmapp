@@ -1,6 +1,14 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import OpenAI from 'openai';
 import { getUserFromRequest } from '../src/utils/auth.js';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.VITE_SUPABASE_URL;
+if (!supabaseUrl) throw new Error('VITE_SUPABASE_URL is not defined');
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!serviceRoleKey) throw new Error('SUPABASE_SERVICE_ROLE_KEY is not defined');
+
+const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -43,6 +51,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const priceText = response.choices[0].message.content || '';
     const normalized = priceText.replace(',', '.').replace(/[^0-9.]/g, '');
     const price = parseFloat(normalized);
+
+    await supabaseAdmin.rpc('decrement_ia_credit', {
+      user_uuid: user.id,
+      credit_type: 'text',
+    });
+
     return res.status(200).json({ price });
   } catch (err) {
     console.error('Erreur estimation coût :', err);
