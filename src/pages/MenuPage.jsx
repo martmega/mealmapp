@@ -84,6 +84,8 @@ export default function MenuPage({
     const userId = session?.user?.id;
     if (!userId) return;
 
+    const isShared = Array.isArray(participantIds) && participantIds.length > 0;
+
     const insertData = {
       user_id: userId,
       name: name || 'Menu sans titre',
@@ -104,7 +106,13 @@ export default function MenuPage({
     if (data?.id) {
       await supabase
         .from('weekly_menu_preferences')
-        .insert({ menu_id: data.id, ...toDbPrefs(DEFAULT_MENU_PREFS) });
+        .insert({
+          menu_id: data.id,
+          ...toDbPrefs({
+            ...DEFAULT_MENU_PREFS,
+            commonMenuSettings: { enabled: isShared },
+          }),
+        });
     }
 
     if (Array.isArray(participantIds) && participantIds.length > 0) {
