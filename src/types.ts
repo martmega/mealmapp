@@ -1,3 +1,9 @@
+export interface CommonMenuSettings {
+  enabled: boolean;
+  linkedUsers: any[];
+  linkedUserRecipes?: any[];
+}
+
 export type WeeklyMenuPreferences = {
   menu_id: string;
   portions_per_meal: number;
@@ -14,4 +20,5 @@ export type WeeklyMenuPreferences = {
   }[];
   /** Camel case tag preferences for generator */
   tagPreferences?: { tag: string; percentage: number }[] | string[];
+  common_menu_settings?: CommonMenuSettings;
 };
