@@ -32,8 +32,11 @@ const RecipeFormImageHandler = ({
     try {
       const res = await fetch('/api/purchase-credits', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId: PRICE_ID }),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ productId: PRICE_ID }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Request failed');
