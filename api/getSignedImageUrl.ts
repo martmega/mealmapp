@@ -1,10 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
-
-const SUPABASE_BUCKETS = {
-  recipes: 'recipe-images',
-  avatars: 'avatars',
-} as const;
+import { SUPABASE_BUCKETS } from './_shared/constants.js';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 if (!supabaseUrl) throw new Error('VITE_SUPABASE_URL is not defined');

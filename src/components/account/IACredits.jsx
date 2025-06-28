@@ -76,8 +76,11 @@ export default function IACredits({ session }) {
       const priceId = type === 'text' ? TEXT_PRICE_ID : IMAGE_PRICE_ID;
       const res = await fetch('/api/purchase-credits', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId }),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ productId: priceId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Request failed');

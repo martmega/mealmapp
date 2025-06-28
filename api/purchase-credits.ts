@@ -2,7 +2,7 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 import { getUserFromRequest } from '../src/utils/auth.js';
 
-const stripeSecret = process.env.STRIPE_SECRET_KEY;
+const stripeSecret = process.env.VITE_STRIPE_SECRET_KEY as string;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -18,19 +18,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const { priceId } = req.body || {};
-  console.log('[purchase-credits] Received priceId:', priceId);
-  if (!/^price_[a-zA-Z0-9]+$/.test(priceId)) {
-    return res.status(400).json({ error: 'Invalid price ID' });
+  const { productId } = req.body;
+  console.log('[purchase-credits] Payload:', req.body);
+  if (!/^price_[a-zA-Z0-9]+$/.test(productId)) {
+    return res.status(400).json({ error: 'Invalid product ID format' });
   }
 
-  const stripe = new Stripe(stripeSecret, { apiVersion: '2024-04-10' });
+  const stripe = new Stripe(stripeSecret, { apiVersion: '2022-11-15' });
   const successUrl = `${req.headers.origin}/paiement?success=true`;
   const cancelUrl = `${req.headers.origin}/paiement?cancelled=true`;
 
   try {
     const session = await stripe.checkout.sessions.create({
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [{ price: productId, quantity: 1 }],
       mode: 'payment',
       success_url: successUrl,
       cancel_url: cancelUrl,
