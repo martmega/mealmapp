@@ -17,6 +17,11 @@ const mapPrefsToDb = (p) => ({
     ? p.meals.filter((m) => m.enabled).map((m) => (m.types && m.types[0] ? m.types[0] : ''))
     : [],
   tag_preferences: p.tagPreferences || [],
+  common_menu_settings: p.commonMenuSettings || {
+    enabled: false,
+    linkedUsers: [],
+    linkedUserRecipes: [],
+  },
 });
 
 const DEFAULT_PREF = {
@@ -25,6 +30,7 @@ const DEFAULT_PREF = {
   weeklyBudget: 35,
   meals: [],
   tagPreferences: [],
+  commonMenuSettings: { enabled: false, linkedUsers: [], linkedUserRecipes: [] },
 };
 
 export default function MenuPage({
