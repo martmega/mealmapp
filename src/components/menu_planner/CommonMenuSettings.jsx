@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Info, Link, Unlink } from 'lucide-react';
 
@@ -13,39 +12,13 @@ function CommonMenuSettings({
   setNewLinkedUserTag,
   isLinkingUser,
   handleAddLinkedUser,
-  handleToggleCommonMenu,
   handleLinkedUserRatioChange,
   handleRemoveLinkedUser,
+  isShared,
 }) {
   return (
     <div className="space-y-4 pt-4 border-t border-pastel-border/70">
-      <div className="flex items-center space-x-2">
-        <Switch
-          id="common-menu-toggle"
-          checked={preferences.commonMenuSettings?.enabled || false}
-          onCheckedChange={handleToggleCommonMenu}
-        />
-        <Label htmlFor="common-menu-toggle" className="text-base font-medium">
-          Activer le menu commun
-        </Label>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-6 w-6 text-pastel-muted-foreground">
-              <Info className="h-4 w-4" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="bg-pastel-card border border-pastel-border rounded-lg dark:bg-pastel-card dark:border-pastel-border">
-            <DialogHeader>
-              <DialogTitle>Menu Commun</DialogTitle>
-              <DialogDescription>
-                Le menu commun vous permet de planifier des repas en utilisant les recettes d'autres utilisateurs que vous avez liés. Activez cette option pour lier des utilisateurs et ajuster les ratios de contribution pour la génération de menu.
-              </DialogDescription>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {preferences.commonMenuSettings?.enabled && (
+      {isShared && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}

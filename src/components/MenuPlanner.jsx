@@ -28,6 +28,7 @@ function MenuPlanner({
   onDeleteMenu,
   preferences,
   updatePreferences,
+  isShared,
 }) {
   const [internalWeeklyMenu, setInternalWeeklyMenu] = useState(
     Array.isArray(propWeeklyMenu) && propWeeklyMenu.length === 7
@@ -166,6 +167,7 @@ function MenuPlanner({
             setPreferences={handleSetPreferences}
             availableTags={availableTags}
             userProfile={userProfile}
+            isShared={isShared}
           />
           <Button
             onClick={handleGenerateMenu}

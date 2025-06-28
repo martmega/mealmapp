@@ -1,5 +1,4 @@
 export interface CommonMenuSettings {
-  enabled: boolean;
   linkedUsers?: string[];
   linkedUserRecipes?: string[];
 }

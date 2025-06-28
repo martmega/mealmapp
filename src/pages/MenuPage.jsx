@@ -32,11 +32,6 @@ export default function MenuPage({
     return <div>Chargement des préférences...</div>;
   }
 
-  const enabled = preferences.commonMenuSettings?.enabled ?? false;
-
-  if (!enabled) {
-    return <div>Les préférences de ce menu sont désactivées.</div>;
-  }
   const friends = useFriendsList(session);
 
   const participants = useMenuParticipants(isShared ? selectedMenuId : null);
@@ -104,10 +99,7 @@ export default function MenuPage({
     }
 
     if (data?.id) {
-      const dbPrefs = toDbPrefs({
-        ...DEFAULT_MENU_PREFS,
-        commonMenuSettings: { enabled: isShared },
-      });
+      const dbPrefs = toDbPrefs({ ...DEFAULT_MENU_PREFS });
       await supabase
         .from('weekly_menu_preferences')
         .insert({ menu_id: data.id, ...dbPrefs });
@@ -149,6 +141,7 @@ export default function MenuPage({
         menuName={menuName}
         preferences={preferences}
         updatePreferences={updatePreferences}
+        isShared={isShared}
         onUpdateMenuName={(name) => handleRename(selectedMenuId, name)}
         onDeleteMenu={() => handleDelete(selectedMenuId)}
       />

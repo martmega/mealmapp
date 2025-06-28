@@ -16,7 +16,7 @@ import CommonMenuSettings from '@/components/menu_planner/CommonMenuSettings.jsx
 import { useLinkedUsers } from '@/hooks/useLinkedUsers.js';
 import { DEFAULT_MENU_PREFS } from '@/lib/defaultPreferences.js';
 
-function MenuPreferencesPanel({ preferences, setPreferences, availableTags, userProfile }) {
+function MenuPreferencesPanel({ preferences, setPreferences, availableTags, userProfile, isShared }) {
   const addMeal = () => {
     const newMealNumber = (preferences.meals?.length || 0) + 1;
     setPreferences({
@@ -88,10 +88,9 @@ function MenuPreferencesPanel({ preferences, setPreferences, availableTags, user
     setNewLinkedUserTag,
     isLinkingUser,
     handleAddLinkedUser,
-    handleToggleCommonMenu,
     handleLinkedUserRatioChange,
     handleRemoveLinkedUser,
-  } = useLinkedUsers(userProfile, preferences, setPreferences);
+  } = useLinkedUsers(userProfile, preferences, setPreferences, isShared);
 
   return (
     <motion.div
@@ -283,9 +282,9 @@ function MenuPreferencesPanel({ preferences, setPreferences, availableTags, user
         setNewLinkedUserTag={setNewLinkedUserTag}
         isLinkingUser={isLinkingUser}
         handleAddLinkedUser={handleAddLinkedUser}
-        handleToggleCommonMenu={handleToggleCommonMenu}
         handleLinkedUserRatioChange={handleLinkedUserRatioChange}
         handleRemoveLinkedUser={handleRemoveLinkedUser}
+        isShared={isShared}
       />
 
       <TagPreferencesForm preferences={preferences} setPreferences={setPreferences} availableTags={availableTags} />

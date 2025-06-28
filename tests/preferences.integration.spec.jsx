@@ -103,13 +103,12 @@ describe('MenuPreferencesPanel', () => {
         setPreferences={updateSpy}
         availableTags={[]}
         userProfile={{ id: 'user1', username: 'User1' }}
+        isShared={false}
       />
     );
 
     fireEvent.change(getByLabelText(/Portions par repas/), { target: { value: '6' } });
-    fireEvent.click(getByLabelText('Activer le menu commun'));
-
-    expect(updateSpy).toHaveBeenCalledTimes(2);
+    expect(updateSpy).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -124,7 +123,7 @@ describe('useWeeklyMenu.updateMenuPreferences', () => {
       weeklyBudget: 50,
       meals: [{ id: 1, enabled: true, mealNumber: 1, types: ['plat'] }],
       tagPreferences: ['bio'],
-      commonMenuSettings: { enabled: true },
+      commonMenuSettings: {},
     };
 
     await act(async () => {
@@ -160,7 +159,7 @@ describe('preferences integration', () => {
       weeklyBudget: 25,
       meals: [],
       tagPreferences: [],
-      commonMenuSettings: { enabled: false },
+      commonMenuSettings: {},
     };
 
     await act(async () => {
@@ -172,7 +171,10 @@ describe('preferences integration', () => {
     const { result: result2 } = renderHook(() => useWeeklyMenu(session, 'menu1'));
 
     await waitFor(() => {
-      expect(result2.current.preferences).toEqual(updated);
+      expect(result2.current.preferences).toEqual({
+        ...updated,
+        commonMenuSettings: { linkedUsers: [], linkedUserRecipes: [] },
+      });
     });
   });
 
