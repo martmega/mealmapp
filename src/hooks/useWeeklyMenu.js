@@ -9,6 +9,7 @@ const defaultPrefs = {
   weeklyBudget: 35,
   meals: [],
   tagPreferences: [],
+  commonMenuSettings: { enabled: false, linkedUsers: [], linkedUserRecipes: [] },
 };
 
 function fromDbPrefs(pref) {
@@ -25,6 +26,18 @@ function fromDbPrefs(pref) {
     weeklyBudget: pref.weekly_budget ?? 35,
     meals,
     tagPreferences: pref.tag_preferences || [],
+    commonMenuSettings: {
+      ...defaultPrefs.commonMenuSettings,
+      ...(pref.common_menu_settings || {}),
+      linkedUsers: Array.isArray(pref.common_menu_settings?.linkedUsers)
+        ? pref.common_menu_settings.linkedUsers
+        : [],
+      linkedUserRecipes: Array.isArray(
+        pref.common_menu_settings?.linkedUserRecipes
+      )
+        ? pref.common_menu_settings.linkedUserRecipes
+        : [],
+    },
   };
 }
 
@@ -39,6 +52,8 @@ function toDbPrefs(pref) {
           .map((m) => (m.types && m.types[0] ? m.types[0] : ''))
       : [],
     tag_preferences: pref.tagPreferences || [],
+    common_menu_settings:
+      pref.commonMenuSettings || defaultPrefs.commonMenuSettings,
   };
 }
 
