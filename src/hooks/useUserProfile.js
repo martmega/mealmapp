@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getSupabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast.js';
+import { DEFAULT_MENU_PREFS } from '@/lib/defaultPreferences.js';
 
 const supabase = getSupabase();
 
@@ -18,14 +19,7 @@ export function useUserProfile(session) {
       avatar_url: DEFAULT_AVATAR_URL,
       bio: '',
       access_keys: [],
-      preferences: {
-        servingsPerMeal: 4,
-        maxCalories: 2200,
-        weeklyBudget: 35,
-        meals: [],
-        tagPreferences: [],
-        commonMenuSettings: { enabled: true, linkedUsers: [] },
-      },
+      preferences: { ...DEFAULT_MENU_PREFS },
     };
 
     if (session === null || !session?.user?.id) {
@@ -85,14 +79,7 @@ export function useUserProfile(session) {
         console.warn('user_tag is NULL for user', session.user.id);
       }
 
-      const defaultPreferences = {
-        servingsPerMeal: 4,
-        maxCalories: 2200,
-        weeklyBudget: 35,
-        meals: [],
-        tagPreferences: [],
-        commonMenuSettings: { enabled: true, linkedUsers: [] },
-      };
+      const defaultPreferences = { ...DEFAULT_MENU_PREFS };
       finalProfileData.preferences = {
         ...defaultPreferences,
         ...(userMetadata.preferences || {}),

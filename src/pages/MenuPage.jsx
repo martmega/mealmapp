@@ -6,19 +6,10 @@ import { initialWeeklyMenuState } from '@/lib/menu';
 import { useFriendsList } from '@/hooks/useFriendsList.js';
 import { useMenuParticipants } from '@/hooks/useMenuParticipants.js';
 import { toDbPrefs } from '@/hooks/useWeeklyMenu.js';
+import { DEFAULT_MENU_PREFS } from '@/lib/defaultPreferences.js';
 import ParticipantWeights from '@/components/ParticipantWeights.jsx';
 
 const supabase = getSupabase();
-
-
-const DEFAULT_PREF = {
-  servingsPerMeal: 4,
-  maxCalories: 2200,
-  weeklyBudget: 35,
-  meals: [],
-  tagPreferences: [],
-  commonMenuSettings: { enabled: true, linkedUsers: [], linkedUserRecipes: [] },
-};
 
 export default function MenuPage({
   session,
@@ -114,7 +105,7 @@ export default function MenuPage({
     if (data?.id) {
       await supabase
         .from('weekly_menu_preferences')
-        .insert({ menu_id: data.id, ...toDbPrefs(DEFAULT_PREF) });
+        .insert({ menu_id: data.id, ...toDbPrefs(DEFAULT_MENU_PREFS) });
     }
 
     if (isShared && Array.isArray(participantIds)) {

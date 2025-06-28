@@ -2,15 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { getSupabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
 import { initialWeeklyMenuState } from '@/lib/menu';
+import { DEFAULT_MENU_PREFS } from '@/lib/defaultPreferences.js';
 
-const defaultPrefs = {
-  servingsPerMeal: 4,
-  maxCalories: 2200,
-  weeklyBudget: 35,
-  meals: [],
-  tagPreferences: [],
-  commonMenuSettings: { enabled: true, linkedUsers: [], linkedUserRecipes: [] },
-};
+const defaultPrefs = { ...DEFAULT_MENU_PREFS };
 
 export function fromDbPrefs(pref) {
   if (!pref) return { ...defaultPrefs };
@@ -31,17 +25,20 @@ export function fromDbPrefs(pref) {
 }
 
 export function toDbPrefs(pref) {
+  const effective = { ...DEFAULT_MENU_PREFS, ...(pref || {}) };
   return {
-    portions_per_meal: pref.servingsPerMeal,
-    daily_calories_limit: pref.maxCalories,
-    weekly_budget: pref.weeklyBudget,
-    daily_meal_structure: Array.isArray(pref.meals)
-      ? pref.meals
+    portions_per_meal: effective.servingsPerMeal,
+    daily_calories_limit: effective.maxCalories,
+    weekly_budget: effective.weeklyBudget,
+    daily_meal_structure: Array.isArray(effective.meals)
+      ? effective.meals
           .filter((m) => m.enabled)
           .map((m) => (m.types && m.types[0] ? m.types[0] : ''))
       : [],
-    tag_preferences: pref.tagPreferences || [],
-    common_menu_settings: pref.commonMenuSettings ?? { enabled: true },
+    tag_preferences: effective.tagPreferences || [],
+    common_menu_settings: effective.commonMenuSettings ?? {
+      enabled: true,
+    },
   };
 }
 
@@ -129,7 +126,7 @@ export function useWeeklyMenu(session, currentMenuId = null) {
           } else {
             const { data: inserted, error: insertErr } = await supabase
               .from('weekly_menu_preferences')
-              .insert({ menu_id: data.id, ...toDbPrefs(defaultPrefs) })
+              .insert({ menu_id: data.id, ...toDbPrefs(DEFAULT_MENU_PREFS) })
               .select('*')
               .single();
             if (!insertErr && inserted) setPreferences(fromDbPrefs(inserted));
