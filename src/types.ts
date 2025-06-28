@@ -1,6 +1,7 @@
 export interface CommonMenuSettings {
   linkedUsers?: string[];
   linkedUserRecipes?: string[];
+  enabled?: boolean;
 }
 
 export type WeeklyMenuPreferences = {
