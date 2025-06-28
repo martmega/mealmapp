@@ -8,7 +8,7 @@ describe('preferences conversion', () => {
       maxCalories: 1500,
       weeklyBudget: 20,
       meals: [
-        { id: 1, mealNumber: 1, types: ['petit-dejeuner'], enabled: true },
+        { id: 1, mealNumber: 1, types: ['petit-dejeuner', 'brunch'], enabled: true },
       ],
       tagPreferences: ['vegan'],
       commonMenuSettings: {
@@ -20,6 +20,9 @@ describe('preferences conversion', () => {
 
     const dbShape = toDbPrefs(prefs);
     expect(dbShape.common_menu_settings).toEqual(prefs.commonMenuSettings);
+    expect(dbShape.daily_meal_structure).toEqual([
+      ['petit-dejeuner', 'brunch'],
+    ]);
 
     const restored = fromDbPrefs(dbShape);
     expect(restored).toEqual(prefs);

@@ -8,12 +8,14 @@ const defaultPrefs = { ...DEFAULT_MENU_PREFS };
 
 export function fromDbPrefs(pref) {
   if (!pref) return { ...defaultPrefs };
-  const meals = (pref.daily_meal_structure || []).map((t, idx) => ({
-    id: idx + 1,
-    mealNumber: idx + 1,
-    types: t ? [t] : [],
-    enabled: true,
-  }));
+  const meals = Array.isArray(pref.daily_meal_structure)
+    ? pref.daily_meal_structure.map((types, idx) => ({
+        id: idx + 1,
+        mealNumber: idx + 1,
+        types: Array.isArray(types) ? types : [],
+        enabled: true,
+      }))
+    : [];
   return {
     servingsPerMeal: pref.portions_per_meal ?? 4,
     maxCalories: pref.daily_calories_limit ?? 2200,
@@ -33,7 +35,7 @@ export function toDbPrefs(pref) {
     daily_meal_structure: Array.isArray(effective.meals)
       ? effective.meals
           .filter((m) => m.enabled)
-          .map((m) => (m.types && m.types[0] ? m.types[0] : ''))
+          .map((m) => (Array.isArray(m.types) ? m.types : []))
       : [],
     tag_preferences: effective.tagPreferences || [],
     common_menu_settings: effective.commonMenuSettings ?? {
