@@ -54,8 +54,7 @@ const RecipeFormAIFeatures = ({
       </div>
       {subscription_tier === 'vip' && (
         <p className="text-xs text-pastel-muted-foreground text-right">
-          Descriptions IA : {iaUsage?.text_requests ?? 0} / 20 (crédits :{' '}
-          {iaUsage?.text_credits ?? 0})
+          Crédits restants : {iaUsage?.text_credits ?? 0}
         </p>
       )}
       <Textarea
