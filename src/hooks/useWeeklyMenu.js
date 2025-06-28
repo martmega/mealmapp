@@ -277,9 +277,10 @@ export function useWeeklyMenu(session, currentMenuId = null) {
     async (newPrefs, id = menuId) => {
       if (!userId || !id) return false;
       try {
+        const merged = { ...preferences, ...(newPrefs || {}) };
         const { data: updated, error } = await supabase
           .from('weekly_menu_preferences')
-          .upsert({ menu_id: id, ...toDbPrefs(newPrefs) }, { onConflict: 'menu_id' })
+          .upsert({ menu_id: id, ...toDbPrefs(merged) }, { onConflict: 'menu_id' })
           .select('*')
           .single();
 
@@ -298,7 +299,7 @@ export function useWeeklyMenu(session, currentMenuId = null) {
         return false;
       }
     },
-    [userId, menuId, toast]
+    [userId, menuId, toast, preferences]
   );
 
   const toggleMenuShared = useCallback(

@@ -133,6 +133,20 @@ describe('useWeeklyMenu.updateMenuPreferences', () => {
 
     expect(global.__supabaseState.lastUpsert).toEqual({ menu_id: 'menu1', ...toDbPrefs(newPrefs) });
   });
+
+  it('merges with existing preferences for partial updates', async () => {
+    const session = { user: { id: 'user1' } };
+    const { result } = renderHook(() => useWeeklyMenu(session, 'menu1'));
+
+    await act(async () => {
+      await result.current.updatePreferences({ weeklyBudget: 40 });
+    });
+
+    const expected = { ...DEFAULT_MENU_PREFS, weeklyBudget: 40 };
+
+    expect(global.__supabaseState.lastUpsert).toEqual({ menu_id: 'menu1', ...toDbPrefs(expected) });
+    expect(result.current.preferences).toEqual(expected);
+  });
 });
 
 describe('preferences integration', () => {
@@ -159,6 +173,26 @@ describe('preferences integration', () => {
 
     await waitFor(() => {
       expect(result2.current.preferences).toEqual(updated);
+    });
+  });
+
+  it('reloads merged preferences after partial update', async () => {
+    const session = { user: { id: 'user1' } };
+    const { result, unmount } = renderHook(() => useWeeklyMenu(session, 'menu1'));
+
+    await act(async () => {
+      await result.current.updatePreferences({ servingsPerMeal: 6 });
+    });
+
+    unmount();
+
+    const { result: result2 } = renderHook(() => useWeeklyMenu(session, 'menu1'));
+
+    await waitFor(() => {
+      expect(result2.current.preferences).toEqual({
+        ...DEFAULT_MENU_PREFS,
+        servingsPerMeal: 6,
+      });
     });
   });
 });
