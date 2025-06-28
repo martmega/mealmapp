@@ -113,13 +113,8 @@ export function useWeeklyMenu(session, currentMenuId = null) {
           throw error;
         }
 
-        if (data) {
-          safeSetWeeklyMenu(data);
-          const { count } = await supabase
-            .from('menu_participants')
-            .select('user_id', { count: 'exact', head: false })
-            .eq('menu_id', data.id);
-          if (typeof count === 'number') setIsShared(count > 0);
+          if (data) {
+            safeSetWeeklyMenu(data);
 
           const { data: pref, error: prefError } = await supabase
             .from('weekly_menu_preferences')
