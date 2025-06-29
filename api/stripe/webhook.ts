@@ -1,4 +1,5 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
+export const config = { runtime: 'edge' };
+
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
@@ -17,20 +18,20 @@ if (!supabaseServiceKey) {
 
 const stripe = new Stripe(stripeSecret ?? '', { apiVersion: '2022-11-15' });
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: Request): Promise<Response> {
   if (req.method !== 'POST') {
-    return res.status(405).send('Method not allowed');
+    return new Response('Method not allowed', { status: 405 });
   }
 
-  const signature = req.headers['stripe-signature'] as string;
+  const signature = req.headers.get('stripe-signature') ?? '';
 
   let event: Stripe.Event;
   try {
-    const body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body ?? {});
+    const body = await req.text();
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err) {
     console.error('Invalid Stripe signature', err);
-    return res.status(400).send('Invalid signature');
+    return new Response('Invalid signature', { status: 400 });
   }
 
   try {
@@ -64,7 +65,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             });
             if (error) {
               console.error('Supabase update error:', error.message);
-              return res.status(500).send('Supabase update failed');
+              return new Response('Supabase update failed', { status: 500 });
             }
           } else if (session.mode === 'payment' && session.metadata?.credits_type) {
             const column =
@@ -101,8 +102,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   } catch (err) {
     console.error('Webhook processing error:', err);
-    return res.status(500).send('Internal server error');
+    return new Response('Internal server error', { status: 500 });
   }
 
-  return res.status(200).send('OK');
+  return new Response('OK');
 }
