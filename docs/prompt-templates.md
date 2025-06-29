@@ -11,7 +11,7 @@ Voici les instructions de préparation : ${instructions}.
 Ne recopie pas les instructions. Utilise-les uniquement pour savoir de quoi il s'agit.
 Fais une description appétissante du plat final, comme on le lirait dans une carte de restaurant ou sur une fiche recette pour donner envie de le cuisiner.
 ```
-(see `api/generate-description.ts`)
+(see `api/ai.ts` with `action: 'description'`)
 
 ## Cost Estimation
 ```
@@ -23,7 +23,7 @@ Nombre de portions : ${recipe.servings}
 Ingrédients :
 ${ingredientsList}
 ```
-(see `api/estimate-cost.ts`)
+(see `api/ai.ts` with `action: 'cost'`)
 
 ## Recipe Image Generation
 The helper `generateRecipeImagePrompt()` builds an English description such as:
@@ -40,4 +40,4 @@ Retourne le tout sous forme d’un tableau JSON, chaque élément représentant 
 N’ajoute pas d’ingrédients, ne déduis pas de quantités, ne change pas l’ordre des étapes.
 Voici les instructions brutes : ${rawText}
 ```
-(see `api/format-instructions.ts`)
+(see `api/ai.ts` with `action: 'format'`)
