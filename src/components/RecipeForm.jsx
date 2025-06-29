@@ -14,7 +14,7 @@ import RecipeCoreFields from '@/components/form/RecipeCoreFields';
 import RecipeIngredientsManager from '@/components/form/RecipeIngredientsManager';
 import RecipeInstructionsManager from '@/components/form/RecipeInstructionsManager';
 import RecipeMetaFields from '@/components/form/RecipeMetaFields';
-import { estimateRecipePrice } from '@/lib/openai';
+import { estimateRecipePrice, formatInstructionsWithAI } from '@/lib/openai';
 import { getSignedImageUrl } from '@/lib/images';
 import { SUPABASE_BUCKETS } from '@/config/constants.client';
 
@@ -87,8 +87,10 @@ function RecipeForm({
   const [iaUsage, setIaUsage] = useState(null);
 
   const fetchIaUsage = useCallback(async () => {
-    if (!session?.access_token ||
-        (subscriptionTier !== 'vip' && subscriptionTier !== 'standard')) {
+    if (
+      !session?.access_token ||
+      (subscriptionTier !== 'vip' && subscriptionTier !== 'standard')
+    ) {
       setIaUsage(null);
       return;
     }
@@ -182,9 +184,10 @@ function RecipeForm({
               if (parsed.image_url.startsWith('http')) {
                 setPreviewImage(parsed.image_url);
               } else {
-                getSignedImageUrl(SUPABASE_BUCKETS.recipes, parsed.image_url).then(
-                  setPreviewImage
-                );
+                getSignedImageUrl(
+                  SUPABASE_BUCKETS.recipes,
+                  parsed.image_url
+                ).then(setPreviewImage);
               }
             }
           } else {
@@ -320,25 +323,41 @@ function RecipeForm({
     const text = Array.isArray(formData.instructions)
       ? formData.instructions.join('\n')
       : formData.instructions;
-    if (!text) return;
+    if (
+      !text ||
+      text.length < 10 ||
+      (iaUsage && (iaUsage.text_credits ?? 0) <= 0)
+    ) {
+      return;
+    }
 
     setIsImprovingInstructions(true);
 
     try {
-      const res = await fetch('/api/format-instructions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
-      });
-      const data = await res.json();
-      if (Array.isArray(data.instructions)) {
-        setFormData((prev) => ({ ...prev, instructions: data.instructions }));
+      const improved = await formatInstructionsWithAI(text, session);
+      if (Array.isArray(improved)) {
+        setFormData((prev) => ({ ...prev, instructions: improved }));
+        if (subscriptionTier === 'vip') {
+          setIaUsage((prev) => ({
+            ...prev,
+            text_requests: (prev?.text_requests ?? 0) + 1,
+            text_credits: (prev?.text_credits ?? 0) - 1,
+          }));
+        }
+        fetchIaUsage();
+      } else {
+        throw new Error('Invalid AI response');
       }
     } catch (err) {
       console.error('improve instructions error:', err);
+      toast({
+        title: 'Erreur',
+        description: 'Échec de l’amélioration des instructions',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsImprovingInstructions(false);
     }
-
-    setIsImprovingInstructions(false);
   };
 
   const handleVisibilityChange = (value) => {
@@ -616,8 +635,12 @@ function RecipeForm({
       const textExceeded = (iaUsage?.text_requests ?? 0) >= 20;
       const imageExceeded = (iaUsage?.image_requests ?? 0) >= 5;
       if (
-        (type === 'description' && textExceeded && (iaUsage?.text_credits ?? 0) <= 0) ||
-        (type === 'image' && imageExceeded && (iaUsage?.image_credits ?? 0) <= 0)
+        (type === 'description' &&
+          textExceeded &&
+          (iaUsage?.text_credits ?? 0) <= 0) ||
+        (type === 'image' &&
+          imageExceeded &&
+          (iaUsage?.image_credits ?? 0) <= 0)
       ) {
         toast({
           title: 'Quota IA dépassé',
@@ -707,14 +730,12 @@ function RecipeForm({
           // Update UI optimistically but re-fetch from Supabase for accuracy
           setIaUsage((prev) => ({
             ...prev,
-            text_requests:
-              quotaFlags?.textExceeded
-                ? prev?.text_requests ?? 0
-                : (prev?.text_requests ?? 0) + 1,
-            text_credits:
-              quotaFlags?.textExceeded
-                ? (prev?.text_credits ?? 0) - 1
-                : prev?.text_credits ?? 0,
+            text_requests: quotaFlags?.textExceeded
+              ? (prev?.text_requests ?? 0)
+              : (prev?.text_requests ?? 0) + 1,
+            text_credits: quotaFlags?.textExceeded
+              ? (prev?.text_credits ?? 0) - 1
+              : (prev?.text_credits ?? 0),
           }));
         }
         fetchIaUsage();
@@ -722,7 +743,9 @@ function RecipeForm({
       } else if (type === 'image') {
         const filePath = data.path;
         setFormData((prev) => ({ ...prev, image_url: filePath }));
-        getSignedImageUrl(SUPABASE_BUCKETS.recipes, filePath).then(setPreviewImage);
+        getSignedImageUrl(SUPABASE_BUCKETS.recipes, filePath).then(
+          setPreviewImage
+        );
         setSelectedFile(null);
         toast({
           title: 'Image générée',
@@ -732,14 +755,12 @@ function RecipeForm({
           // Update UI optimistically but re-fetch from Supabase for accuracy
           setIaUsage((prev) => ({
             ...prev,
-            image_requests:
-              quotaFlags?.imageExceeded
-                ? prev?.image_requests ?? 0
-                : (prev?.image_requests ?? 0) + 1,
-            image_credits:
-              quotaFlags?.imageExceeded
-                ? (prev?.image_credits ?? 0) - 1
-                : prev?.image_credits ?? 0,
+            image_requests: quotaFlags?.imageExceeded
+              ? (prev?.image_requests ?? 0)
+              : (prev?.image_requests ?? 0) + 1,
+            image_credits: quotaFlags?.imageExceeded
+              ? (prev?.image_credits ?? 0) - 1
+              : (prev?.image_credits ?? 0),
           }));
         }
         fetchIaUsage();
@@ -851,6 +872,7 @@ function RecipeForm({
               handleInstructionsChange={handleInstructionsChange}
               handleImproveInstructions={handleImproveInstructions}
               isImproving={isImprovingInstructions}
+              iaUsage={iaUsage}
             />
 
             <RecipeFormAIFeatures
