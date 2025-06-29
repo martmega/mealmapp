@@ -137,6 +137,22 @@ describe('MenuTabs', () => {
     expect(tab).toHaveClass('data-[state=active]:bg-pastel-mint');
   });
 
+  it("affiche le nom du propriétaire et le badge 'partagé' pour un menu partagé par un autre utilisateur", () => {
+    render(
+      <MenuTabs
+        menus={sharedMenuOtherUser}
+        activeMenuId="1"
+        onSelect={() => {}}
+        currentUserId="user1"
+        friends={[]}
+      />
+    );
+
+    const tab = screen.getByRole('tab', { name: 'Menu ami' });
+    expect(within(tab).getByText('(par Ami)', { exact: false })).toBeInTheDocument();
+    expect(within(tab).getByText('partagé')).toBeInTheDocument();
+  });
+
   it("n'affiche pas le bouton supprimer pour un menu partagé par un autre utilisateur", () => {
     render(
       <MenuTabs
