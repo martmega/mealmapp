@@ -15,7 +15,7 @@ if (!supabaseServiceKey) {
   throw new Error('SUPABASE_SERVICE_ROLE_KEY is not defined');
 }
 
-const stripe = new Stripe(stripeSecret ?? '', { apiVersion: '2024-04-10' });
+const stripe = new Stripe(stripeSecret ?? '', { apiVersion: '2022-11-15' });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -38,12 +38,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       case "checkout.session.completed":
       case "invoice.paid":
         const session: any = event.data.object;
-        const userId: string | undefined = session.client_reference_id;
+        const userId: string | null = session.client_reference_id ?? null;
         const email: string | undefined =
           session.customer_email || session.customer_details?.email;
-        let id = userId;
+        let id: string | null = userId;
 
-        const supabase = createClient(supabaseUrl, supabaseServiceKey);
+        const supabase = createClient(supabaseUrl!, supabaseServiceKey!);
 
         if (!id && email) {
           const { data, error } = await supabase
@@ -54,12 +54,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           if (error) {
             console.error("Error fetching user:", error.message);
           }
-          id = data?.id as string | undefined;
+          id = (data?.id as string | undefined) ?? null;
         }
 
         if (id) {
           if (session.mode === 'subscription') {
-            const { error } = await supabase.auth.admin.updateUserById(id, {
+            const { error } = await supabase.auth.admin.updateUserById(id as string, {
               app_metadata: { subscription_tier: 'premium' },
             });
             if (error) {
@@ -74,11 +74,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               .from('ia_credits')
               .select(column)
               .eq('user_id', id)
-              .maybeSingle();
+              .maybeSingle<{
+                text_credits?: number;
+                image_credits?: number;
+              }>();
             if (fetchErr) {
               console.error('ia_credits fetch error:', fetchErr.message);
             }
-            const current = row?.[column] ?? 0;
+            const current = (row as Record<typeof column, number> | null)?.[column] ?? 0;
             const { error: upsertErr } = await supabase.from('ia_credits').upsert(
               {
                 user_id: id,
