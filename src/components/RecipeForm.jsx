@@ -337,7 +337,9 @@ function RecipeForm({
       const improved = await formatInstructionsWithAI(text, session);
       if (Array.isArray(improved)) {
         const cleaned = improved.map((item) =>
-          item && item.text ? item.text : String(item)
+          typeof item === 'string'
+            ? item
+            : item.text || item.step || JSON.stringify(item)
         );
         setFormData((prev) => ({ ...prev, instructions: cleaned }));
         if (subscriptionTier === 'vip') {
