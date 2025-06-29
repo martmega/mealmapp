@@ -16,7 +16,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const user = await getUserFromRequest(req);
-  if (!user || user.raw_user_meta_data?.subscription_tier !== 'premium') {
+  const tier = (user as any)?.raw_user_meta_data?.subscription_tier;
+  if (!user || tier !== 'premium') {
     return res.status(403).json({ error: 'Premium only' });
   }
 
@@ -30,7 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
     const ingredientsList = Array.isArray(recipe.ingredients)
-      ? recipe.ingredients
+      ? (recipe.ingredients as { quantity: string | number; unit?: string; name: string }[])
           .map(
             (ing) =>
               `- ${ing.quantity} ${ing.unit ? ing.unit + ' ' : ''}${ing.name}`.trim()

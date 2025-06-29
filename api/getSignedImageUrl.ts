@@ -35,7 +35,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (error) throw error;
     return res.status(200).json({ url: data.signedUrl });
   } catch (err) {
-    console.error('getSignedImageUrl error:', err.message);
+    if (err instanceof Error) {
+      console.error('getSignedImageUrl error:', err.message);
+    } else {
+      console.error('getSignedImageUrl error:', err);
+    }
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 }
