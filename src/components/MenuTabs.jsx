@@ -47,6 +47,16 @@ export default function MenuTabs({
               )}
             >
               {menu.name || 'Menu'}
+              {menu.is_shared === true && menu.user_id !== currentUserId && (
+                <span className="ml-1 text-xs text-muted-foreground">
+                  (par {menu.owner?.username})
+                </span>
+              )}
+              {menu.is_shared === true && menu.user_id !== currentUserId && (
+                <span className="ml-2 px-1 rounded bg-pastel-mint text-white text-xs">
+                  partagé
+                </span>
+              )}
               {menu.user_id === currentUserId && (
                 <button
                   aria-label="Supprimer"
