@@ -12,7 +12,9 @@ export default function RecipeInstructionsManager({
   iaUsage,
 }) {
   const rawText = Array.isArray(instructions)
-    ? instructions.join('\n')
+    ? instructions
+        .map((item) => (item.text ? item.text : String(item)))
+        .join('\n')
     : instructions || '';
   const disabled =
     isImproving ||

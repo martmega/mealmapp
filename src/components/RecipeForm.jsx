@@ -336,7 +336,10 @@ function RecipeForm({
     try {
       const improved = await formatInstructionsWithAI(text, session);
       if (Array.isArray(improved)) {
-        setFormData((prev) => ({ ...prev, instructions: improved }));
+        const cleaned = improved.map((item) =>
+          item && item.text ? item.text : String(item)
+        );
+        setFormData((prev) => ({ ...prev, instructions: cleaned }));
         if (subscriptionTier === 'vip') {
           setIaUsage((prev) => ({
             ...prev,
