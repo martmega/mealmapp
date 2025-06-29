@@ -38,13 +38,26 @@ export default async function handler(req: Request): Promise<Response> {
     switch (event.type) {
       case "checkout.session.completed":
       case "invoice.paid":
+        const supabase = createClient(supabaseUrl!, supabaseServiceKey!);
+
+        const { data: existingEvent, error: existingErr } = await supabase
+          .from('stripe_events')
+          .select('event_id')
+          .eq('event_id', event.id)
+          .maybeSingle();
+        if (existingErr) {
+          console.error('stripe_events fetch error:', existingErr.message);
+        }
+        if (existingEvent) {
+          console.log('Stripe event already processed:', event.id);
+          break;
+        }
+
         const session: any = event.data.object;
         const userId: string | null = session.client_reference_id ?? null;
         const email: string | undefined =
           session.customer_email || session.customer_details?.email;
         let id: string | null = userId;
-
-        const supabase = createClient(supabaseUrl!, supabaseServiceKey!);
 
         if (!id && email) {
           const { data, error } = await supabase
@@ -105,6 +118,13 @@ export default async function handler(req: Request): Promise<Response> {
             if (upsertErr) {
               console.error('ia_credits upsert error:', upsertErr.message);
             }
+          }
+
+          const { error: insertErr } = await supabase
+            .from('stripe_events')
+            .insert({ event_id: event.id });
+          if (insertErr) {
+            console.error('stripe_events insert error:', insertErr.message);
           }
         }
         break;

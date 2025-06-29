@@ -55,3 +55,7 @@ create policy "allow owner" on weekly_menu_preferences
 
 ## ia_credits
 - Users can read and modify their own credit balance only.
+
+## stripe_events
+- Insert-only table used to deduplicate Stripe webhooks.
+- Not directly accessible by regular users.
