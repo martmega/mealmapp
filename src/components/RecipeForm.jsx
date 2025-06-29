@@ -684,12 +684,7 @@ function RecipeForm({
     if (type === 'image') setIsGeneratingImage(true);
 
     try {
-      const endpoint =
-        type === 'description'
-          ? '/api/generate-description'
-          : '/api/generate-image';
-
-      const response = await fetch(endpoint, {
+      const response = await fetch('/api/ai', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -698,6 +693,7 @@ function RecipeForm({
           'x-subscription-tier': subscriptionTier,
         },
         body: JSON.stringify({
+          action: type,
           recipe: {
             title: formData.name,
             ingredients: formData.ingredients

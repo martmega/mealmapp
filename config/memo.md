@@ -25,7 +25,7 @@ export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY!;
 ```
 
 ```ts
-// ✅ API usage (ex: /api/generate-image.ts)
+// ✅ API usage (ex: /api/ai.ts)
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 ```
