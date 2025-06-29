@@ -68,6 +68,7 @@ function RecipeForm({
   const [suggestedTags, setSuggestedTags] = useState([]);
   const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [isImprovingInstructions, setIsImprovingInstructions] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -312,6 +313,31 @@ function RecipeForm({
       ...prev,
       instructions: e.target.value.split('\n'),
     }));
+  };
+
+  const handleImproveInstructions = async () => {
+    const text = Array.isArray(formData.instructions)
+      ? formData.instructions.join('\n')
+      : formData.instructions;
+    if (!text) return;
+
+    setIsImprovingInstructions(true);
+
+    try {
+      const res = await fetch('/api/format-instructions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      const data = await res.json();
+      if (Array.isArray(data.instructions)) {
+        setFormData((prev) => ({ ...prev, instructions: data.instructions }));
+      }
+    } catch (err) {
+      console.error('improve instructions error:', err);
+    }
+
+    setIsImprovingInstructions(false);
   };
 
   const handleVisibilityChange = (value) => {
@@ -822,6 +848,8 @@ function RecipeForm({
             <RecipeInstructionsManager
               instructions={formData.instructions}
               handleInstructionsChange={handleInstructionsChange}
+              handleImproveInstructions={handleImproveInstructions}
+              isImproving={isImprovingInstructions}
             />
 
             <RecipeFormAIFeatures
