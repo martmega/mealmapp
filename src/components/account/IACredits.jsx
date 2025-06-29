@@ -74,7 +74,7 @@ export default function IACredits({ session }) {
     setLoading(type);
     try {
       const priceId = type === 'text' ? TEXT_PRICE_ID : IMAGE_PRICE_ID;
-      const res = await fetch('/api/credits', {
+      const res = await fetch('/api/purchase-credits', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

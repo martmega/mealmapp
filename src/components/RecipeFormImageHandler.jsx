@@ -30,7 +30,7 @@ const RecipeFormImageHandler = ({
 
   const handlePurchase = async () => {
     try {
-      const res = await fetch('/api/credits', {
+      const res = await fetch('/api/purchase-credits', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
