@@ -108,7 +108,7 @@ const RecipeFormImageHandler = ({
                 : 'Premium Image'}
         </Button>
       </div>
-      {subscription_tier === 'vip' && (
+      {(subscription_tier === 'vip' || subscription_tier === 'standard') && (
         <p className="text-xs text-pastel-muted-foreground text-right">
           Crédits restants : {iaUsage?.image_credits ?? 0}
         </p>

@@ -2,7 +2,10 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 import { getUserFromRequest } from '../src/utils/auth.js';
 
-const stripeSecret = process.env.VITE_STRIPE_SECRET_KEY as string;
+let stripeSecret = process.env.STRIPE_SECRET_KEY as string | undefined;
+if (!stripeSecret && process.env.NODE_ENV !== 'production') {
+  stripeSecret = process.env.VITE_STRIPE_SECRET_KEY;
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -10,7 +13,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (!stripeSecret) {
-    return res.status(500).json({ error: 'Stripe not configured' });
+    return res.status(500).json({ error: 'Stripe secret key not configured' });
   }
 
   const user = await getUserFromRequest(req);

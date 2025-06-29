@@ -54,7 +54,8 @@ export default function AccountPage({ session, userProfile, onProfileUpdate }) {
         />
       </section>
 
-      {userProfile.subscription_tier === 'vip' && (
+      {(userProfile.subscription_tier === 'vip' ||
+        userProfile.subscription_tier === 'standard') && (
         <section className="bg-muted/10 p-6 rounded-xl space-y-6">
           <IACredits session={session} />
         </section>
