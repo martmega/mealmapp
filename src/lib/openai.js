@@ -55,3 +55,23 @@ export const estimateRecipePrice = async (
     return null;
   }
 };
+
+export const formatInstructionsWithAI = async (rawText) => {
+  try {
+    const response = await fetch('/api/format-instructions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ rawText }),
+    });
+
+    if (!response.ok) throw new Error('Request failed');
+
+    const { instructions } = await response.json();
+    return Array.isArray(instructions) ? instructions : [];
+  } catch (error) {
+    console.error('Erreur lors du formatage des instructions:', error);
+    return null;
+  }
+};
