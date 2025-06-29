@@ -80,7 +80,7 @@ export default function IACredits({ session }) {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ productId: priceId }),
+        body: JSON.stringify({ productId: priceId, creditsType: type }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Request failed');

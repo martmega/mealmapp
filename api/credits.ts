@@ -65,11 +65,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ error: 'Stripe secret key not configured' });
     }
 
-    const { productId } = req.body || {};
+    const { productId, creditsType } = req.body || {};
     console.log('[credits] purchase payload:', req.body);
     if (!/^price_[a-zA-Z0-9]+$/.test(productId)) {
       return res.status(400).json({ error: 'Invalid product ID format' });
     }
+
+    const creditType: 'text' | 'image' = creditsType === 'text' ? 'text' : 'image';
 
     const stripe = new Stripe(stripeSecret, { apiVersion: '2022-11-15' });
     const successUrl = `${req.headers.origin}/paiement?success=true`;
@@ -81,6 +83,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         mode: 'payment',
         success_url: successUrl,
         cancel_url: cancelUrl,
+        client_reference_id: user.id,
+        metadata: { credits_type: creditType },
       });
       return res.status(200).json({ url: session.url });
     } catch (err) {
