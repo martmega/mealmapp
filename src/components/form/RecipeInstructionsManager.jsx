@@ -13,7 +13,11 @@ export default function RecipeInstructionsManager({
 }) {
   const rawText = Array.isArray(instructions)
     ? instructions
-        .map((item) => (item.text ? item.text : String(item)))
+        .map((item) =>
+          typeof item === 'string'
+            ? item
+            : item.text || item.step || JSON.stringify(item)
+        )
         .join('\n')
     : instructions || '';
   const disabled =
