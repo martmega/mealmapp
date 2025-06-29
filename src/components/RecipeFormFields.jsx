@@ -165,7 +165,9 @@ const RecipeFormFields = ({
         <Textarea
           id="instructions"
           name="instructions"
-          value={formData.instructions.join('\n')}
+          value={formData.instructions
+            .map((item) => (item.text ? item.text : String(item)))
+            .join('\n')}
           onChange={handleInstructionsChange}
           required
           className="min-h-[120px]"
