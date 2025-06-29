@@ -70,7 +70,18 @@ export default async function handler(req: Request): Promise<Response> {
           } else if (session.mode === 'payment' && session.metadata?.credits_type) {
             const column =
               session.metadata.credits_type === 'text' ? 'text_credits' : 'image_credits';
-            const increment = session.metadata.credits_type === 'text' ? 150 : 50;
+            let increment = 0;
+            try {
+              const detailedSession = await stripe.checkout.sessions.retrieve(session.id, {
+                expand: ['line_items.data.price.product'],
+              });
+              const lineItem = (detailedSession as any).line_items?.data?.[0];
+              const meta = lineItem?.price?.metadata || lineItem?.price?.product?.metadata;
+              const amount = parseInt(meta?.credit_amount ?? '0', 10);
+              if (!Number.isNaN(amount)) increment = amount;
+            } catch (err) {
+              console.error('Failed to load credit metadata:', err);
+            }
             const { data: row, error: fetchErr } = await supabase
               .from('ia_credits')
               .select(column)
