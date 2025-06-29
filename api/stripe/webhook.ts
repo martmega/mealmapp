@@ -71,7 +71,7 @@ export default async function handler(req: Request): Promise<Response> {
             const column =
               session.metadata.credits_type === 'text' ? 'text_credits' : 'image_credits';
             const increment = session.metadata.credits_type === 'text' ? 150 : 50;
-            const { data: row, error: fetchErr } = await supabase
+          const { data: row, error: fetchErr } = await supabase
               .from('ia_credits')
               .select(column)
               .eq('user_id', id)
@@ -93,6 +93,18 @@ export default async function handler(req: Request): Promise<Response> {
             );
             if (upsertErr) {
               console.error('ia_credits upsert error:', upsertErr.message);
+            }
+
+            const { error: insertErr } = await supabase
+              .from('ia_credit_purchases')
+              .insert({
+                user_id: id,
+                stripe_session_id: session.id,
+                credit_type: session.metadata.credits_type,
+                amount: increment,
+              });
+            if (insertErr) {
+              console.error('ia_credit_purchases insert error:', insertErr.message);
             }
           }
         }

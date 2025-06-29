@@ -55,3 +55,6 @@ create policy "allow owner" on weekly_menu_preferences
 
 ## ia_credits
 - Users can read and modify their own credit balance only.
+
+## ia_credit_purchases
+- Users may read their own purchase history.
