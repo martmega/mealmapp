@@ -17,6 +17,16 @@ const sharedMenuOtherUser = [
   { id: '1', user_id: 'user2', name: 'Menu ami', is_shared: true },
 ];
 
+const sharedMenuWithOwner = [
+  {
+    id: '1',
+    user_id: 'user2',
+    name: 'Menu ami',
+    owner: 'Alice',
+    is_shared: true,
+  },
+];
+
 function Wrapper() {
   const [menus, setMenus] = useState(sampleMenus);
   const [activeId, setActiveId] = useState(sampleMenus[0].id);
@@ -142,8 +152,24 @@ describe('MenuTabs', () => {
       />
     );
 
-    const tab = screen.getByRole('tab', { name: 'Menu ami' });
+    const tab = screen.getByRole('tab', { name: /Menu ami/ });
     expect(within(tab).queryByLabelText('Supprimer')).toBeNull();
     expect(tab).toHaveClass('shared-menu');
+  });
+
+  it('affiche le nom du propriétaire et le badge partagé', () => {
+    render(
+      <MenuTabs
+        menus={sharedMenuWithOwner}
+        activeMenuId="1"
+        onSelect={() => {}}
+        currentUserId="user1"
+        friends={[]}
+      />
+    );
+
+    const tab = screen.getByRole('tab', { name: /Menu ami/ });
+    expect(tab).toHaveTextContent('Alice');
+    expect(screen.getByText(/partagé/i)).toBeInTheDocument();
   });
 });

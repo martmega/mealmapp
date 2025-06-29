@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import SignedImage from '../components/SignedImage.jsx';
 import * as images from '../lib/images.js';
@@ -25,7 +25,7 @@ describe('SignedImage', () => {
     render(<SignedImage bucket={SUPABASE_BUCKETS.recipes} path="image.jpg" alt="image" />);
 
     const img = await screen.findByRole('img');
-    expect(img).toHaveAttribute('src', signedUrl);
+    await waitFor(() => expect(img).toHaveAttribute('src', signedUrl));
     expect(img).toHaveAttribute('loading', 'lazy');
   });
 

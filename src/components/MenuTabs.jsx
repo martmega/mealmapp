@@ -47,6 +47,11 @@ export default function MenuTabs({
               )}
             >
               {menu.name || 'Menu'}
+              {menu.owner && menu.user_id !== currentUserId && (
+                <span className="ml-1 text-xs text-pastel-muted-foreground">
+                  {menu.owner}
+                </span>
+              )}
               {menu.user_id === currentUserId && (
                 <button
                   aria-label="Supprimer"
@@ -60,6 +65,11 @@ export default function MenuTabs({
                 >
                   <X className="w-3 h-3" />
                 </button>
+              )}
+              {menu.user_id !== currentUserId && menu.is_shared && (
+                <span className="ml-2 rounded-md bg-pastel-mint text-white text-xs px-1.5" data-testid="shared-badge">
+                  partagé
+                </span>
               )}
             </TabsTrigger>
           );
