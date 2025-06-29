@@ -33,10 +33,10 @@ export const estimateRecipePrice = async (
     if (token) {
       headers.Authorization = `Bearer ${token}`;
     } else {
-      console.error('Missing access token for /api/estimate-cost request');
+      console.error('Missing access token for /api/ai?action=cost request');
     }
 
-    const response = await fetch('/api/estimate-cost', {
+    const response = await fetch('/api/ai?action=cost', {
       method: 'POST',
       headers,
       body: JSON.stringify({ recipe }),
@@ -63,11 +63,11 @@ export const formatInstructionsWithAI = async (rawText, session) => {
       headers.Authorization = `Bearer ${token}`;
     } else {
       console.error(
-        'Missing access token for /api/format-instructions request'
+        'Missing access token for /api/ai?action=format request'
       );
     }
 
-    const response = await fetch('/api/format-instructions', {
+    const response = await fetch('/api/ai?action=format', {
       method: 'POST',
       headers,
       body: JSON.stringify({ rawText }),

@@ -686,8 +686,8 @@ function RecipeForm({
     try {
       const endpoint =
         type === 'description'
-          ? '/api/generate-description'
-          : '/api/generate-image';
+          ? '/api/ai?action=description'
+          : '/api/ai?action=image';
 
       const response = await fetch(endpoint, {
         method: 'POST',
