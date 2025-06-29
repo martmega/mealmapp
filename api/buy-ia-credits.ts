@@ -1,1 +1,1 @@
-export { default } from './purchase-credits';
+export { default } from './credits';
