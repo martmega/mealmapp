@@ -54,9 +54,23 @@ export function useMenuList(session) {
         }
       }
 
-      // `is_shared` is selected directly from weekly_menus
+      const userIds = [...new Set(unique.map((m) => m.user_id))];
+      let usersMap = {};
+      if (userIds.length > 0) {
+        const { data: users } = await supabase
+          .from('public_user_view')
+          .select('id, username, avatar_url')
+          .in('id', userIds);
+        usersMap = Object.fromEntries((users || []).map((u) => [u.id, u]));
+      }
 
-      setMenus(unique);
+      // `is_shared` is selected directly from weekly_menus
+      const withOwners = unique.map((m) => ({
+        ...m,
+        owner: usersMap[m.user_id] ?? null,
+      }));
+
+      setMenus(withOwners);
     } catch (err) {
       console.error('Erreur chargement menus:', err);
       toast({
