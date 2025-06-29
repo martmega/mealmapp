@@ -14,7 +14,13 @@ const sharedMenu = [
 ];
 
 const sharedMenuOtherUser = [
-  { id: '1', user_id: 'user2', name: 'Menu ami', is_shared: true },
+  {
+    id: '1',
+    user_id: 'user2',
+    name: 'Menu ami',
+    is_shared: true,
+    owner: { username: 'Ami' },
+  },
 ];
 
 function Wrapper() {
@@ -145,5 +151,9 @@ describe('MenuTabs', () => {
     const tab = screen.getByRole('tab', { name: 'Menu ami' });
     expect(within(tab).queryByLabelText('Supprimer')).toBeNull();
     expect(tab).toHaveClass('shared-menu');
+    expect(
+      within(tab).getByText('(par Ami)', { exact: false })
+    ).toBeInTheDocument();
+    expect(within(tab).getByText('partagé')).toBeInTheDocument();
   });
 });
