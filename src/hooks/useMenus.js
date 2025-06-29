@@ -4,6 +4,65 @@ import { useToast } from '@/components/ui/use-toast';
 
 const supabase = getSupabase();
 
+export async function fetchMenusForUser(userId) {
+  if (!userId) return [];
+
+  const { data: ownerMenus, error: ownerError } = await supabase
+    .from('weekly_menus')
+    .select('id, user_id, name, updated_at, is_shared')
+    .eq('user_id', userId)
+    .order('created_at');
+
+  if (ownerError && ownerError.code !== 'PGRST116') {
+    throw ownerError;
+  }
+
+  const { data: participantRows, error: participantError } = await supabase
+    .from('menu_participants')
+    .select('menu_id')
+    .eq('user_id', userId);
+
+  if (participantError && participantError.code !== 'PGRST116') {
+    throw participantError;
+  }
+
+  const participantIds = (participantRows || []).map((r) => r.menu_id);
+  let participantMenus = [];
+  if (participantIds.length > 0) {
+    const { data, error } = await supabase
+      .from('weekly_menus')
+      .select('id, user_id, name, updated_at, is_shared')
+      .in('id', participantIds);
+    if (error) throw error;
+    participantMenus = data || [];
+  }
+
+  const combined = [...(ownerMenus || []), ...participantMenus];
+  const unique = [];
+  const seen = new Set();
+  for (const m of combined) {
+    if (!seen.has(m.id)) {
+      seen.add(m.id);
+      unique.push(m);
+    }
+  }
+
+  const userIds = [...new Set(unique.map((m) => m.user_id))];
+  let usersMap = {};
+  if (userIds.length > 0) {
+    const { data: users } = await supabase
+      .from('public_user_view')
+      .select('id, username, avatar_url')
+      .in('id', userIds);
+    usersMap = Object.fromEntries((users || []).map((u) => [u.id, u]));
+  }
+
+  return unique.map((m) => ({
+    ...m,
+    owner: usersMap[m.user_id] ?? null,
+  }));
+}
+
 export function useMenus(session) {
   const userId = session?.user?.id;
   const { toast } = useToast();
@@ -17,63 +76,8 @@ export function useMenus(session) {
     if (!userId) return;
     setLoading(true);
     try {
-      const { data: ownerMenus, error: ownerError } = await supabase
-        .from('weekly_menus')
-        .select('id, user_id, name, updated_at, is_shared')
-        .eq('user_id', userId)
-        .order('created_at');
-
-      if (ownerError && ownerError.code !== 'PGRST116') {
-        throw ownerError;
-      }
-
-      const { data: participantRows, error: participantError } = await supabase
-        .from('menu_participants')
-        .select('menu_id')
-        .eq('user_id', userId);
-
-      if (participantError && participantError.code !== 'PGRST116') {
-        throw participantError;
-      }
-
-      const participantIds = (participantRows || []).map((r) => r.menu_id);
-      let participantMenus = [];
-      if (participantIds.length > 0) {
-        const { data, error } = await supabase
-          .from('weekly_menus')
-          .select('id, user_id, name, updated_at, is_shared')
-          .in('id', participantIds);
-        if (error) throw error;
-        participantMenus = data || [];
-      }
-
-      const combined = [...(ownerMenus || []), ...participantMenus];
-      const unique = [];
-      const seen = new Set();
-      for (const m of combined) {
-        if (!seen.has(m.id)) {
-          seen.add(m.id);
-          unique.push(m);
-        }
-      }
-
-      const userIds = [...new Set(unique.map((m) => m.user_id))];
-      let usersMap = {};
-      if (userIds.length > 0) {
-        const { data: users } = await supabase
-          .from('public_user_view')
-          .select('id, username, avatar_url')
-          .in('id', userIds);
-        usersMap = Object.fromEntries((users || []).map((u) => [u.id, u]));
-      }
-
-      // `is_shared` is selected directly from weekly_menus
-      const withOwners = unique.map((m) => ({
-        ...m,
-        owner: usersMap[m.user_id] ?? null,
-      }));
-
-      setMenus(withOwners);
+      const list = await fetchMenusForUser(userId);
+      setMenus(list);
     } catch (err) {
       console.error('Erreur chargement menus:', err);
       toast({

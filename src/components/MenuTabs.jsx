@@ -31,11 +31,15 @@ export default function MenuTabs({
     >
       <TabsList className="flex overflow-x-auto items-center gap-2">
         {menus.map((menu) => {
+          const isOwner = menu.user_id === currentUserId;
           const isShared = menu.is_shared === true;
-          // Shared menus turn mint when active
+
           const colorClasses = isShared
-            ? 'shared-menu data-[state=active]:bg-pastel-mint data-[state=active]:text-white'
-            : 'border-pastel-primary text-pastel-primary hover:bg-pastel-primary/10 data-[state=active]:bg-pastel-primary';
+            ? isOwner
+              ? 'mintStyle data-[state=active]:bg-pastel-mint data-[state=active]:text-white'
+              : 'mintStyleWithBadge data-[state=active]:bg-pastel-mint data-[state=active]:text-white'
+            : 'violetStyle data-[state=active]:bg-pastel-primary';
+
           return (
             <TabsTrigger
               key={menu.id}
@@ -47,17 +51,10 @@ export default function MenuTabs({
               )}
             >
               {menu.name || 'Menu'}
-              {menu.is_shared === true && menu.user_id !== currentUserId && (
-                <span className="ml-1 text-xs text-muted-foreground">
-                  (par {menu.owner?.username})
-                </span>
+              {!isOwner && isShared && (
+                <span className="badge">Partagé par {menu.owner?.username}</span>
               )}
-              {menu.is_shared === true && menu.user_id !== currentUserId && (
-                <span className="ml-2 px-1 rounded bg-pastel-mint text-white text-xs">
-                  partagé
-                </span>
-              )}
-              {menu.user_id === currentUserId && (
+              {isOwner && (
                 <button
                   aria-label="Supprimer"
                   onClick={(e) => {

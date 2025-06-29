@@ -187,6 +187,23 @@
   .shared-menu {
     @apply border-pastel-mint text-pastel-mint hover:bg-pastel-mint/10;
   }
+
+  /* New menu tab styles */
+  .mintStyle {
+    @apply border-pastel-mint text-pastel-mint hover:bg-pastel-mint/10;
+  }
+
+  .mintStyleWithBadge {
+    @apply border-pastel-mint text-pastel-mint hover:bg-pastel-mint/10;
+  }
+
+  .violetStyle {
+    @apply border-pastel-primary text-pastel-primary hover:bg-pastel-primary/10;
+  }
+
+  .badge {
+    @apply ml-2 px-1 rounded bg-pastel-mint text-white text-xs;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
