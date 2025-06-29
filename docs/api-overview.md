@@ -11,3 +11,5 @@ All API routes are under `api/` and are deployed as serverless functions.
 | `api/credits` | `GET` returns remaining AI usage and credits. |
 | `api/purchase-credits` | Starts a Stripe Checkout session to buy credit packs. |
 | `api/stripe/webhook` | Deno function that updates subscription metadata after Stripe events. |
+
+Credit pack quantities are stored as a `credit_amount` metadata field on each Stripe Price. The webhook reads this value to know how many credits to add when a purchase is completed.
