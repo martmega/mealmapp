@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import MenuPlanner from '@/components/MenuPlanner';
 import MenuTabs from '@/components/MenuTabs.jsx';
 import { getSupabase } from '@/lib/supabase';
-import { initialWeeklyMenuState } from '@/lib/menu';
 import { useFriendsList } from '@/hooks/useFriendsList.js';
 import { useMenuParticipants } from '@/hooks/useMenuParticipants.js';
 import { toDbPrefs } from '@/hooks/useWeeklyMenu.js';
@@ -84,8 +83,8 @@ export default function MenuPage({
     const insertData = {
       user_id: userId,
       name: name || 'Menu sans titre',
-      menu_data: initialWeeklyMenuState(),
       is_shared: Boolean(isShared),
+      menu_data: {},
     };
 
     const { data, error } = await supabase
@@ -107,10 +106,9 @@ export default function MenuPage({
         .insert({ menu_id: data.id, ...dbPrefs });
     }
 
-    if (isShared && data?.id) {
-      const ids = Array.from(new Set([userId, ...participantIds]));
-      const rows = ids.map((id) => ({ menu_id: data.id, user_id: id }));
-      await supabase.from('menu_participants').insert(rows);
+    if (isShared) {
+      // Wait for trigger to populate menu_participants
+      await new Promise((r) => setTimeout(r, 500));
     }
 
     await refreshMenus();

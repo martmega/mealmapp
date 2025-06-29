@@ -133,11 +133,11 @@ describe('MenuTabs', () => {
     );
 
     const tab = screen.getByRole('tab', { name: 'Menu 1' });
-    expect(tab).toHaveClass('shared-menu');
+    expect(tab).toHaveClass('mintStyle');
     expect(tab).toHaveClass('data-[state=active]:bg-pastel-mint');
   });
 
-  it("affiche le nom du propriétaire et le badge 'partagé' pour un menu partagé par un autre utilisateur", () => {
+  it("affiche le badge avec le nom du propriétaire pour un menu partagé par un autre utilisateur", () => {
     render(
       <MenuTabs
         menus={sharedMenuOtherUser}
@@ -148,9 +148,8 @@ describe('MenuTabs', () => {
       />
     );
 
-    const tab = screen.getByRole('tab', { name: 'Menu ami' });
-    expect(within(tab).getByText('(par Ami)', { exact: false })).toBeInTheDocument();
-    expect(within(tab).getByText('partagé')).toBeInTheDocument();
+    const tab = screen.getByRole('tab', { name: /Menu ami/ });
+    expect(within(tab).getByText('Partagé par Ami')).toBeInTheDocument();
   });
 
   it("n'affiche pas le bouton supprimer pour un menu partagé par un autre utilisateur", () => {
@@ -164,12 +163,9 @@ describe('MenuTabs', () => {
       />
     );
 
-    const tab = screen.getByRole('tab', { name: 'Menu ami' });
+    const tab = screen.getByRole('tab', { name: /Menu ami/ });
     expect(within(tab).queryByLabelText('Supprimer')).toBeNull();
-    expect(tab).toHaveClass('shared-menu');
-    expect(
-      within(tab).getByText('(par Ami)', { exact: false })
-    ).toBeInTheDocument();
-    expect(within(tab).getByText('partagé')).toBeInTheDocument();
+    expect(tab).toHaveClass('mintStyleWithBadge');
+    expect(within(tab).getByText('Partagé par Ami')).toBeInTheDocument();
   });
 });
