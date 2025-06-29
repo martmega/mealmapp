@@ -60,6 +60,8 @@ export async function fetchMenusForUser(userId) {
   return unique.map((m) => ({
     ...m,
     owner: usersMap[m.user_id] ?? null,
+    shared_by:
+      m.user_id !== userId ? usersMap[m.user_id]?.username || null : null,
   }));
 }
 
@@ -120,11 +122,14 @@ export function useMenus(session) {
     }
   }, [selectedMenuId, storageKey]);
 
+  const selectedMenu = menus.find((m) => m.id === selectedMenuId) || null;
+
   return {
     menus,
     loading,
     selectedMenuId,
     setSelectedMenuId,
+    selectedMenu,
     refreshMenus: fetchMenus,
   };
 }

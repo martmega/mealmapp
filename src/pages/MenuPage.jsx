@@ -104,11 +104,13 @@ export default function MenuPage({
       await supabase
         .from('weekly_menu_preferences')
         .insert({ menu_id: data.id, ...dbPrefs });
-    }
 
-    if (isShared) {
-      // Wait for trigger to populate menu_participants
-      await new Promise((r) => setTimeout(r, 500));
+      if (isShared) {
+        const participants = [userId, ...participantIds];
+        await supabase.from('menu_participants').insert(
+          participants.map((uid) => ({ menu_id: data.id, user_id: uid }))
+        );
+      }
     }
 
     await refreshMenus();
