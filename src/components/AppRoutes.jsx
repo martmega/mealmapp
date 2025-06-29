@@ -13,6 +13,7 @@ import UserProfilePage from '@/pages/UserProfilePage';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import { PlusCircle } from 'lucide-react';
 import LoginPage from '@/pages/Login.jsx';
+import CreditsConfirmedPage from '@/pages/CreditsConfirmed';
 
 export default function AppRoutes({
   session,
@@ -204,6 +205,7 @@ export default function AppRoutes({
           )
         }
       />
+      <Route path="/credits-confirmed" element={<CreditsConfirmedPage />} />
       <Route path="/app/*" element={<Navigate to="/app/recipes" replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<Navigate to="/app/recipes" replace />} />

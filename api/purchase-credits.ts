@@ -28,8 +28,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const stripe = new Stripe(stripeSecret, { apiVersion: '2022-11-15' });
-  const successUrl = `${req.headers.origin}/paiement?success=true`;
-  const cancelUrl = `${req.headers.origin}/paiement?cancelled=true`;
+  const successUrl = `${req.headers.origin}/credits-confirmed`;
+  const cancelUrl = `${req.headers.origin}/app/account?credits_canceled=true`;
 
   try {
     const session = await stripe.checkout.sessions.create({
