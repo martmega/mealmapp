@@ -49,7 +49,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const previousTier =
-      user.raw_user_meta_data?.subscription_tier || 'standard';
+      (user as any).raw_user_meta_data?.subscription_tier || 'standard';
 
     const { error: userUpdateErr } = await supabaseAdmin.auth.admin.updateUserById(
       user.id,

@@ -16,7 +16,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const user = await getUserFromRequest(req);
-  if (!user || user.raw_user_meta_data?.subscription_tier !== 'premium') {
+  if (!user || (user as any).raw_user_meta_data?.subscription_tier !== 'premium') {
     return res.status(403).json({ error: 'Premium only' });
   }
 
@@ -32,7 +32,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const ingredientsList = Array.isArray(recipe.ingredients)
       ? recipe.ingredients
           .map(
-            (ing) =>
+            (ing: { quantity?: string | number; unit?: string; name: string }) =>
               `- ${ing.quantity} ${ing.unit ? ing.unit + ' ' : ''}${ing.name}`.trim()
           )
           .join('\n')

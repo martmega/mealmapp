@@ -75,7 +75,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       response_format: 'url',
     });
 
-    const dalleUrl = response.data[0].url;
+    const dalleUrl = response.data?.[0]?.url;
+    if (!dalleUrl) {
+      throw new Error('No image URL returned by OpenAI');
+    }
     const imageRes = await fetch(dalleUrl);
     if (!imageRes.ok) throw new Error('Failed to download image');
     const arrayBuffer = await imageRes.arrayBuffer();

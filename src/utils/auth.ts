@@ -1,14 +1,16 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type User } from '@supabase/supabase-js';
+import type { VercelRequest } from '@vercel/node';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 if (!supabaseUrl) throw new Error('VITE_SUPABASE_URL is not defined');
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!serviceRoleKey)
-  throw new Error('SUPABASE_SERVICE_ROLE_KEY is not defined');
+if (!serviceRoleKey) throw new Error('SUPABASE_SERVICE_ROLE_KEY is not defined');
 
 const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-export async function getUserFromRequest(req) {
+export async function getUserFromRequest(
+  req: VercelRequest
+): Promise<User | null> {
   const authHeader = req.headers['authorization'] || '';
   const token = authHeader.split(' ')[1];
   if (!token) return null;
@@ -17,9 +19,10 @@ export async function getUserFromRequest(req) {
     console.warn('Error fetching user from token:', error.message);
     return null;
   }
-  const user = data.user || null;
-  if (user && !user.raw_user_meta_data && user.user_metadata) {
-    user.raw_user_meta_data = user.user_metadata;
+  const user = data.user as User | null;
+  if (user && !(user as any).raw_user_meta_data && user.user_metadata) {
+    // Sync legacy field name for compatibility
+    (user as any).raw_user_meta_data = user.user_metadata;
   }
   return user;
 }
