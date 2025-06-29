@@ -6,7 +6,8 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 if (!supabaseUrl) throw new Error('VITE_SUPABASE_URL is not defined');
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!serviceRoleKey) throw new Error('SUPABASE_SERVICE_ROLE_KEY is not defined');
+if (!serviceRoleKey)
+  throw new Error('SUPABASE_SERVICE_ROLE_KEY is not defined');
 
 const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
@@ -38,6 +39,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     subscriptionTier !== 'vip'
   ) {
     return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  const { data: creditRow, error: creditErr } = await supabaseAdmin
+    .from('ia_credits')
+    .select('text_credits')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (creditErr) {
+    console.error('ia_credits fetch error:', creditErr.message);
+  }
+
+  const currentCredits = creditRow?.text_credits ?? 0;
+  if (currentCredits <= 0) {
+    return res.status(402).json({ error: 'Insufficient text credits' });
   }
 
   const { rawText } = req.body || {};
@@ -81,6 +97,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({ instructions });
   } catch (err) {
     console.error('OpenAI error:', err);
-    return res.status(500).json({ error: 'Internal Server Error', details: String(err) });
+    return res
+      .status(500)
+      .json({ error: 'Internal Server Error', details: String(err) });
   }
 }

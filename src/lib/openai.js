@@ -1,4 +1,3 @@
-
 export const generateRecipe = async (prompt, subscriptionTier = 'standard') => {
   try {
     const response = await fetch('/api/generate-recipe', {
@@ -56,13 +55,21 @@ export const estimateRecipePrice = async (
   }
 };
 
-export const formatInstructionsWithAI = async (rawText) => {
+export const formatInstructionsWithAI = async (rawText, session) => {
   try {
+    const headers = { 'Content-Type': 'application/json' };
+    const token = session?.access_token ?? session;
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    } else {
+      console.error(
+        'Missing access token for /api/format-instructions request'
+      );
+    }
+
     const response = await fetch('/api/format-instructions', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify({ rawText }),
     });
 
