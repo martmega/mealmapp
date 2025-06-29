@@ -52,7 +52,7 @@ const RecipeFormAIFeatures = ({
               : 'Premium Description'}
         </Button>
       </div>
-      {subscription_tier === 'vip' && (
+      {(subscription_tier === 'vip' || subscription_tier === 'standard') && (
         <p className="text-xs text-pastel-muted-foreground text-right">
           Crédits restants : {iaUsage?.text_credits ?? 0}
         </p>

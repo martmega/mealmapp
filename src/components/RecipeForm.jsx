@@ -87,7 +87,8 @@ function RecipeForm({
   const [iaUsage, setIaUsage] = useState(null);
 
   const fetchIaUsage = useCallback(async () => {
-    if (subscriptionTier !== 'vip' || !session?.access_token) {
+    if (!session?.access_token ||
+        (subscriptionTier !== 'vip' && subscriptionTier !== 'standard')) {
       setIaUsage(null);
       return;
     }
