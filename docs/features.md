@@ -25,6 +25,7 @@
 ## Stripe Subscriptions
 - Checkout handled via Stripe to unlock `premium` tiers.
 - Webhook updates user metadata when payment succeeds.
+- Processed event IDs are stored in `stripe_events` to avoid duplicate credit updates.
 
 ## Access Keys
 - Invitation keys stored in `access_keys` to grant special roles or beta access.

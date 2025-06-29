@@ -34,6 +34,22 @@ export default async function handler(req: Request): Promise<Response> {
     return new Response('Invalid signature', { status: 400 });
   }
 
+  const supabase = createClient(supabaseUrl!, supabaseServiceKey!);
+
+  const { data: existing, error: checkErr } = await supabase
+    .from('stripe_events')
+    .select('id')
+    .eq('id', event.id)
+    .maybeSingle();
+
+  if (checkErr) {
+    console.error('stripe_events check error:', checkErr.message);
+  }
+  if (existing) {
+    console.log('Stripe event already processed:', event.id);
+    return new Response('OK');
+  }
+
   try {
     switch (event.type) {
       case "checkout.session.completed":
@@ -43,8 +59,6 @@ export default async function handler(req: Request): Promise<Response> {
         const email: string | undefined =
           session.customer_email || session.customer_details?.email;
         let id: string | null = userId;
-
-        const supabase = createClient(supabaseUrl!, supabaseServiceKey!);
 
         if (!id && email) {
           const { data, error } = await supabase
@@ -99,6 +113,13 @@ export default async function handler(req: Request): Promise<Response> {
         break;
       default:
         console.log(`Unhandled event type: ${event.type}`);
+    }
+
+    const { error: insertErr } = await supabase
+      .from('stripe_events')
+      .insert({ id: event.id });
+    if (insertErr) {
+      console.error('stripe_events insert error:', insertErr.message);
     }
   } catch (err) {
     console.error('Webhook processing error:', err);

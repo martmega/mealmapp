@@ -10,4 +10,4 @@ All API routes are under `api/` and are deployed as serverless functions.
 | `api/update-profile` | Updates fields in `public_user_view` for the current user. |
 | `api/credits` | `GET` returns remaining AI usage and credits. |
 | `api/purchase-credits` | Starts a Stripe Checkout session to buy credit packs. |
-| `api/stripe/webhook` | Deno function that updates subscription metadata after Stripe events. |
+| `api/stripe/webhook` | Deno function that updates subscription metadata and credits after Stripe events. Processed event IDs are stored in `stripe_events`. |
