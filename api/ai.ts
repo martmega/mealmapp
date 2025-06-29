@@ -241,7 +241,16 @@ Ne termine pas par une formule type “Bon appétit”.
         try {
           const parsed = JSON.parse(content);
           if (Array.isArray(parsed)) {
-            instructions = parsed.map((s) => String(s));
+            instructions = parsed.map((step) => {
+              if (typeof step === 'string') return step.trim();
+              if (step && typeof step === 'object') {
+                const value = step.text || step.step || Object.values(step)[0];
+                return typeof value === 'string'
+                  ? value.trim()
+                  : JSON.stringify(step);
+              }
+              return String(step);
+            });
           } else {
             throw new Error('Not an array');
           }
