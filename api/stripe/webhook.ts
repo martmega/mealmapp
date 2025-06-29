@@ -105,6 +105,18 @@ export default async function handler(req: Request): Promise<Response> {
             if (upsertErr) {
               console.error('ia_credits upsert error:', upsertErr.message);
             }
+
+            const { error: purchaseErr } = await supabase
+              .from('ia_credit_purchases')
+              .insert({
+                user_id: id,
+                stripe_session_id: session.id,
+                credits_type: session.metadata?.credits_type,
+                credits_amount: increment,
+              });
+            if (purchaseErr) {
+              console.error('ia_credit_purchases insert error:', purchaseErr.message);
+            }
           }
         }
         break;
