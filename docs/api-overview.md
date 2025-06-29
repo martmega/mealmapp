@@ -10,5 +10,6 @@ All API routes are under `api/` and are deployed as serverless functions.
 | `api/format-instructions` | Formats raw cooking instructions into clear steps using OpenAI. Requires authentication. |
 | `api/generate-image` | Generates a DALL·E image, uploads it to Supabase and returns the file path. |
 | `api/update-profile` | Updates fields in `public_user_view` for the current user. |
-| `api/credits` | `GET` returns remaining AI usage and credits. `POST` starts a Stripe Checkout session to buy credit packs. |
+| `api/credits` | `GET` returns remaining AI usage and credits. |
+| `api/purchase-credits` | Starts a Stripe Checkout session to buy credit packs. |
 | `api/stripe/webhook` | Deno function that updates subscription metadata after Stripe events. |
