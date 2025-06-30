@@ -13,4 +13,4 @@ All API routes are under `api/` and are deployed as serverless functions.
 | `api/purchase-credits` | Alias for `api/credits` kept for backward compatibility. |
 | `api/stripe/webhook` | Deno function that updates subscription metadata after Stripe events and records credit purchases. |
 
-Credit pack quantities are stored as a `credit_amount` metadata field on each Stripe Price. The webhook reads this value to know how many credits to add when a purchase is completed. Each successful purchase is also stored in the `ia_credit_purchases` table.
+Credit pack quantities are stored as a `credit_amount` metadata field on each Stripe Price. The webhook reads this value to know how many credits to add when a purchase is completed. Each successful purchase is also stored in the `ia_credit_purchases` table. Processed event IDs are saved in the `stripe_events` table to avoid duplicate handling.

@@ -46,6 +46,21 @@ export default async function handler(req: Request): Promise<Response> {
 
         const supabase = createClient(supabaseUrl!, supabaseServiceKey!);
 
+        const { data: existingEvent, error: eventCheckErr } = await supabase
+          .from('stripe_events')
+          .select('event_id')
+          .eq('event_id', event.id)
+          .maybeSingle();
+
+        if (eventCheckErr) {
+          console.error('stripe_events fetch error:', eventCheckErr.message);
+        }
+
+        if (existingEvent) {
+          console.log('Stripe event already handled:', event.id);
+          return new Response('OK');
+        }
+
         if (!id && email) {
           const { data, error } = await supabase
             .from("public_user_view")
@@ -116,6 +131,13 @@ export default async function handler(req: Request): Promise<Response> {
               });
             if (purchaseErr) {
               console.error('ia_credit_purchases insert error:', purchaseErr.message);
+            }
+
+            const { error: eventInsertErr } = await supabase
+              .from('stripe_events')
+              .insert({ event_id: event.id });
+            if (eventInsertErr) {
+              console.error('stripe_events insert error:', eventInsertErr.message);
             }
           }
         }

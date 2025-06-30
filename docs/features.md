@@ -19,6 +19,7 @@
 - Usage of these features is limited via the `ia_usage` table based on subscription tier.
 - Additional paid credits are tracked in the `ia_credits` table.
 - Completed purchases are logged in the `ia_credit_purchases` table.
+- Processed Stripe event IDs are stored in the `stripe_events` table to prevent duplicate credit grants.
 
 ## Social
 - Friend requests stored in `user_relationships` allow sharing recipes among friends.
