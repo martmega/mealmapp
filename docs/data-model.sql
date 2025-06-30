@@ -85,3 +85,8 @@ create table ia_credit_purchases (
   credits_amount integer not null,
   created_at timestamptz default now()
 );
+
+create table stripe_events (
+  event_id text primary key,
+  created_at timestamptz default now()
+);
