@@ -72,6 +72,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const creditType: 'text' | 'image' = creditsType === 'text' ? 'text' : 'image';
+    const creditQuantity = creditType === 'text' ? 150 : 50;
 
     const stripe = new Stripe(stripeSecret, { apiVersion: '2022-11-15' });
     const successUrl = `${req.headers.origin}/paiement?credits_success=true`;
@@ -84,7 +85,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         success_url: successUrl,
         cancel_url: cancelUrl,
         client_reference_id: user.id,
-        metadata: { credits_type: creditType },
+        metadata: {
+          credits_type: creditType,
+          credits_quantity: creditQuantity,
+        },
       });
       return res.status(200).json({ url: session.url });
     } catch (err) {
