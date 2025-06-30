@@ -6,6 +6,7 @@ import { useFriendsList } from '@/hooks/useFriendsList.js';
 import { useMenuParticipants } from '@/hooks/useMenuParticipants.js';
 import { toDbPrefs } from '@/hooks/useWeeklyMenu.js';
 import { DEFAULT_MENU_PREFS } from '@/lib/defaultPreferences.js';
+import { initialWeeklyMenuState } from '@/lib/menu';
 import ParticipantWeights from '@/components/ParticipantWeights.jsx';
 
 const supabase = getSupabase();
@@ -84,7 +85,7 @@ export default function MenuPage({
       user_id: userId,
       name: name || 'Menu sans titre',
       is_shared: Boolean(isShared),
-      menu_data: {},
+      menu_data: initialWeeklyMenuState(),
     };
 
     const { data, error } = await supabase
