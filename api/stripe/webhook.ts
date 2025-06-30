@@ -39,7 +39,8 @@ export default async function handler(req: Request): Promise<Response> {
       case "checkout.session.completed":
       case "invoice.paid":
         const session: any = event.data.object;
-        const userId: string | null = session.client_reference_id ?? null;
+        console.log('Stripe session metadata:', session.metadata);
+        const userId: string | null = session.client_reference_id || session.metadata?.user_id || null;
         const email: string | undefined =
           session.customer_email || session.customer_details?.email;
         let id: string | null = userId;
@@ -82,51 +83,68 @@ export default async function handler(req: Request): Promise<Response> {
               console.error('Supabase update error:', error.message);
               return new Response('Supabase update failed', { status: 500 });
             }
-          } else if (session.mode === 'payment' && session.metadata?.credits_type) {
+          } else if (
+            session.mode === 'payment' &&
+            typeof session.metadata?.credits_type === 'string'
+          ) {
             const column =
               session.metadata.credits_type === 'text' ? 'text_credits' : 'image_credits';
             const increment = Number(session.metadata.credits_quantity) || 0;
-            const { data: row, error: fetchErr } = await supabase
-              .from('ia_credits')
-              .select(column)
-              .eq('user_id', id)
-              .maybeSingle<{
-                text_credits?: number;
-                image_credits?: number;
-              }>();
-            if (fetchErr) {
-              console.error('ia_credits fetch error:', fetchErr.message);
-            }
-            const current = (row as Record<typeof column, number> | null)?.[column] ?? 0;
-            const { error: upsertErr } = await supabase.from('ia_credits').upsert(
-              {
-                user_id: id,
-                [column]: current + increment,
-                updated_at: new Date().toISOString(),
-              },
-              { onConflict: 'user_id' }
-            );
-            if (upsertErr) {
-              console.error('ia_credits upsert error:', upsertErr.message);
-            }
 
-            const { error: purchaseErr } = await supabase
+            const { data: existingPurchase, error: checkErr } = await supabase
               .from('ia_credit_purchases')
-              .insert({
-                user_id: id,
-                stripe_session_id: session.id,
-                credits_type: session.metadata?.credits_type,
-                credits_amount: increment,
-              });
-            if (purchaseErr) {
-              console.error('ia_credit_purchases insert error:', purchaseErr.message);
+              .select('id')
+              .eq('stripe_session_id', session.id)
+              .maybeSingle();
+            if (checkErr) {
+              console.error('ia_credit_purchases fetch error:', checkErr.message);
             }
 
-            const { error: eventInsertErr } = await supabase
-              .from('stripe_events')
-              .insert({ event_id: event.id });
-            if (eventInsertErr) {
-              console.error('stripe_events insert error:', eventInsertErr.message);
+            if (!existingPurchase) {
+              const { data: row, error: fetchErr } = await supabase
+                .from('ia_credits')
+                .select(column)
+                .eq('user_id', id)
+                .maybeSingle<{
+                  text_credits?: number;
+                  image_credits?: number;
+                }>();
+              if (fetchErr) {
+                console.error('ia_credits fetch error:', fetchErr.message);
+              }
+              const current = (row as Record<typeof column, number> | null)?.[column] ?? 0;
+              const { error: upsertErr } = await supabase.from('ia_credits').upsert(
+                {
+                  user_id: id,
+                  [column]: current + increment,
+                  updated_at: new Date().toISOString(),
+                },
+                { onConflict: 'user_id' }
+              );
+              if (upsertErr) {
+                console.error('ia_credits upsert error:', upsertErr.message);
+              }
+
+              const { error: purchaseErr } = await supabase
+                .from('ia_credit_purchases')
+                .insert({
+                  user_id: id,
+                  stripe_session_id: session.id,
+                  credits_type: session.metadata?.credits_type,
+                  credits_amount: increment,
+                });
+              if (purchaseErr) {
+                console.error('ia_credit_purchases insert error:', purchaseErr.message);
+              }
+
+              const { error: eventInsertErr } = await supabase
+                .from('stripe_events')
+                .insert({ event_id: event.id });
+              if (eventInsertErr) {
+                console.error('stripe_events insert error:', eventInsertErr.message);
+              }
+            } else {
+              console.log('Stripe session already processed:', session.id);
             }
           }
         }
