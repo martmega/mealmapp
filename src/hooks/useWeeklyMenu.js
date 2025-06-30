@@ -90,7 +90,17 @@ export function useWeeklyMenu(session, currentMenuId = null) {
       if (typeof data.is_shared === 'boolean') setIsShared(data.is_shared);
     } else {
       setWeeklyMenu(initialWeeklyMenuState());
-      setIsShared(false);
+      if (data && typeof data === 'object') {
+        if (data.name) setMenuName(data.name);
+        if (data.id) setMenuId(data.id);
+        if (typeof data.is_shared === 'boolean') {
+          setIsShared(data.is_shared);
+        } else {
+          setIsShared(false);
+        }
+      } else {
+        setIsShared(false);
+      }
     }
   }, []);
 
