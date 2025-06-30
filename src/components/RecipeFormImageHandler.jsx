@@ -44,7 +44,11 @@ const RecipeFormImageHandler = ({
       window.location.href = url;
     } catch (err) {
       console.error('purchase credits error:', err);
-      toast({ title: 'Erreur', description: err.message, variant: 'destructive' });
+      toast({
+        title: 'Erreur',
+        description: err.message || "Une erreur est survenue lors de l'achat.",
+        variant: 'destructive',
+      });
     }
   };
   return (
