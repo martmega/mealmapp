@@ -1,13 +1,14 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useMenus } from '../hooks/useMenus.js';
 
 let ownerEqCalls = [];
 let participantEqCalls = [];
 let inCalls = [];
+let weeklyMenuCall = 0;
+let friendMenuShared = true;
 
 vi.mock('../lib/supabase', () => {
-  let weeklyMenuCall = 0;
   function createQuery(data, recordEq, recordIn) {
     const q = {};
     q.select = vi.fn(() => q);
@@ -34,7 +35,15 @@ vi.mock('../lib/supabase', () => {
           );
         }
         return createQuery(
-          [{ id: 'm2', user_id: 'user2', name: 'Menu Ami', updated_at: 'now', is_shared: true }],
+          [
+            {
+              id: 'm2',
+              user_id: 'user2',
+              name: 'Menu Ami',
+              updated_at: 'now',
+              is_shared: friendMenuShared,
+            },
+          ],
           null,
           inCalls,
         );
@@ -55,6 +64,14 @@ vi.mock('../lib/supabase', () => {
 });
 
 describe('useMenus friend visibility', () => {
+  beforeEach(() => {
+    ownerEqCalls = [];
+    participantEqCalls = [];
+    inCalls = [];
+    weeklyMenuCall = 0;
+    friendMenuShared = true;
+  });
+
   it('includes shared menus from friends', async () => {
     const session = { user: { id: 'user1' } };
     const { result } = renderHook(() => useMenus(session));
@@ -67,6 +84,21 @@ describe('useMenus friend visibility', () => {
         expect.objectContaining({ id: 'm2', user_id: 'user2', is_shared: true }),
       ]),
     );
+    expect(ownerEqCalls).toContainEqual(['user_id', 'user1']);
+    expect(participantEqCalls).toContainEqual(['user_id', 'user1']);
+    expect(inCalls).toContainEqual(['id', ['m2']]);
+  });
+
+  it('excludes unshared menus from friends', async () => {
+    friendMenuShared = false;
+    const session = { user: { id: 'user1' } };
+    const { result } = renderHook(() => useMenus(session));
+
+    await waitFor(() => result.current.menus.length === 1);
+
+    expect(result.current.menus).toEqual([
+      expect.objectContaining({ id: 'm1', user_id: 'user1' }),
+    ]);
     expect(ownerEqCalls).toContainEqual(['user_id', 'user1']);
     expect(participantEqCalls).toContainEqual(['user_id', 'user1']);
     expect(inCalls).toContainEqual(['id', ['m2']]);

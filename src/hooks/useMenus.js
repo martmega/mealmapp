@@ -34,7 +34,7 @@ export async function fetchMenusForUser(userId) {
       .select('id, user_id, name, updated_at, is_shared')
       .in('id', participantIds);
     if (error) throw error;
-    participantMenus = data || [];
+    participantMenus = (data || []).filter((m) => m.is_shared);
   }
 
   const combined = [...(ownerMenus || []), ...participantMenus];
