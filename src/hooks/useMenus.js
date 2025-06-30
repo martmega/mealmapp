@@ -32,6 +32,7 @@ export async function fetchMenusForUser(userId) {
     const { data, error } = await supabase
       .from('weekly_menus')
       .select('id, user_id, name, updated_at, is_shared')
+      .eq('is_shared', true)
       .in('id', participantIds);
     if (error) throw error;
     participantMenus = data || [];
