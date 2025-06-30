@@ -25,8 +25,8 @@ function NewMenuModal({ onCreate, friends = [], trigger }) {
   };
 
   const handleCreate = () => {
-    const shared = selectedIds.length > 0;
-    onCreate({ name, isShared: shared, participantIds: selectedIds });
+    const participantIds = isShared ? selectedIds : [];
+    onCreate({ name, participantIds });
     setName('');
     setIsShared(false);
     setSelectedIds([]);
