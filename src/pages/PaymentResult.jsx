@@ -4,13 +4,13 @@ import { CheckCircle, XCircle } from 'lucide-react';
 
 export default function PaymentResultPage() {
   const [params] = useSearchParams();
-  const success = params.get('success');
-  const cancelled = params.get('cancelled');
+  const success = params.get('credits_success');
+  const cancelled = params.get('credits_canceled');
 
   useEffect(() => {
     const newUrl = new URL(window.location.href);
-    newUrl.searchParams.delete('success');
-    newUrl.searchParams.delete('cancelled');
+    newUrl.searchParams.delete('credits_success');
+    newUrl.searchParams.delete('credits_canceled');
     window.history.replaceState({}, '', newUrl.toString());
   }, []);
 
