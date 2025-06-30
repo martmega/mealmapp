@@ -85,16 +85,17 @@ export function useWeeklyMenu(session, currentMenuId = null) {
       data.menu_data.length === 7
     ) {
       setWeeklyMenu(data.menu_data);
-      if (data.name) setMenuName(data.name);
-      if (data.id) setMenuId(data.id);
-      if (typeof data.is_shared === 'boolean') setIsShared(data.is_shared);
+      if ('name' in data) setMenuName(data.name);
+      if ('id' in data) setMenuId(data.id);
+      if ('is_shared' in data)
+        setIsShared(typeof data.is_shared === 'boolean' ? data.is_shared : !!data.is_shared);
     } else {
       setWeeklyMenu(initialWeeklyMenuState());
       if (data && typeof data === 'object') {
-        if (data.name) setMenuName(data.name);
-        if (data.id) setMenuId(data.id);
-        if (typeof data.is_shared === 'boolean') {
-          setIsShared(data.is_shared);
+        if ('name' in data) setMenuName(data.name);
+        if ('id' in data) setMenuId(data.id);
+        if ('is_shared' in data) {
+          setIsShared(typeof data.is_shared === 'boolean' ? data.is_shared : !!data.is_shared);
         } else {
           setIsShared(false);
         }

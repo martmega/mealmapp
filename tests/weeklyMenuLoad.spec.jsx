@@ -88,6 +88,13 @@ beforeEach(() => {
   global.__supabaseState.preferences = {
     menu1: { menu_id: 'menu1', ...toDbPrefs(DEFAULT_MENU_PREFS) },
   };
+  global.__supabaseState.menus.menu1 = {
+    id: 'menu1',
+    user_id: 'user1',
+    name: 'Shared Menu',
+    menu_data: [],
+    is_shared: true,
+  };
 });
 
 describe('useWeeklyMenu loading', () => {
@@ -101,6 +108,19 @@ describe('useWeeklyMenu loading', () => {
 
     expect(result.current.weeklyMenu).toEqual(initialWeeklyMenuState());
     expect(result.current.menuName).toBe('Shared Menu');
+    expect(result.current.isShared).toBe(true);
+  });
+
+  it('retains shared status when menu_data is missing', async () => {
+    const session = { user: { id: 'user1' } };
+    delete global.__supabaseState.menus.menu1.menu_data;
+    const { result } = renderHook(() => useWeeklyMenu(session, 'menu1'));
+
+    await waitFor(() => {
+      expect(result.current.menuName).toBe('Shared Menu');
+    });
+
+    expect(result.current.weeklyMenu).toEqual(initialWeeklyMenuState());
     expect(result.current.isShared).toBe(true);
   });
 });
