@@ -4,21 +4,27 @@ import { useMenus } from '../hooks/useMenus.js';
 
 let ownerEqCalls = [];
 let participantEqCalls = [];
+let participantMenuEqCalls = [];
 let inCalls = [];
 
 vi.mock('../lib/supabase', () => {
   let weeklyMenuCall = 0;
   function createQuery(data, recordEq, recordIn) {
-    const q = {};
+    const q = { filters: [] };
     q.select = vi.fn(() => q);
     q.eq = vi.fn((col, val) => {
       recordEq && recordEq.push([col, val]);
+      q.filters.push([col, val]);
       return q;
     });
     q.order = vi.fn(() => Promise.resolve({ data, error: null }));
     q.in = vi.fn((col, val) => {
       recordIn && recordIn.push([col, val]);
-      return Promise.resolve({ data, error: null });
+      let result = data;
+      q.filters.forEach(([c, v]) => {
+        result = result.filter((row) => row[c] === v);
+      });
+      return Promise.resolve({ data: result, error: null });
     });
     return q;
   }
@@ -34,8 +40,11 @@ vi.mock('../lib/supabase', () => {
           );
         }
         return createQuery(
-          [{ id: 'm2', user_id: 'user2', name: 'Menu Ami', updated_at: 'now', is_shared: true }],
-          null,
+          [
+            { id: 'm2', user_id: 'user2', name: 'Menu Ami', updated_at: 'now', is_shared: false },
+            { id: 'm3', user_id: 'user2', name: 'Menu Ami 2', updated_at: 'now', is_shared: true },
+          ],
+          participantMenuEqCalls,
           inCalls,
         );
       }
@@ -44,7 +53,7 @@ vi.mock('../lib/supabase', () => {
         q.select = vi.fn(() => q);
         q.eq = vi.fn((col, val) => {
           participantEqCalls.push([col, val]);
-          return Promise.resolve({ data: [{ menu_id: 'm2' }], error: null });
+          return Promise.resolve({ data: [{ menu_id: 'm2' }, { menu_id: 'm3' }], error: null });
         });
         return q;
       }
@@ -64,11 +73,12 @@ describe('useMenus friend visibility', () => {
     expect(result.current.menus).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ id: 'm1', user_id: 'user1' }),
-        expect.objectContaining({ id: 'm2', user_id: 'user2', is_shared: true }),
+        expect.objectContaining({ id: 'm3', user_id: 'user2', is_shared: true }),
       ]),
     );
     expect(ownerEqCalls).toContainEqual(['user_id', 'user1']);
     expect(participantEqCalls).toContainEqual(['user_id', 'user1']);
-    expect(inCalls).toContainEqual(['id', ['m2']]);
+    expect(participantMenuEqCalls).toContainEqual(['is_shared', true]);
+    expect(inCalls).toContainEqual(['id', ['m2', 'm3']]);
   });
 });
