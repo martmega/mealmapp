@@ -36,14 +36,15 @@ export default async function handler(req: Request): Promise<Response> {
 
   try {
     switch (event.type) {
-      case "checkout.session.completed":
-      case "invoice.paid":
+      case 'checkout.session.completed': {
         const session: any = event.data.object;
+        const { user_id, credits_type, credits_quantity } = session.metadata || {};
         console.log('Stripe session metadata:', session.metadata);
-        const userId: string | null = session.client_reference_id || session.metadata?.user_id || null;
-        const email: string | undefined =
-          session.customer_email || session.customer_details?.email;
-        let id: string | null = userId;
+
+        if (!user_id || !credits_type || !credits_quantity) {
+          console.error('Missing Stripe metadata');
+          return new Response('Missing metadata', { status: 400 });
+        }
 
         const supabase = createClient(supabaseUrl!, supabaseServiceKey!);
 
@@ -62,93 +63,51 @@ export default async function handler(req: Request): Promise<Response> {
           return new Response('OK');
         }
 
-        if (!id && email) {
-          const { data, error } = await supabase
-            .from("public_user_view")
-            .select("id")
-            .eq("email", email)
-            .maybeSingle();
-          if (error) {
-            console.error("Error fetching user:", error.message);
-          }
-          id = (data?.id as string | undefined) ?? null;
+        const column = credits_type === 'text' ? 'text_credits' : 'image_credits';
+        const increment = Number(credits_quantity) || 0;
+
+        const { data: creditRow, error: fetchErr } = await supabase
+          .from('ia_credits')
+          .select('text_credits, image_credits')
+          .eq('user_id', user_id)
+          .maybeSingle<{ text_credits?: number; image_credits?: number }>();
+        if (fetchErr) {
+          console.error('ia_credits fetch error:', fetchErr.message);
         }
 
-        if (id) {
-          if (session.mode === 'subscription') {
-            const { error } = await supabase.auth.admin.updateUserById(id as string, {
-              app_metadata: { subscription_tier: 'premium' },
-            });
-            if (error) {
-              console.error('Supabase update error:', error.message);
-              return new Response('Supabase update failed', { status: 500 });
-            }
-          } else if (
-            session.mode === 'payment' &&
-            typeof session.metadata?.credits_type === 'string'
-          ) {
-            const column =
-              session.metadata.credits_type === 'text' ? 'text_credits' : 'image_credits';
-            const increment = Number(session.metadata.credits_quantity) || 0;
+        const updated = {
+          user_id,
+          text_credits: creditRow?.text_credits ?? 0,
+          image_credits: creditRow?.image_credits ?? 0,
+          updated_at: new Date().toISOString(),
+        } as { user_id: string; text_credits: number; image_credits: number; updated_at: string };
+        updated[column] = (creditRow?.[column as 'text_credits' | 'image_credits'] ?? 0) + increment;
 
-            const { data: existingPurchase, error: checkErr } = await supabase
-              .from('ia_credit_purchases')
-              .select('id')
-              .eq('stripe_session_id', session.id)
-              .maybeSingle();
-            if (checkErr) {
-              console.error('ia_credit_purchases fetch error:', checkErr.message);
-            }
+        const { error: upsertErr } = await supabase
+          .from('ia_credits')
+          .upsert(updated, { onConflict: 'user_id' });
+        if (upsertErr) {
+          console.error('ia_credits upsert error:', upsertErr.message);
+        }
 
-            if (!existingPurchase) {
-              const { data: row, error: fetchErr } = await supabase
-                .from('ia_credits')
-                .select(column)
-                .eq('user_id', id)
-                .maybeSingle<{
-                  text_credits?: number;
-                  image_credits?: number;
-                }>();
-              if (fetchErr) {
-                console.error('ia_credits fetch error:', fetchErr.message);
-              }
-              const current = (row as Record<typeof column, number> | null)?.[column] ?? 0;
-              const { error: upsertErr } = await supabase.from('ia_credits').upsert(
-                {
-                  user_id: id,
-                  [column]: current + increment,
-                  updated_at: new Date().toISOString(),
-                },
-                { onConflict: 'user_id' }
-              );
-              if (upsertErr) {
-                console.error('ia_credits upsert error:', upsertErr.message);
-              }
+        const { error: purchaseErr } = await supabase.from('ia_credit_purchases').insert({
+          user_id,
+          stripe_session_id: session.id,
+          credits_type,
+          credits_amount: increment,
+        });
+        if (purchaseErr) {
+          console.error('ia_credit_purchases insert error:', purchaseErr.message);
+        }
 
-              const { error: purchaseErr } = await supabase
-                .from('ia_credit_purchases')
-                .insert({
-                  user_id: id,
-                  stripe_session_id: session.id,
-                  credits_type: session.metadata?.credits_type,
-                  credits_amount: increment,
-                });
-              if (purchaseErr) {
-                console.error('ia_credit_purchases insert error:', purchaseErr.message);
-              }
-
-              const { error: eventInsertErr } = await supabase
-                .from('stripe_events')
-                .insert({ event_id: event.id });
-              if (eventInsertErr) {
-                console.error('stripe_events insert error:', eventInsertErr.message);
-              }
-            } else {
-              console.log('Stripe session already processed:', session.id);
-            }
-          }
+        const { error: eventInsertErr } = await supabase
+          .from('stripe_events')
+          .insert({ event_id: event.id });
+        if (eventInsertErr) {
+          console.error('stripe_events insert error:', eventInsertErr.message);
         }
         break;
+      }
       default:
         console.log(`Unhandled event type: ${event.type}`);
     }

@@ -57,9 +57,8 @@ beforeEach(() => {
     data: {
       object: {
         id: 'sess_123',
-        client_reference_id: 'user_abc',
         mode: 'payment',
-        metadata: { credits_type: 'text', credits_quantity: '5' },
+        metadata: { user_id: 'user_abc', credits_type: 'text', credits_quantity: '5' },
       },
     },
   };
@@ -82,6 +81,7 @@ describe('stripe webhook handler', () => {
       {
         user_id: 'user_abc',
         text_credits: 15,
+        image_credits: 0,
         updated_at: expect.any(String),
       },
       { onConflict: 'user_id' }
