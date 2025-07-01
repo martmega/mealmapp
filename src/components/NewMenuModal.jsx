@@ -76,7 +76,9 @@ function NewMenuModal({ onCreate, friends = [], trigger }) {
           <DialogClose asChild>
             <Button variant="outline">Annuler</Button>
           </DialogClose>
-          <Button onClick={handleCreate}>Créer</Button>
+          <Button onClick={handleCreate} disabled={isShared && selectedIds.length === 0}>
+            Créer
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
