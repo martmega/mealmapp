@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useMenus } from '../hooks/useMenus.js';
 
@@ -6,65 +6,76 @@ let ownerEqCalls = [];
 let participantEqCalls = [];
 let participantMenuEqCalls = [];
 let inCalls = [];
+let weeklyMenusData = [];
+let participantRowsData = [];
 
 vi.mock('../lib/supabase', () => {
-  let weeklyMenuCall = 0;
-  function createQuery(data, recordEq, recordIn) {
+  function applyFilters(data, filters) {
+    let result = data;
+    filters.forEach(([c, v]) => {
+      result = result.filter((row) => row[c] === v);
+    });
+    return result;
+  }
+
+  function createMenusQuery(data) {
     const q = { filters: [] };
     q.select = vi.fn(() => q);
     q.eq = vi.fn((col, val) => {
-      recordEq && recordEq.push([col, val]);
+      if (col === 'user_id') ownerEqCalls.push([col, val]);
+      if (col === 'is_shared') participantMenuEqCalls.push([col, val]);
       q.filters.push([col, val]);
       return q;
     });
-    q.order = vi.fn(() => Promise.resolve({ data, error: null }));
+    q.order = vi.fn(() =>
+      Promise.resolve({ data: applyFilters(data, q.filters), error: null })
+    );
     q.in = vi.fn((col, val) => {
-      recordIn && recordIn.push([col, val]);
-      let result = data;
-      q.filters.forEach(([c, v]) => {
-        result = result.filter((row) => row[c] === v);
-      });
+      inCalls.push([col, val]);
+      let result = applyFilters(data, q.filters);
+      result = result.filter((row) => val.includes(row[col]));
       return Promise.resolve({ data: result, error: null });
     });
     return q;
   }
+
   const supabase = {
     from: (table) => {
       if (table === 'weekly_menus') {
-        weeklyMenuCall += 1;
-        if (weeklyMenuCall === 1) {
-          return createQuery(
-            [{ id: 'm1', user_id: 'user1', name: 'Menu 1', updated_at: 'now', is_shared: false }],
-            ownerEqCalls,
-            null,
-          );
-        }
-        return createQuery(
-          [
-            { id: 'm2', user_id: 'user2', name: 'Menu Ami', updated_at: 'now', is_shared: false },
-            { id: 'm3', user_id: 'user2', name: 'Menu Ami 2', updated_at: 'now', is_shared: true },
-          ],
-          participantMenuEqCalls,
-          inCalls,
-        );
+        return createMenusQuery(weeklyMenusData);
       }
       if (table === 'menu_participants') {
         const q = {};
         q.select = vi.fn(() => q);
         q.eq = vi.fn((col, val) => {
           participantEqCalls.push([col, val]);
-          return Promise.resolve({ data: [{ menu_id: 'm2' }, { menu_id: 'm3' }], error: null });
+          return Promise.resolve({ data: participantRowsData, error: null });
         });
         return q;
       }
-      return createQuery([]);
+      return createMenusQuery([]);
     },
   };
   return { getSupabase: () => supabase };
 });
 
+beforeEach(() => {
+  ownerEqCalls = [];
+  participantEqCalls = [];
+  participantMenuEqCalls = [];
+  inCalls = [];
+  weeklyMenusData = [];
+  participantRowsData = [];
+});
+
 describe('useMenus friend visibility', () => {
   it('includes shared menus from friends', async () => {
+    weeklyMenusData = [
+      { id: 'm1', user_id: 'user1', name: 'Menu 1', updated_at: 'now', is_shared: false },
+      { id: 'm2', user_id: 'user2', name: 'Menu Ami', updated_at: 'now', is_shared: false },
+      { id: 'm3', user_id: 'user2', name: 'Menu Ami 2', updated_at: 'now', is_shared: true },
+    ];
+    participantRowsData = [{ menu_id: 'm2' }, { menu_id: 'm3' }];
     const session = { user: { id: 'user1' } };
     const { result } = renderHook(() => useMenus(session));
 
@@ -80,5 +91,26 @@ describe('useMenus friend visibility', () => {
     expect(participantEqCalls).toContainEqual(['user_id', 'user1']);
     expect(participantMenuEqCalls).toContainEqual(['is_shared', true]);
     expect(inCalls).toContainEqual(['id', ['m2', 'm3']]);
+  });
+
+  it('ignores menus that are not shared', async () => {
+    weeklyMenusData = [
+      { id: 'm1', user_id: 'user1', name: 'Menu 1', updated_at: 'now', is_shared: false },
+      { id: 'm2', user_id: 'user2', name: 'Menu Ami', updated_at: 'now', is_shared: false },
+    ];
+    participantRowsData = [{ menu_id: 'm2' }];
+    const session = { user: { id: 'user1' } };
+    const { result } = renderHook(() => useMenus(session));
+
+    await waitFor(() => result.current.menus.length === 1);
+
+    expect(result.current.menus).toEqual([
+      expect.objectContaining({ id: 'm1', user_id: 'user1' }),
+    ]);
+    expect(result.current.menus.some((m) => m.id === 'm2')).toBe(false);
+    expect(ownerEqCalls).toContainEqual(['user_id', 'user1']);
+    expect(participantEqCalls).toContainEqual(['user_id', 'user1']);
+    expect(participantMenuEqCalls).toContainEqual(['is_shared', true]);
+    expect(inCalls).toContainEqual(['id', ['m2']]);
   });
 });
