@@ -13,6 +13,9 @@ let stripeSecret: string | undefined = process.env.STRIPE_SECRET_KEY as string |
 if (!stripeSecret && process.env.NODE_ENV !== 'production') {
   stripeSecret = process.env.VITE_STRIPE_SECRET_KEY;
 }
+if (!stripeSecret) {
+  throw new Error('Missing STRIPE_SECRET_KEY in environment variables');
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const user = await getUserFromRequest(req);
@@ -61,9 +64,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ error: 'Internal Server Error' });
     }
   } else if (req.method === 'POST') {
-    if (!stripeSecret) {
-      return res.status(500).json({ error: 'Stripe secret key not configured' });
-    }
 
     const { productId, creditsType } = req.body || {};
     console.log('[credits] purchase payload:', req.body);
