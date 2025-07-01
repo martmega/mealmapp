@@ -87,6 +87,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         client_reference_id: user.id,
         metadata: {
           user_id: user.id,
+          product_id: productId,
           credits_type: creditType,
           credits_quantity: creditQuantity,
         },
