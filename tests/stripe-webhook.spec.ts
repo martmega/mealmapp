@@ -19,6 +19,10 @@ vi.mock('stripe', () => {
   };
 });
 
+vi.mock('micro', () => {
+  return { buffer: vi.fn(() => Promise.resolve('dummy')) };
+});
+
 vi.mock('@supabase/supabase-js', () => {
   return {
     createClient: vi.fn(() => {
@@ -66,17 +70,28 @@ beforeEach(() => {
 
 describe('stripe webhook handler', () => {
   it('updates credits on payment completion', async () => {
-    const { default: handler } = await import('../api/stripe/webhook.ts');
+    const { default: handler } = await import('../api/webhooks/stripe.ts');
 
-    const req = new Request('http://example.com', {
+    const req: any = {
       method: 'POST',
       headers: { 'stripe-signature': 'sig' },
-      body: 'dummy',
-    });
+    };
+    const res: any = {
+      statusCode: 0,
+      body: '',
+      status(code: number) {
+        this.statusCode = code;
+        return this;
+      },
+      send(payload: any) {
+        this.body = payload;
+        return this;
+      },
+    };
 
-    const res = await handler(req);
+    await handler(req, res);
 
-    expect(res.status).toBe(200);
+    expect(res.statusCode).toBe(200);
     expect(upsertSpy).toHaveBeenCalledWith(
       {
         user_id: 'user_abc',

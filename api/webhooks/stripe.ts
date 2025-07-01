@@ -9,6 +9,9 @@ let stripeSecret = process.env.STRIPE_SECRET_KEY as string | undefined;
 if (!stripeSecret && process.env.NODE_ENV !== 'production') {
   stripeSecret = process.env.VITE_STRIPE_SECRET_KEY;
 }
+if (!stripeSecret) {
+  throw new Error('Missing STRIPE_SECRET_KEY in environment variables');
+}
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET ?? '';
 const supabaseUrl = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
@@ -41,8 +44,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (event.type === 'checkout.session.completed') {
       const session: any = event.data.object;
       const userId: string | undefined = session.metadata?.user_id;
-      const productId: string | undefined = session.metadata?.product_id;
-      if (!userId || !productId) {
+      if (!userId) {
         console.error('Missing metadata', session.metadata);
         return res.status(400).send('Missing metadata');
       }
@@ -57,9 +59,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(200).send('OK');
       }
 
-      const price = await stripe.prices.retrieve(productId);
-      const creditAmount = Number(price.metadata?.credit_amount || 0);
-      const creditType = price.metadata?.credits_type === 'image' ? 'image' : 'text';
+      const creditAmount = Number(session.metadata?.credits_quantity || 0);
+      const creditType = session.metadata?.credits_type === 'image' ? 'image' : 'text';
       const column = creditType === 'text' ? 'text_credits' : 'image_credits';
 
       const { data: row } = await supabase
