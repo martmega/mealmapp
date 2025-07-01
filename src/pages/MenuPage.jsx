@@ -80,7 +80,7 @@ export default function MenuPage({
     if (!userId) return;
 
     const cleanedIds = Array.isArray(participantIds)
-      ? participantIds.filter((id) => id && id !== userId)
+      ? [...new Set(participantIds.filter((id) => id && id !== userId))]
       : [];
     const isShared = cleanedIds.length > 0;
 
