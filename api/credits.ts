@@ -89,6 +89,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           user_id: user.id,
           credits_type: creditType,
           credits_quantity: creditQuantity,
+          product_id: productId,
         },
       });
       return res.status(200).json({ url: session.url });
