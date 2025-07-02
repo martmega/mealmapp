@@ -130,7 +130,15 @@ describe('useWeeklyMenu.updateMenuPreferences', () => {
       await result.current.updatePreferences(newPrefs);
     });
 
-    expect(global.__supabaseState.lastUpsert).toEqual({ menu_id: 'menu1', ...toDbPrefs(newPrefs) });
+    const actual = { ...global.__supabaseState.lastUpsert };
+    const expectedDb = toDbPrefs(newPrefs);
+    ['daily_meal_structure', 'tag_preferences', 'common_menu_settings'].forEach(
+      (f) => {
+        actual[f] = JSON.parse(actual[f]);
+        expectedDb[f] = JSON.parse(expectedDb[f]);
+      }
+    );
+    expect(actual).toEqual({ menu_id: 'menu1', ...expectedDb });
   });
 
   it('merges with existing preferences for partial updates', async () => {
@@ -144,7 +152,14 @@ describe('useWeeklyMenu.updateMenuPreferences', () => {
     const expected = { ...DEFAULT_MENU_PREFS, weeklyBudget: 40 };
     const expectedDb = toDbPrefs({ ...expected, commonMenuSettings: {} });
 
-    expect(global.__supabaseState.lastUpsert).toEqual({ menu_id: 'menu1', ...expectedDb });
+    const actual = { ...global.__supabaseState.lastUpsert };
+    ['daily_meal_structure', 'tag_preferences', 'common_menu_settings'].forEach(
+      (f) => {
+        actual[f] = JSON.parse(actual[f]);
+        expectedDb[f] = JSON.parse(expectedDb[f]);
+      }
+    );
+    expect(actual).toEqual({ menu_id: 'menu1', ...expectedDb });
     expect(result.current.preferences).toEqual(expected);
   });
 });
