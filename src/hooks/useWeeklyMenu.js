@@ -4,8 +4,23 @@ import { useToast } from '@/components/ui/use-toast';
 import { initialWeeklyMenuState } from '@/lib/menu';
 import { DEFAULT_MENU_PREFS } from '@/lib/defaultPreferences.js';
 
+/** @typedef {import('@/types').WeeklyMenuPreferences} WeeklyMenuPreferences */
+/** @typedef {import('@/types').CommonMenuSettings} CommonMenuSettings */
+
 const defaultPrefs = { ...DEFAULT_MENU_PREFS };
 
+/**
+ * Convert a database row into client preferences.
+ * @param {WeeklyMenuPreferences | null | undefined} pref
+ * @returns {{
+ *   servingsPerMeal: number;
+ *   maxCalories: number | null;
+ *   weeklyBudget: number;
+ *   meals: {id:number; mealNumber:number; types:string[]; enabled:boolean;}[];
+ *   tagPreferences: string[];
+ *   commonMenuSettings: CommonMenuSettings;
+ * }}
+ */
 export function fromDbPrefs(pref) {
   if (!pref) return { ...defaultPrefs };
   const dailyMealStructure =
@@ -41,6 +56,18 @@ export function fromDbPrefs(pref) {
   };
 }
 
+/**
+ * Convert client preferences into a database row.
+ * @param {{
+ *   servingsPerMeal?: number;
+ *   maxCalories?: number | null;
+ *   weeklyBudget?: number;
+ *   meals?: {id:number; mealNumber:number; types:string[]; enabled:boolean;}[];
+ *   tagPreferences?: string[];
+ *   commonMenuSettings?: CommonMenuSettings;
+ * }} pref
+ * @returns {WeeklyMenuPreferences}
+ */
 export function toDbPrefs(pref) {
   const effective = { ...DEFAULT_MENU_PREFS, ...(pref || {}) };
   return {
