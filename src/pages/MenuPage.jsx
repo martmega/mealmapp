@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MenuPlanner from '@/components/MenuPlanner';
 import MenuTabs from '@/components/MenuTabs.jsx';
 import { getSupabase } from '@/lib/supabase';
+import { createSharedMenu } from '@/lib/sharedMenu.js';
 import { useFriendsList } from '@/hooks/useFriendsList.js';
 import { useMenuParticipants } from '@/hooks/useMenuParticipants.js';
 import { toDbPrefs } from '@/hooks/useWeeklyMenu.js';
@@ -82,44 +83,49 @@ export default function MenuPage({
     const cleanedIds = Array.isArray(participantIds)
       ? [...new Set(participantIds.filter((id) => id && id !== userId))]
       : [];
-    const isShared = sharedFlag;
 
-    const insertData = {
-      user_id: userId,
-      name: name || 'Menu sans titre',
-      is_shared: isShared,
-      menu_data: initialWeeklyMenuState(),
-    };
+    const menuName = name || 'Menu sans titre';
 
-    console.log('Insert menu:', insertData);
+    let createdId = null;
 
-    const { data, error } = await supabase
-      .from('weekly_menus')
-      .insert(insertData)
-      .select('id')
-      .single();
-    if (error) {
-      console.error('Erreur creation menu:', error);
-      return;
+    if (sharedFlag) {
+      const result = await createSharedMenu({
+        user_id: userId,
+        name: menuName,
+        menu_data: initialWeeklyMenuState(),
+        participant_ids: cleanedIds,
+      });
+      if (!result?.id) return;
+      createdId = result.id;
+    } else {
+      const insertData = {
+        user_id: userId,
+        name: menuName,
+        is_shared: false,
+        menu_data: initialWeeklyMenuState(),
+      };
+      const { data, error } = await supabase
+        .from('weekly_menus')
+        .insert(insertData)
+        .select('id')
+        .single();
+      if (error) {
+        console.error('Erreur creation menu:', error);
+        return;
+      }
+      createdId = data?.id || null;
     }
 
-    if (data?.id) {
+    if (createdId) {
       const basePrefs = { ...DEFAULT_MENU_PREFS };
-      if (!isShared) basePrefs.commonMenuSettings = {};
+      if (!sharedFlag) basePrefs.commonMenuSettings = {};
       const dbPrefs = toDbPrefs(basePrefs);
       await supabase
         .from('weekly_menu_preferences')
-        .insert({ menu_id: data.id, ...dbPrefs });
-
-      if (isShared) {
-        await supabase.from('menu_participants').insert(
-          cleanedIds.map((uid) => ({ menu_id: data.id, user_id: uid }))
-        );
-      }
+        .insert({ menu_id: createdId, ...dbPrefs });
+      await refreshMenus();
+      setSelectedMenuId(createdId);
     }
-
-    await refreshMenus();
-    if (data?.id) setSelectedMenuId(data.id);
   };
 
   return (
