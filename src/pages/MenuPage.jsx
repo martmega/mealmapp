@@ -91,6 +91,8 @@ export default function MenuPage({
       menu_data: initialWeeklyMenuState(),
     };
 
+    console.log('Insert menu:', insertData);
+
     const { data, error } = await supabase
       .from('weekly_menus')
       .insert(insertData)
