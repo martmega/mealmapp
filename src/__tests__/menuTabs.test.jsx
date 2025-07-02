@@ -133,8 +133,8 @@ describe('MenuTabs', () => {
     );
 
     const tab = screen.getByRole('tab', { name: 'Menu 1' });
-    expect(tab).toHaveClass('violetStyle');
-    expect(tab).toHaveClass('data-[state=active]:bg-pastel-primary');
+    expect(tab).toHaveClass('mintStyleWithBadge');
+    expect(tab).toHaveClass('data-[state=active]:bg-pastel-mint');
   });
 
   it("affiche le badge avec le nom du propriétaire pour un menu partagé par un autre utilisateur", () => {
