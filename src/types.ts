@@ -9,8 +9,10 @@ export type WeeklyMenuPreferences = {
   portions_per_meal: number;
   daily_calories_limit: number | null;
   weekly_budget: number;
-  daily_meal_structure: string[][];
-  tag_preferences: string[];
+  /** Raw JSON string or parsed array of meal type arrays */
+  daily_meal_structure: string[][] | string;
+  /** Raw JSON string or parsed array of tags */
+  tag_preferences: string[] | string;
   /** Client side representation of meals */
   meals?: {
     id: number;
@@ -20,7 +22,8 @@ export type WeeklyMenuPreferences = {
   }[];
   /** Camel case tag preferences for generator */
   tagPreferences?: { tag: string; percentage: number }[] | string[];
-  common_menu_settings?: CommonMenuSettings;
+  /** Raw JSON string or parsed settings object */
+  common_menu_settings?: CommonMenuSettings | string;
 };
 
 export interface Recipe {

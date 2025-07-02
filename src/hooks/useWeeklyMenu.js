@@ -8,8 +8,16 @@ const defaultPrefs = { ...DEFAULT_MENU_PREFS };
 
 export function fromDbPrefs(pref) {
   if (!pref) return { ...defaultPrefs };
-  const meals = Array.isArray(pref.daily_meal_structure)
-    ? pref.daily_meal_structure.map((types, idx) => ({
+  let daily = pref.daily_meal_structure;
+  if (typeof daily === 'string') {
+    try {
+      daily = JSON.parse(daily);
+    } catch {
+      daily = [];
+    }
+  }
+  const meals = Array.isArray(daily)
+    ? daily.map((types, idx) => ({
         id: idx + 1,
         mealNumber: idx + 1,
         types: Array.isArray(types) ? types : [],
@@ -21,10 +29,28 @@ export function fromDbPrefs(pref) {
     maxCalories: pref.daily_calories_limit ?? 2200,
     weeklyBudget: pref.weekly_budget ?? 35,
     meals,
-    tagPreferences: pref.tag_preferences || [],
+    tagPreferences:
+      typeof pref.tag_preferences === 'string'
+        ? (() => {
+            try {
+              return JSON.parse(pref.tag_preferences);
+            } catch {
+              return [];
+            }
+          })()
+        : pref.tag_preferences || [],
     commonMenuSettings: {
       ...DEFAULT_MENU_PREFS.commonMenuSettings,
-      ...(pref.common_menu_settings || {}),
+      ...(() => {
+        if (typeof pref.common_menu_settings === 'string') {
+          try {
+            return JSON.parse(pref.common_menu_settings);
+          } catch {
+            return {};
+          }
+        }
+        return pref.common_menu_settings || {};
+      })(),
     },
   };
 }
