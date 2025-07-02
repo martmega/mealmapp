@@ -45,17 +45,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const session: any = event.data.object;
       const userId: string | undefined = session.metadata?.user_id;
       if (!userId) {
-        console.error('Missing metadata', session.metadata);
+        console.error('❌ Missing metadata', session.metadata);
         return res.status(400).send('Missing metadata');
       }
 
-      const { data: existingEvent } = await supabase
+      console.log('✅ Webhook reçu pour user_id:', userId);
+      console.log('📦 Metadata:', session.metadata);
+
+      const { data: existingEvent, error: existingEventError } = await supabase
         .from('stripe_events')
         .select('event_id')
         .eq('event_id', event.id)
         .maybeSingle();
+
+      if (existingEventError) {
+        console.error('❌ Erreur sur select stripe_events:', existingEventError);
+      }
+
       if (existingEvent) {
-        console.log('Stripe event already handled:', event.id);
+        console.log('⚠️ Stripe event déjà traité:', event.id);
         return res.status(200).send('OK');
       }
 
@@ -63,31 +71,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const creditType = session.metadata?.credits_type === 'image' ? 'image' : 'text';
       const column = creditType === 'text' ? 'text_credits' : 'image_credits';
 
-      const { data: row } = await supabase
+      const { data: row, error: selectError } = await supabase
         .from('ia_credits')
         .select(column)
         .eq('user_id', userId)
-        .maybeSingle<{ text_credits?: number; image_credits?: number }>();
+        .maybeSingle();
+
+      if (selectError) {
+        console.error('❌ Erreur sur select ia_credits:', selectError);
+      }
+
       const current = (row as Record<typeof column, number> | null)?.[column] ?? 0;
 
-      await supabase.from('ia_credits').upsert(
+      const { error: upsertError } = await supabase.from('ia_credits').upsert(
         { user_id: userId, [column]: current + creditAmount, updated_at: new Date().toISOString() },
         { onConflict: 'user_id' }
       );
 
-      await supabase.from('ia_credit_purchases').insert({
-        user_id: userId,
-        stripe_session_id: session.id,
-        credits_type: creditType,
-        credits_amount: creditAmount,
-      });
+      if (upsertError) {
+        console.error('❌ Erreur sur upsert ia_credits:', upsertError);
+      }
 
       await supabase.from('stripe_events').insert({ event_id: event.id });
     } else {
-      console.log(`Unhandled event type: ${event.type}`);
+      console.log(`ℹ️ Unhandled event type: ${event.type}`);
     }
   } catch (err) {
-    console.error('Webhook processing error:', err);
+    console.error('❌ Webhook processing error:', err);
     return res.status(500).send('Internal server error');
   }
 
