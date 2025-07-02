@@ -13,7 +13,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { user_id, name, menu_data, participant_ids } = req.body || {};
+  const { user_id, name, menu_data, participant_ids, is_shared } = req.body || {};
 
   if (!user_id || typeof user_id !== 'string') {
     return res.status(400).json({ error: 'user_id required' });
@@ -34,6 +34,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: 'User lookup failed' });
   }
 
+  const shared = typeof is_shared === 'boolean' ? is_shared : false;
+
   try {
     const { data: inserted, error } = await supabaseAdmin
       .from('weekly_menus')
@@ -41,7 +43,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         user_id,
         name,
         menu_data: menu_data || {},
-        is_shared: true,
+        is_shared: shared,
       })
       .select('id')
       .single();
@@ -54,7 +56,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ error: error?.message || 'Insert failed' });
     }
 
-    if (Array.isArray(participant_ids) && participant_ids.length > 0) {
+    if (shared && Array.isArray(participant_ids) && participant_ids.length > 0) {
       const rows = participant_ids
         .filter((id: string) => id && id !== user_id)
         .map((id: string) => ({ menu_id: inserted.id, user_id: id }));

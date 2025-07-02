@@ -10,7 +10,18 @@ All API routes are under `api/` and are deployed as serverless functions.
 | `api/getSignedImageUrl` | Returns a temporary signed URL for images stored in Supabase. |
 | `api/update-profile` | Updates fields in `public_user_view` for the current user. |
 | `api/credits` | `GET` returns remaining AI usage and credits, `POST` starts a Stripe Checkout session. This consolidates the old `get-ia-credits` and `purchase-credits` endpoints. |
+| `api/create-shared-menu` | Creates a weekly menu. Pass `is_shared` to share with `participant_ids`. |
 | `api/webhooks/stripe` | Node function that validates Stripe signatures, updates `ia_credits`, and logs purchases. |
+
+## `/api/create-shared-menu`
+
+Request body fields:
+
+- `user_id` (string) – owner of the menu
+- `name` (string) – menu name
+- `menu_data` (object, optional)
+- `participant_ids` (string[], optional)
+- `is_shared` (boolean, optional, defaults to `false`)
 
 ## Stripe webhook
 
