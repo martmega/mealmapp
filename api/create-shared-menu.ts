@@ -47,7 +47,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .single();
 
     if (error || !inserted) {
-      console.error('create-shared-menu insert error:', error?.message);
+      console.error(
+        '🛠 Menu insert error:',
+        error || inserted
+      );
       return res.status(500).json({ error: error?.message || 'Insert failed' });
     }
 
@@ -60,14 +63,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           .from('menu_participants')
           .insert(rows);
         if (partErr) {
-          console.warn('menu_participants insert error:', partErr.message);
+          console.warn(
+            '🛠 menu_participants insert error:',
+            partErr.message
+          );
         }
       }
     }
 
     return res.status(200).json({ id: inserted.id });
   } catch (err) {
-    console.error('create-shared-menu error:', err);
+    console.error('🛠 create-shared-menu error:', err);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 }
