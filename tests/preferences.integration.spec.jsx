@@ -4,6 +4,24 @@ import { render, fireEvent, waitFor } from '@testing-library/react';
 import { renderHook, act } from '@testing-library/react';
 import MenuPreferencesPanel from '../src/components/menu_planner/MenuPreferencesPanel.jsx';
 import { useWeeklyMenu, toDbPrefs } from '../src/hooks/useWeeklyMenu.js';
+
+function parseJsonFields(row) {
+  return {
+    ...row,
+    daily_meal_structure:
+      typeof row.daily_meal_structure === 'string'
+        ? JSON.parse(row.daily_meal_structure)
+        : row.daily_meal_structure,
+    tag_preferences:
+      typeof row.tag_preferences === 'string'
+        ? JSON.parse(row.tag_preferences)
+        : row.tag_preferences,
+    common_menu_settings:
+      typeof row.common_menu_settings === 'string'
+        ? JSON.parse(row.common_menu_settings)
+        : row.common_menu_settings,
+  };
+}
 import { DEFAULT_MENU_PREFS } from '../src/lib/defaultPreferences.js';
 
 global.scrollTo = vi.fn();
@@ -130,7 +148,9 @@ describe('useWeeklyMenu.updateMenuPreferences', () => {
       await result.current.updatePreferences(newPrefs);
     });
 
-    expect(global.__supabaseState.lastUpsert).toEqual({ menu_id: 'menu1', ...toDbPrefs(newPrefs) });
+    expect(parseJsonFields(global.__supabaseState.lastUpsert)).toEqual(
+      parseJsonFields({ menu_id: 'menu1', ...toDbPrefs(newPrefs) })
+    );
   });
 
   it('merges with existing preferences for partial updates', async () => {
@@ -144,7 +164,9 @@ describe('useWeeklyMenu.updateMenuPreferences', () => {
     const expected = { ...DEFAULT_MENU_PREFS, weeklyBudget: 40 };
     const expectedDb = toDbPrefs({ ...expected, commonMenuSettings: {} });
 
-    expect(global.__supabaseState.lastUpsert).toEqual({ menu_id: 'menu1', ...expectedDb });
+    expect(parseJsonFields(global.__supabaseState.lastUpsert)).toEqual(
+      parseJsonFields({ menu_id: 'menu1', ...expectedDb })
+    );
     expect(result.current.preferences).toEqual(expected);
   });
 });

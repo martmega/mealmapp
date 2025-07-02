@@ -1,6 +1,24 @@
 import { describe, it, expect } from 'vitest';
 import { toDbPrefs, fromDbPrefs } from '../src/hooks/useWeeklyMenu.js';
 
+function parseJsonFields(row: any) {
+  return {
+    ...row,
+    daily_meal_structure:
+      typeof row.daily_meal_structure === 'string'
+        ? JSON.parse(row.daily_meal_structure)
+        : row.daily_meal_structure,
+    tag_preferences:
+      typeof row.tag_preferences === 'string'
+        ? JSON.parse(row.tag_preferences)
+        : row.tag_preferences,
+    common_menu_settings:
+      typeof row.common_menu_settings === 'string'
+        ? JSON.parse(row.common_menu_settings)
+        : row.common_menu_settings,
+  };
+}
+
 describe('preferences conversion', () => {
   it('preserves commonMenuSettings through DB round trip', () => {
     const prefs = {
@@ -19,12 +37,13 @@ describe('preferences conversion', () => {
     };
 
     const dbShape = toDbPrefs(prefs);
-    expect(dbShape.common_menu_settings).toEqual(prefs.commonMenuSettings);
-    expect(dbShape.daily_meal_structure).toEqual([
+    const parsed = parseJsonFields(dbShape);
+    expect(parsed.common_menu_settings).toEqual(prefs.commonMenuSettings);
+    expect(parsed.daily_meal_structure).toEqual([
       ['petit-dejeuner', 'brunch'],
     ]);
 
-    const restored = fromDbPrefs(dbShape);
+    const restored = fromDbPrefs(parsed);
     expect(restored).toEqual(prefs);
   });
 
