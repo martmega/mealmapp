@@ -28,6 +28,11 @@ create table weekly_menus (
   updated_at timestamptz default now()
 );
 
+-- Automatically create default preferences for each new menu
+create trigger insert_default_preferences
+after insert on weekly_menus
+for each row execute function insert_default_preferences();
+
 create table menu_participants (
   menu_id uuid references weekly_menus(id) on delete cascade,
   user_id uuid references auth.users(id) on delete cascade,
@@ -58,7 +63,7 @@ create table weekly_menu_preferences (
   portions_per_meal integer default 4,
   daily_calories_limit integer default 2200,
   weekly_budget numeric default 0,
-  daily_meal_structure text[][],
+  daily_meal_structure jsonb, -- [{ mealNumber: int, types: text[], enabled: bool }]
   tag_preferences text[],
   common_menu_settings jsonb default '{}'::jsonb -- { enabled: boolean, linkedUsers: uuid[], linkedUserRecipes: uuid[] }
 );
