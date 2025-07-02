@@ -5,8 +5,6 @@ import { getSupabase } from '@/lib/supabase';
 import { createSharedMenu } from '@/lib/sharedMenu.js';
 import { useFriendsList } from '@/hooks/useFriendsList.js';
 import { useMenuParticipants } from '@/hooks/useMenuParticipants.js';
-import { toDbPrefs } from '@/hooks/useWeeklyMenu.js';
-import { DEFAULT_MENU_PREFS } from '@/lib/defaultPreferences.js';
 import { initialWeeklyMenuState } from '@/lib/menu';
 import ParticipantWeights from '@/components/ParticipantWeights.jsx';
 
@@ -117,12 +115,6 @@ export default function MenuPage({
     }
 
     if (createdId) {
-      const basePrefs = { ...DEFAULT_MENU_PREFS };
-      if (!sharedFlag) basePrefs.commonMenuSettings = {};
-      const dbPrefs = toDbPrefs(basePrefs);
-      await supabase
-        .from('weekly_menu_preferences')
-        .insert({ menu_id: createdId, ...dbPrefs });
       await refreshMenus();
       setSelectedMenuId(createdId);
     }
