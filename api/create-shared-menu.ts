@@ -45,16 +45,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         menu_data: menu_data || {},
         is_shared: shared,
       })
-      .select('id')
+      .select('id, is_shared') // pour log debug
       .single();
 
-    if (error || !inserted) {
+  if (error || !inserted) {
       console.error(
         '🛠 Menu insert error:',
         error || inserted
       );
-      return res.status(500).json({ error: error?.message || 'Insert failed' });
-    }
+    return res.status(500).json({ error: error?.message || 'Insert failed' });
+  }
+
+    console.log('Menu created with is_shared:', inserted.is_shared);
 
     if (shared && Array.isArray(participant_ids) && participant_ids.length > 0) {
       const rows = participant_ids
