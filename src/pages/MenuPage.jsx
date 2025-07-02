@@ -75,14 +75,14 @@ export default function MenuPage({
     }
   };
 
-  const handleCreate = async ({ name, participantIds = [] } = {}) => {
+  const handleCreate = async ({ name, participantIds = [], isShared: sharedFlag } = {}) => {
     const userId = session?.user?.id;
     if (!userId) return;
 
     const cleanedIds = Array.isArray(participantIds)
       ? [...new Set(participantIds.filter((id) => id && id !== userId))]
       : [];
-    const isShared = cleanedIds.length > 0;
+    const isShared = sharedFlag || cleanedIds.length > 0;
 
     const insertData = {
       user_id: userId,
