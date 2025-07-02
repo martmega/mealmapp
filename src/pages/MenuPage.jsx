@@ -82,7 +82,7 @@ export default function MenuPage({
     const cleanedIds = Array.isArray(participantIds)
       ? [...new Set(participantIds.filter((id) => id && id !== userId))]
       : [];
-    const isShared = sharedFlag || cleanedIds.length > 0;
+    const isShared = sharedFlag;
 
     const insertData = {
       user_id: userId,
