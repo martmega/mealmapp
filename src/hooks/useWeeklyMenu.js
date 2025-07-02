@@ -8,8 +8,20 @@ const defaultPrefs = { ...DEFAULT_MENU_PREFS };
 
 export function fromDbPrefs(pref) {
   if (!pref) return { ...defaultPrefs };
-  const meals = Array.isArray(pref.daily_meal_structure)
-    ? pref.daily_meal_structure.map((types, idx) => ({
+  const dailyMealStructure =
+    typeof pref.daily_meal_structure === 'string'
+      ? JSON.parse(pref.daily_meal_structure || '[]')
+      : pref.daily_meal_structure;
+  const tagPreferences =
+    typeof pref.tag_preferences === 'string'
+      ? JSON.parse(pref.tag_preferences || '[]')
+      : pref.tag_preferences;
+  const commonMenuSettings =
+    typeof pref.common_menu_settings === 'string'
+      ? JSON.parse(pref.common_menu_settings || '{}')
+      : pref.common_menu_settings;
+  const meals = Array.isArray(dailyMealStructure)
+    ? dailyMealStructure.map((types, idx) => ({
         id: idx + 1,
         mealNumber: idx + 1,
         types: Array.isArray(types) ? types : [],
@@ -21,10 +33,10 @@ export function fromDbPrefs(pref) {
     maxCalories: pref.daily_calories_limit ?? 2200,
     weeklyBudget: pref.weekly_budget ?? 35,
     meals,
-    tagPreferences: pref.tag_preferences || [],
+    tagPreferences: tagPreferences || [],
     commonMenuSettings: {
       ...DEFAULT_MENU_PREFS.commonMenuSettings,
-      ...(pref.common_menu_settings || {}),
+      ...(commonMenuSettings || {}),
     },
   };
 }
@@ -35,13 +47,15 @@ export function toDbPrefs(pref) {
     portions_per_meal: effective.servingsPerMeal,
     daily_calories_limit: effective.maxCalories,
     weekly_budget: effective.weeklyBudget,
-    daily_meal_structure: Array.isArray(effective.meals)
-      ? effective.meals
-          .filter((m) => m.enabled)
-          .map((m) => (Array.isArray(m.types) ? m.types : []))
-      : [],
-    tag_preferences: effective.tagPreferences || [],
-    common_menu_settings: effective.commonMenuSettings ?? {},
+    daily_meal_structure: JSON.stringify(
+      Array.isArray(effective.meals)
+        ? effective.meals
+            .filter((m) => m.enabled)
+            .map((m) => (Array.isArray(m.types) ? m.types : []))
+        : []
+    ),
+    tag_preferences: JSON.stringify(effective.tagPreferences || []),
+    common_menu_settings: JSON.stringify(effective.commonMenuSettings ?? {}),
   };
 }
 

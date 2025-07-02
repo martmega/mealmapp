@@ -19,10 +19,14 @@ describe('preferences conversion', () => {
     };
 
     const dbShape = toDbPrefs(prefs);
-    expect(dbShape.common_menu_settings).toEqual(prefs.commonMenuSettings);
-    expect(dbShape.daily_meal_structure).toEqual([
-      ['petit-dejeuner', 'brunch'],
-    ]);
+    expect(dbShape.common_menu_settings).toEqual(
+      JSON.stringify(prefs.commonMenuSettings)
+    );
+    expect(dbShape.daily_meal_structure).toEqual(
+      JSON.stringify([
+        ['petit-dejeuner', 'brunch'],
+      ])
+    );
 
     const restored = fromDbPrefs(dbShape);
     expect(restored).toEqual(prefs);
