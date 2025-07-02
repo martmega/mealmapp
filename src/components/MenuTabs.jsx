@@ -32,7 +32,8 @@ export default function MenuTabs({
       <TabsList className="flex overflow-x-auto items-center gap-2">
         {menus.map((menu) => {
           const isOwner = menu.user_id === currentUserId;
-          const isShared = menu.is_shared === true && !isOwner;
+          const isShared = menu.is_shared === true;
+          const sharedByOther = isShared && !isOwner;
 
           const colorClasses = isShared
             ? 'mintStyleWithBadge data-[state=active]:bg-pastel-mint data-[state=active]:text-white'
@@ -49,7 +50,7 @@ export default function MenuTabs({
               )}
             >
               {menu.name || 'Menu'}
-              {isShared && (
+              {sharedByOther && (
                 <span className="badge">Partagé par {menu.owner?.username}</span>
               )}
               {isOwner && (
