@@ -1,6 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
-import { toDbPrefs } from '../src/lib/menuPreferences.js';
 
 const supabaseUrl = process.env.SUPABASE_URL;
 if (!supabaseUrl) throw new Error('SUPABASE_URL is not defined');
@@ -44,12 +43,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       menu_data,
       is_shared: shared,
     });
+    const sanitizedMenuData = Array.isArray(menu_data) ? menu_data : [];
+
     const { data: inserted, error } = await supabaseAdmin
       .from('weekly_menus')
       .insert({
         user_id,
         name,
-        menu_data: toDbPrefs(menu_data || {}),
+        menu_data: sanitizedMenuData,
         is_shared: shared,
       })
       .select('id, is_shared') // pour log debug
