@@ -3,7 +3,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { renderHook, act } from '@testing-library/react';
 import MenuPreferencesPanel from '../src/components/menu_planner/MenuPreferencesPanel.jsx';
-import { useWeeklyMenu, toDbPrefs } from '../src/hooks/useWeeklyMenu.js';
+import { useWeeklyMenu } from '../src/hooks/useWeeklyMenu.js';
+import { toDbPrefs } from '../src/lib/menuPreferences.js';
 import { DEFAULT_MENU_PREFS } from '../src/lib/defaultPreferences.js';
 
 global.scrollTo = vi.fn();

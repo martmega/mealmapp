@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { toDbPrefs, fromDbPrefs } from '../src/hooks/useWeeklyMenu.js';
+import { toDbPrefs, fromDbPrefs } from '../src/lib/menuPreferences.js';
 
 describe('preferences conversion', () => {
   it('preserves commonMenuSettings through DB round trip', () => {
