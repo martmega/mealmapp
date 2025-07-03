@@ -92,6 +92,7 @@ export default function MenuPage({
         name: menuName,
         menu_data: initialWeeklyMenuState(),
         participant_ids: cleanedIds,
+        is_shared: true,
       });
       if (!result?.id) return;
       createdId = result.id;
