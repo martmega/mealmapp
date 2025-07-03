@@ -14,7 +14,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { user_id, name, menu_data, participant_ids, is_shared } = req.body || {};
+  const {
+    user_id,
+    name,
+    menu_data,
+    participant_ids,
+    is_shared: bodyIsShared,
+  } = req.body || {};
 
   if (!user_id || typeof user_id !== 'string') {
     return res.status(400).json({ error: 'user_id required' });
@@ -35,7 +41,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: 'User lookup failed' });
   }
 
-  const shared = typeof is_shared === 'boolean' ? is_shared : false;
+  const shared = typeof bodyIsShared === 'boolean' ? bodyIsShared : false;
 
   try {
     console.log('Inserting weekly menu:', {
