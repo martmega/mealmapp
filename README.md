@@ -1,6 +1,8 @@
 # Meal Planner
 
-This project uses Supabase as a backend. To run the app locally, create a `.env` file in the project root with the following variables:
+This project uses Supabase as a backend. To run the app locally, create a `.env` file in the project root with the following variables.
+
+Frontend (`VITE_` prefix):
 
 ```
 VITE_SUPABASE_URL=<your-supabase-url>
@@ -9,17 +11,23 @@ VITE_ACCESS_KEYS=BETA2025
 VITE_STRIPE_PUBLISHABLE_KEY=<your-stripe-publishable-key>
 VITE_STANDARD_PRICE_ID=<your-standard-price-id>
 VITE_PREMIUM_PRICE_ID=<your-premium-price-id>
-VITE_STRIPE_SECRET_KEY=<your-stripe-secret-key>
 VITE_STRIPE_PRICE_ID_IMAGE_CREDIT=price_XXXXXX
 VITE_STRIPE_PRICE_ID_TEXT_CREDIT=price_YYYYYY
+```
+
+Backend:
+
+```
+SUPABASE_URL=<your-supabase-url>
 SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
+STRIPE_SECRET_KEY=<your-stripe-secret-key>
 STRIPE_WEBHOOK_SECRET=<your-stripe-webhook-secret>
 STRIPE_PUBLISHABLE_KEY=<your-stripe-publishable-key>
 STRIPE_STANDARD_PRICE_ID=<your-standard-price-id>
 STRIPE_PREMIUM_PRICE_ID=<your-premium-price-id>
 ```
 
-These values are injected by Vite and used by the app at runtime.
+Values with the `VITE_` prefix are exposed to the browser via Vite. Backend variables should not be prefixed and remain private.
 Additional documentation is available in the [docs](docs) directory.
 
 All Supabase URLs used by the application are defined in
@@ -29,7 +37,7 @@ Supabase should import these constants instead of hard coding URLs. The buckets 
 
 `STRIPE_PUBLISHABLE_KEY` is the public key used by the browser to initialize Stripe.
 `STRIPE_STANDARD_PRICE_ID` and `STRIPE_PREMIUM_PRICE_ID` correspond to the price identifiers for your Standard and Premium subscription plans.
-`VITE_STRIPE_SECRET_KEY` is read server-side to create checkout sessions.
+`STRIPE_SECRET_KEY` is read server-side to create checkout sessions.
 `VITE_STRIPE_PRICE_ID_TEXT_CREDIT` and `VITE_STRIPE_PRICE_ID_IMAGE_CREDIT` contain the price IDs for packs of AI text and image credits. Each Stripe Price should define a `credit_amount` metadata field specifying how many credits are granted.
 You can find all these values in the Stripe dashboard: the publishable key under **Developers > API keys** and the price IDs on each product's pricing page.
 

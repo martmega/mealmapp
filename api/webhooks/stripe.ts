@@ -5,16 +5,13 @@ import { createClient } from '@supabase/supabase-js';
 
 export const config = { api: { bodyParser: false } };
 
-let stripeSecret = process.env.STRIPE_SECRET_KEY as string | undefined;
-if (!stripeSecret && process.env.NODE_ENV !== 'production') {
-  stripeSecret = process.env.VITE_STRIPE_SECRET_KEY;
-}
+const stripeSecret = process.env.STRIPE_SECRET_KEY as string | undefined;
 if (!stripeSecret) {
   throw new Error('Missing STRIPE_SECRET_KEY in environment variables');
 }
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET ?? '';
-const supabaseUrl = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
+const supabaseUrl = process.env.SUPABASE_URL;
 if (!supabaseUrl) throw new Error('SUPABASE_URL is not defined');
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!supabaseServiceKey) {

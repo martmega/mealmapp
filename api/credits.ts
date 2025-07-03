@@ -3,16 +3,13 @@ import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 import { getUserFromRequest } from '../src/utils/auth.js';
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
-if (!supabaseUrl) throw new Error('VITE_SUPABASE_URL is not defined');
+const supabaseUrl = process.env.SUPABASE_URL;
+if (!supabaseUrl) throw new Error('SUPABASE_URL is not defined');
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!serviceRoleKey) throw new Error('SUPABASE_SERVICE_ROLE_KEY is not defined');
 const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
-let stripeSecret: string | undefined = process.env.STRIPE_SECRET_KEY as string | undefined;
-if (!stripeSecret && process.env.NODE_ENV !== 'production') {
-  stripeSecret = process.env.VITE_STRIPE_SECRET_KEY;
-}
+const stripeSecret: string | undefined = process.env.STRIPE_SECRET_KEY as string | undefined;
 if (!stripeSecret) {
   throw new Error('Missing STRIPE_SECRET_KEY in environment variables');
 }
