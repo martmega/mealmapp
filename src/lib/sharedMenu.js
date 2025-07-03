@@ -1,9 +1,15 @@
-export async function createSharedMenu({ user_id, name, menu_data, participant_ids, is_shared }) {
+export async function createSharedMenu({ user_id, name, menu_data, participant_ids }) {
   try {
     const res = await fetch('/api/create-shared-menu', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id, name, menu_data, participant_ids, is_shared }),
+      body: JSON.stringify({
+        user_id,
+        name,
+        menu_data,
+        participant_ids,
+        is_shared: true,
+      }),
     });
     const result = await res.json();
     if (!res.ok) {
