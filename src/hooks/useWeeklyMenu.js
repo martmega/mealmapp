@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getSupabase } from '@/lib/supabase';
-import { useToast } from '@/components/ui/use-toast';
-import { initialWeeklyMenuState } from '@/lib/menu';
-import { DEFAULT_MENU_PREFS } from '@/lib/defaultPreferences.js';
+import { getSupabase } from '../lib/supabase.js';
+import { useToast } from '../components/ui/use-toast.js';
+import { initialWeeklyMenuState } from '../lib/menu.js';
+import { DEFAULT_MENU_PREFS } from '../lib/defaultPreferences.js';
 
-/** @typedef {import('@/types').WeeklyMenuPreferences} WeeklyMenuPreferences */
-/** @typedef {import('@/types').CommonMenuSettings} CommonMenuSettings */
+/** @typedef {import('../types').WeeklyMenuPreferences} WeeklyMenuPreferences */
+/** @typedef {import('../types').CommonMenuSettings} CommonMenuSettings */
 
 const defaultPrefs = { ...DEFAULT_MENU_PREFS };
 
