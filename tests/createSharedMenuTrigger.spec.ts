@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-process.env.VITE_SUPABASE_URL = 'http://localhost';
+process.env.SUPABASE_URL = 'http://localhost';
 process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role';
 
 let insertedMenus: any[];
@@ -77,5 +77,25 @@ describe('create-shared-menu trigger', () => {
     expect(res.statusCode).toBe(200);
     expect(menuInsertSpy).toHaveBeenCalledWith(expect.objectContaining({ is_shared: false }));
     expect(insertedPrefs[0].common_menu_settings).toEqual({});
+  });
+
+  it('inserts participants when menu is shared', async () => {
+    const { default: handler } = await import('../api/create-shared-menu.ts');
+    const req: any = {
+      method: 'POST',
+      body: {
+        user_id: 'u1',
+        name: 'Shared',
+        is_shared: true,
+        participant_ids: ['u2', 'u3'],
+      },
+    };
+    const res: any = { status() { return this; }, json() { return this; } };
+    await handler(req, res);
+
+    expect(participantInsertSpy).toHaveBeenCalledWith([
+      { menu_id: 'm1', user_id: 'u2' },
+      { menu_id: 'm1', user_id: 'u3' },
+    ]);
   });
 });

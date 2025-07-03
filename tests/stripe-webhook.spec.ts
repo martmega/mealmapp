@@ -96,7 +96,6 @@ describe('stripe webhook handler', () => {
       {
         user_id: 'user_abc',
         text_credits: 15,
-        image_credits: 0,
         updated_at: expect.any(String),
       },
       { onConflict: 'user_id' }
