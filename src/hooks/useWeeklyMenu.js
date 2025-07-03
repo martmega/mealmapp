@@ -3,14 +3,14 @@ import { getSupabase } from '../lib/supabase.js';
 import { useToast } from '../components/ui/use-toast.js';
 import { initialWeeklyMenuState } from '../lib/menu.js';
 import { DEFAULT_MENU_PREFS } from '../lib/defaultPreferences.js';
-import { fromDbPrefs, toDbPrefs } from '../lib/menuPreferences.js';
+import { fromDbPrefs, toDbPrefs } from '../lib/preferences.js';
 
 /** @typedef {import('../types').WeeklyMenuPreferences} WeeklyMenuPreferences */
 /** @typedef {import('../types').CommonMenuSettings} CommonMenuSettings */
 
 const defaultPrefs = { ...DEFAULT_MENU_PREFS };
 
-export { fromDbPrefs, toDbPrefs } from '../lib/menuPreferences.js';
+export { fromDbPrefs, toDbPrefs } from '../lib/preferences.js';
 
 function isValidUUID(value) {
   return (

@@ -35,6 +35,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const shared = typeof is_shared === 'boolean' ? is_shared : false;
+  console.log('is_shared received:', shared);
 
   try {
     console.log('Inserting weekly menu:', {
@@ -43,7 +44,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       menu_data,
       is_shared: shared,
     });
-    const sanitizedMenuData = Array.isArray(menu_data) ? menu_data : [];
+    const sanitizedMenuData = menu_data || {};
 
     const { data: inserted, error } = await supabaseAdmin
       .from('weekly_menus')
