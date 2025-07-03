@@ -38,6 +38,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const shared = typeof is_shared === 'boolean' ? is_shared : false;
 
   try {
+    console.log('Inserting weekly menu:', {
+      user_id,
+      name,
+      menu_data,
+      is_shared: shared,
+    });
     const { data: inserted, error } = await supabaseAdmin
       .from('weekly_menus')
       .insert({
