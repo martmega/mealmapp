@@ -3,8 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
 import { getUserFromRequest } from '../src/utils/auth.js';
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
-if (!supabaseUrl) throw new Error('VITE_SUPABASE_URL is not defined');
+const supabaseUrl = process.env.SUPABASE_URL;
+if (!supabaseUrl) throw new Error('SUPABASE_URL is not defined');
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!serviceRoleKey) throw new Error('SUPABASE_SERVICE_ROLE_KEY is not defined');
 
