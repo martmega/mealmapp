@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-process.env.VITE_SUPABASE_URL = 'http://localhost';
+process.env.SUPABASE_URL = 'http://localhost';
 process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role';
 
 let insertedMenus: any[];
