@@ -1,6 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
-import { toDbPrefs } from '@/lib/menuPreferences';
 
 const supabaseUrl = process.env.SUPABASE_URL;
 if (!supabaseUrl) throw new Error('SUPABASE_URL is not defined');
@@ -66,31 +65,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
     console.log('Menu created with is_shared:', inserted.is_shared);
-
-    const { error: prefErr } = await supabaseAdmin
-      .from('weekly_menu_preferences')
-      .insert({ menu_id: inserted.id, ...toDbPrefs({}) });
-
-    if (prefErr) {
-      console.warn('🛠 weekly_menu_preferences insert error:', prefErr.message);
-    }
-
-    if (shared && Array.isArray(participant_ids) && participant_ids.length > 0) {
-      const rows = participant_ids
-        .filter((id: string) => id && id !== user_id)
-        .map((id: string) => ({ menu_id: inserted.id, user_id: id }));
-      if (rows.length > 0) {
-        const { error: partErr } = await supabaseAdmin
-          .from('menu_participants')
-          .insert(rows);
-        if (partErr) {
-          console.warn(
-            '🛠 menu_participants insert error:',
-            partErr.message
-          );
-        }
-      }
-    }
 
     return res.status(200).json({ id: inserted.id });
   } catch (err) {
