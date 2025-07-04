@@ -40,6 +40,12 @@ Supabase should import these constants instead of hard coding URLs. The buckets 
 `STRIPE_SECRET_KEY` is read server-side to create checkout sessions.
 `VITE_STRIPE_PRICE_ID_TEXT_CREDIT` and `VITE_STRIPE_PRICE_ID_IMAGE_CREDIT` contain the price IDs for packs of AI text and image credits. Each Stripe Price should define a `credit_amount` metadata field specifying how many credits are granted.
 You can find all these values in the Stripe dashboard: the publishable key under **Developers > API keys** and the price IDs on each product's pricing page.
+## Setup
+Install all dependencies, including those required for development:
+
+```bash
+npm install
+```
 
 ## Database
 
