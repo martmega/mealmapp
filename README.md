@@ -56,11 +56,20 @@ supabase db execute < supabase/migrations/0001_enable_recipes_rls.sql
 
 ## Running tests
 
-Execute the following command to run the Vitest suite:
+Install dependencies before running the test suite:
 
 ```bash
-npm run test
+npm install
 ```
+
+Then execute the Vitest suite with:
+
+```bash
+npm test
+```
+
+The tests mock external services and set required environment variables
+programmatically, so no real Supabase or Stripe credentials are needed.
 
 ## Zod example script
 
@@ -88,6 +97,10 @@ You can also run:
 ```bash
 npx ts-node scripts/upload-test-image.ts ./test-image.png
 ```
+
+This helper requires `VITE_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to be
+set in your environment. You can copy `.env.example` to `.env` and provide
+your Supabase credentials if you wish to use it.
 
 Once uploaded, the image will be publicly available at
 `https://<project-ref>.supabase.co/storage/v1/object/public/recipe-images/public/test-image.png`.
