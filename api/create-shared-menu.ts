@@ -15,6 +15,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const { user_id, name, menu_data, participant_ids, is_shared } = req.body || {};
 
+  if (!Array.isArray(menu_data) || menu_data.length !== 7) {
+    return res
+      .status(400)
+      .json({ error: 'menu_data must be an array of 7 days' });
+  }
+
   if (!user_id || typeof user_id !== 'string') {
     return res.status(400).json({ error: 'user_id required' });
   }
