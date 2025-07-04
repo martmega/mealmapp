@@ -92,8 +92,9 @@ export function useWeeklyMenu(session, currentMenuId = null) {
           throw error;
         }
 
-          if (data) {
-            safeSetWeeklyMenu(data);
+        if (data) {
+          const menuIsShared = !!data.is_shared;
+          safeSetWeeklyMenu(data);
 
           const { data: pref, error: prefError } = await supabase
             .from('weekly_menu_preferences')
@@ -106,7 +107,7 @@ export function useWeeklyMenu(session, currentMenuId = null) {
           if (pref) {
             setPreferences(fromDbPrefs(pref));
           } else {
-            const safePrefs = isShared
+            const safePrefs = menuIsShared
               ? toDbPrefs(DEFAULT_MENU_PREFS)
               : toDbPrefs({
                   ...DEFAULT_MENU_PREFS,
