@@ -66,6 +66,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log('Menu created with is_shared:', inserted.is_shared);
 
+    if (
+      inserted.is_shared &&
+      Array.isArray(participant_ids) &&
+      participant_ids.length > 0
+    ) {
+      const rows = participant_ids
+        .filter((id: string) => id && id !== user_id)
+        .map((id: string) => ({ menu_id: inserted.id, user_id: id }));
+
+      if (rows.length > 0) {
+        const { error: partErr } = await supabaseAdmin
+          .from('menu_participants')
+          .insert(rows);
+        if (partErr) {
+          console.warn('🛠 menu_participants insert error:', partErr.message);
+        }
+      }
+    }
+
     return res.status(200).json({ id: inserted.id });
   } catch (err) {
     console.error('🛠 create-shared-menu error:', err);
