@@ -56,7 +56,15 @@ beforeEach(() => {
 describe('create-shared-menu trigger', () => {
   it('inserts default prefs for shared menu', async () => {
     const { default: handler } = await import('../api/create-shared-menu.ts');
-    const req: any = { method: 'POST', body: { user_id: 'u1', name: 'Shared', is_shared: true } };
+    const req: any = {
+      method: 'POST',
+      body: {
+        user_id: 'u1',
+        name: 'Shared',
+        is_shared: true,
+        menu_data: [[], [], [], [], [], [], []],
+      },
+    };
     const res: any = { status(code: number) { this.statusCode = code; return this; }, json(payload: any) { this.body = payload; return this; } };
     await handler(req, res);
 
@@ -68,7 +76,15 @@ describe('create-shared-menu trigger', () => {
 
   it('inserts default prefs for non shared menu', async () => {
     const { default: handler } = await import('../api/create-shared-menu.ts');
-    const req: any = { method: 'POST', body: { user_id: 'u1', name: 'Private', is_shared: false } };
+    const req: any = {
+      method: 'POST',
+      body: {
+        user_id: 'u1',
+        name: 'Private',
+        is_shared: false,
+        menu_data: [[], [], [], [], [], [], []],
+      },
+    };
     const res: any = { status(code: number) { this.statusCode = code; return this; }, json(payload: any) { this.body = payload; return this; } };
     await handler(req, res);
 
@@ -86,6 +102,7 @@ describe('create-shared-menu trigger', () => {
         user_id: 'u1',
         name: 'Shared',
         is_shared: true,
+        menu_data: [[], [], [], [], [], [], []],
         participant_ids: ['u2', 'u3'],
       },
     };
@@ -106,6 +123,7 @@ describe('create-shared-menu trigger', () => {
         user_id: 'u1',
         name: 'Shared',
         is_shared: true,
+        menu_data: [[], [], [], [], [], [], []],
         participant_ids: ['u1', 'u2', null, undefined, '', 'u3'],
       },
     };
@@ -116,5 +134,31 @@ describe('create-shared-menu trigger', () => {
       { menu_id: 'm1', user_id: 'u2' },
       { menu_id: 'm1', user_id: 'u3' },
     ]);
+  });
+
+  it('returns 400 when menu_data is invalid', async () => {
+    const { default: handler } = await import('../api/create-shared-menu.ts');
+    const req: any = {
+      method: 'POST',
+      body: { user_id: 'u1', name: 'Bad', menu_data: ['only'], is_shared: true },
+    };
+    const res: any = {
+      status(code: number) {
+        this.statusCode = code;
+        return this;
+      },
+      json(payload: any) {
+        this.body = payload;
+        return this;
+      },
+    };
+
+    await handler(req, res);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual({
+      error: 'menu_data must be an array of 7 days',
+    });
+    expect(menuInsertSpy).not.toHaveBeenCalled();
   });
 });
