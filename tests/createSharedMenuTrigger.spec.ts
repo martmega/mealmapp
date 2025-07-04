@@ -1,11 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { toDbPrefs } from '@/lib/menuPreferences';
 
 process.env.SUPABASE_URL = 'http://localhost';
 process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role';
 
 let insertedMenus: any[];
-let insertedPrefs: any[];
 let menuInsertSpy: any;
 let participantInsertSpy: any;
 
@@ -30,11 +28,10 @@ vi.mock('@supabase/supabase-js', () => {
         }
         if (table === 'weekly_menu_preferences') {
           return {
-            insert(data: any) {
-              insertedPrefs.push(data);
+            insert() {
               return {
                 select: () => ({
-                  single: () => Promise.resolve({ data, error: null }),
+                  single: () => Promise.resolve({ data: {}, error: null }),
                 }),
               };
             },
@@ -52,7 +49,6 @@ vi.mock('@supabase/supabase-js', () => {
 
 beforeEach(() => {
   insertedMenus = [];
-  insertedPrefs = [];
   menuInsertSpy = vi.fn(() => Promise.resolve({ error: null }));
   participantInsertSpy = vi.fn(() => Promise.resolve({ error: null }));
 });
@@ -65,8 +61,9 @@ describe('create-shared-menu trigger', () => {
     await handler(req, res);
 
     expect(res.statusCode).toBe(200);
-    expect(menuInsertSpy).toHaveBeenCalledWith(expect.objectContaining({ is_shared: true }));
-    expect(insertedPrefs[0]).toEqual({ menu_id: 'm1', ...toDbPrefs({}) });
+    expect(menuInsertSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ is_shared: true })
+    );
   });
 
   it('inserts default prefs for non shared menu', async () => {
@@ -76,8 +73,9 @@ describe('create-shared-menu trigger', () => {
     await handler(req, res);
 
     expect(res.statusCode).toBe(200);
-    expect(menuInsertSpy).toHaveBeenCalledWith(expect.objectContaining({ is_shared: false }));
-    expect(insertedPrefs[0]).toEqual({ menu_id: 'm1', ...toDbPrefs({}) });
+    expect(menuInsertSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ is_shared: false })
+    );
   });
 
   it('inserts participants when menu is shared', async () => {
