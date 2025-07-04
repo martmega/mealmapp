@@ -114,6 +114,10 @@ export function useWeeklyMenu(session, currentMenuId = null) {
                   commonMenuSettings: { enabled: false },
                 });
 
+            console.log('[WeeklyMenu] insert default preferences payload:', {
+              menu_id: data.id,
+              ...safePrefs,
+            });
             const { data: inserted, error: insertErr } = await supabase
               .from('weekly_menu_preferences')
               .insert({ menu_id: data.id, ...safePrefs })
@@ -267,6 +271,10 @@ export function useWeeklyMenu(session, currentMenuId = null) {
       try {
         const merged = { ...preferences, ...(newPrefs || {}) };
         if (!isShared) merged.commonMenuSettings = {};
+        console.log('[WeeklyMenu] upsert preferences payload:', {
+          menu_id: id,
+          ...toDbPrefs(merged),
+        });
         const { data: updated, error } = await supabase
           .from('weekly_menu_preferences')
           .upsert({ menu_id: id, ...toDbPrefs(merged) }, { onConflict: 'menu_id' })
