@@ -6,7 +6,7 @@ This memo documents all environment variables used by the project, especially th
 
 | Variable | Description | Usage | Visible in Vercel? | Code source | Important notes |
 | --- | --- | --- | --- | --- | --- |
-| `VITE_SUPABASE_URL` | Public Supabase project URL | ✅ Frontend & `/api` | ✅ Yes | `import.meta.env.VITE_SUPABASE_URL` | Must be present in Vercel variables |
+| `VITE_SUPABASE_URL` | Public Supabase project URL | ✅ Frontend | ✅ Yes | `import.meta.env.VITE_SUPABASE_URL` | Must be present in Vercel variables |
 | `VITE_SUPABASE_ANON_KEY` | Public anonymous key | ✅ Frontend only | ✅ Yes | `import.meta.env.VITE_SUPABASE_ANON_KEY` | Never use on secured backend |
 | `SUPABASE_SERVICE_ROLE_KEY` | Secret key with full rights | ✅ Backend only | ✅ Yes | `process.env.SUPABASE_SERVICE_ROLE_KEY` | Never expose to frontend |
 
@@ -26,7 +26,7 @@ export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY!;
 
 ```ts
 // ✅ API usage (ex: /api/ai.ts)
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const supabaseUrl = process.env.SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 ```
 

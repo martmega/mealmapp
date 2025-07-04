@@ -60,6 +60,7 @@ Install dependencies before running the test suite:
 
 ```bash
 npm install
+npm run lint
 ```
 
 Then execute the Vitest suite with:
