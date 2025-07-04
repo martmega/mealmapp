@@ -1,3 +1,8 @@
+// Validate that Supabase URLs are only defined in
+// `src/config/constants.client.ts`.
+//
+// Usage:
+//   npx ts-node scripts/validate-config.ts
 import { glob } from 'glob';
 import fs from 'fs';
 

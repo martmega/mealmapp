@@ -70,6 +70,14 @@ Run the following command to execute `scripts/test-zod.ts`:
 npx ts-node scripts/test-zod.ts
 ```
 
+## Config validation
+
+Ensure no Supabase URLs are hard coded:
+
+```bash
+npx ts-node scripts/validate-config.ts
+```
+
 ## Test recipe image
 
 Some tests rely on a small image stored in Supabase. Upload any PNG to the
