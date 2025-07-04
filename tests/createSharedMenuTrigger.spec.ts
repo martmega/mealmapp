@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { toDbPrefs } from '../src/lib/menuPreferences.js';
 
 process.env.SUPABASE_URL = 'http://localhost';
 process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role';
@@ -18,22 +19,22 @@ vi.mock('@supabase/supabase-js', () => {
               menuInsertSpy(data);
               const menuId = `m${insertedMenus.length + 1}`;
               insertedMenus.push({ ...data, id: menuId });
-              const pref = {
-                menu_id: menuId,
-                portions_per_meal: 4,
-                daily_calories_limit: 2200,
-                weekly_budget: 35,
-                daily_meal_structure: [],
-                tag_preferences: [],
-                common_menu_settings: data.is_shared
-                  ? { enabled: false, linkedUsers: [], linkedUserRecipes: [] }
-                  : {},
-              };
-              insertedPrefs.push(pref);
               return {
                 select: () => ({
                   single: () =>
                     Promise.resolve({ data: { id: menuId, is_shared: data.is_shared }, error: null }),
+                }),
+              };
+            },
+          };
+        }
+        if (table === 'weekly_menu_preferences') {
+          return {
+            insert(data: any) {
+              insertedPrefs.push(data);
+              return {
+                select: () => ({
+                  single: () => Promise.resolve({ data, error: null }),
                 }),
               };
             },
@@ -65,7 +66,7 @@ describe('create-shared-menu trigger', () => {
 
     expect(res.statusCode).toBe(200);
     expect(menuInsertSpy).toHaveBeenCalledWith(expect.objectContaining({ is_shared: true }));
-    expect(insertedPrefs[0].common_menu_settings).toEqual({ enabled: false, linkedUsers: [], linkedUserRecipes: [] });
+    expect(insertedPrefs[0]).toEqual({ menu_id: 'm1', ...toDbPrefs({}) });
   });
 
   it('inserts default prefs for non shared menu', async () => {
@@ -76,7 +77,7 @@ describe('create-shared-menu trigger', () => {
 
     expect(res.statusCode).toBe(200);
     expect(menuInsertSpy).toHaveBeenCalledWith(expect.objectContaining({ is_shared: false }));
-    expect(insertedPrefs[0].common_menu_settings).toEqual({});
+    expect(insertedPrefs[0]).toEqual({ menu_id: 'm1', ...toDbPrefs({}) });
   });
 
   it('inserts participants when menu is shared', async () => {
