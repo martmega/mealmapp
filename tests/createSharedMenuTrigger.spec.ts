@@ -97,4 +97,24 @@ describe('create-shared-menu trigger', () => {
       { menu_id: 'm1', user_id: 'u3' },
     ]);
   });
+
+  it('filters out creator and falsy IDs', async () => {
+    const { default: handler } = await import('../api/create-shared-menu.ts');
+    const req: any = {
+      method: 'POST',
+      body: {
+        user_id: 'u1',
+        name: 'Shared',
+        is_shared: true,
+        participant_ids: ['u1', 'u2', null, undefined, '', 'u3'],
+      },
+    };
+    const res: any = { status() { return this; }, json() { return this; } };
+    await handler(req, res);
+
+    expect(participantInsertSpy).toHaveBeenCalledWith([
+      { menu_id: 'm1', user_id: 'u2' },
+      { menu_id: 'm1', user_id: 'u3' },
+    ]);
+  });
 });
