@@ -4,7 +4,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react';
 import { renderHook, act } from '@testing-library/react';
 import MenuPreferencesPanel from '../src/components/menu_planner/MenuPreferencesPanel.jsx';
 import { useWeeklyMenu } from '../src/hooks/useWeeklyMenu.js';
-import { toDbPrefs } from '../src/lib/menuPreferences.js';
+import { toDbPrefs } from '@/lib/menuPreferences';
 import { DEFAULT_MENU_PREFS } from '../src/lib/defaultPreferences.js';
 
 global.scrollTo = vi.fn();

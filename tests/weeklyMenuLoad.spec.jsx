@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useWeeklyMenu } from '../src/hooks/useWeeklyMenu.js';
-import { toDbPrefs } from '../src/lib/menuPreferences.js';
+import { toDbPrefs } from '@/lib/menuPreferences';
 import { initialWeeklyMenuState } from '../src/lib/menu.js';
 import { DEFAULT_MENU_PREFS } from '../src/lib/defaultPreferences.js';
 
