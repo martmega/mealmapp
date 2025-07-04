@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { toDbPrefs } from '../src/lib/menuPreferences.js';
+import { toDbPrefs } from '@/lib/menuPreferences';
 
 process.env.SUPABASE_URL = 'http://localhost';
 process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role';
