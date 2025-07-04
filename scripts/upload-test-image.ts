@@ -2,11 +2,11 @@ import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import recipeImage from '../tests/fixtures/recipe-image.json' assert { type: 'json' };
 
-const url = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+const url = process.env.SUPABASE_URL;
 const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!url || !serviceRole) {
-  console.error('VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set');
+  console.error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set');
   process.exit(1);
 }
 
