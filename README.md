@@ -94,6 +94,14 @@ Once uploaded, the image will be publicly available at
 Its location is referenced in `tests/fixtures/recipe-image.json` and used by the
 `SignedImage` tests.
 
+## Validate configuration
+
+Check for hard-coded Supabase URLs outside of `src/config/constants.client.ts`:
+
+```bash
+npm run validate-config
+```
+
 ## Price estimation
 
 Recipe prices are estimated with OpenAI only when required. A new estimate is
