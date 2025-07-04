@@ -23,6 +23,9 @@ Request body fields:
 - `participant_ids` (string[], optional)
 - `is_shared` (boolean, optional, defaults to `false`)
 
+When a menu is created, the server also inserts a row into `weekly_menu_preferences`
+for that menu with default values.
+
 ## Stripe webhook
 
 The `/api/webhooks/stripe` endpoint handles payment events from Stripe. Credit
