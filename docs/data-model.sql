@@ -27,11 +27,7 @@ create table weekly_menus (
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
-
--- Automatically create default preferences for each new menu
-create trigger insert_default_preferences
-after insert on weekly_menus
-for each row execute function insert_default_preferences();
+-- Menu preferences are inserted later by the application
 
 create table menu_participants (
   menu_id uuid references weekly_menus(id) on delete cascade,
