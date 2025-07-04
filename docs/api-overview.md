@@ -23,8 +23,8 @@ Request body fields:
 - `participant_ids` (string[], optional)
 - `is_shared` (boolean, optional, defaults to `false`)
 
-When a menu is created, the server also inserts a row into `weekly_menu_preferences`
-for that menu with default values.
+Menu preferences are not created automatically. Configure the
+`weekly_menu_preferences` row separately after the menu is created.
 
 ## Stripe webhook
 
