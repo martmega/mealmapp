@@ -58,9 +58,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           daily_meal_structure: as2DTextArray(
             menu_data?.daily_meal_structure
           ),
-          common_menu_settings: JSON.stringify(
-            menu_data?.common_menu_settings ?? {}
-          ),
+          common_menu_settings: menu_data?.common_menu_settings ?? {},
         };
 
     const { data: inserted, error } = await supabaseAdmin
