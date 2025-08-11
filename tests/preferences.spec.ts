@@ -13,7 +13,7 @@ describe('preferences conversion', () => {
       tagPreferences: ['vegan'],
       commonMenuSettings: {
         enabled: false,
-        linkedUsers: [{ id: 'u1', name: 'Alice', ratio: 50 }],
+        linkedUsers: [{ id: 'u1', name: 'Alice', weight: 0.5 }],
         linkedUserRecipes: [],
       },
     };

@@ -88,7 +88,7 @@ function MenuPreferencesPanel({ preferences, setPreferences, availableTags, user
     setNewLinkedUserTag,
     isLinkingUser,
     handleAddLinkedUser,
-    handleLinkedUserRatioChange,
+    handleLinkedUserWeightChange,
     handleRemoveLinkedUser,
   } = useLinkedUsers(userProfile, preferences, setPreferences, isShared);
 
@@ -282,7 +282,7 @@ function MenuPreferencesPanel({ preferences, setPreferences, availableTags, user
         setNewLinkedUserTag={setNewLinkedUserTag}
         isLinkingUser={isLinkingUser}
         handleAddLinkedUser={handleAddLinkedUser}
-        handleLinkedUserRatioChange={handleLinkedUserRatioChange}
+        handleLinkedUserWeightChange={handleLinkedUserWeightChange}
         handleRemoveLinkedUser={handleRemoveLinkedUser}
         isShared={isShared}
       />

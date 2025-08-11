@@ -12,7 +12,7 @@ function CommonMenuSettings({
   setNewLinkedUserTag,
   isLinkingUser,
   handleAddLinkedUser,
-  handleLinkedUserRatioChange,
+  handleLinkedUserWeightChange,
   handleRemoveLinkedUser,
   isShared,
 }) {
@@ -33,17 +33,17 @@ function CommonMenuSettings({
               <div className="flex items-center gap-2">
                 <Input
                   type="number"
-                  value={user.ratio || 0}
-                  onChange={(e) => handleLinkedUserRatioChange(index, e.target.value)}
+                  step="0.05"
+                  value={user.weight ?? 0}
+                  onChange={(e) => handleLinkedUserWeightChange(index, e.target.value)}
                   className="w-16 h-8 text-xs px-1.5 py-1"
                   min="0"
-                  max="100"
+                  max="1"
                   disabled={
                     user.isOwner &&
                     (preferences.commonMenuSettings?.linkedUsers || []).length === 1
                   }
                 />
-                <span className="text-xs">%</span>
                 {!user.isOwner && (
                   <Button
                     variant="ghost"
@@ -57,6 +57,14 @@ function CommonMenuSettings({
               </div>
             </div>
           ))}
+          <div className="text-right text-xs text-pastel-muted-foreground">
+            Total: {(
+              (preferences.commonMenuSettings?.linkedUsers || []).reduce(
+                (sum, u) => sum + (u.weight || 0),
+                0
+              )
+            ).toFixed(2)}
+          </div>
           <div className="flex gap-2 pt-2 border-t border-pastel-border/50">
             <Input
               type="text"

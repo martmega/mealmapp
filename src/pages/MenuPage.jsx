@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import MenuPlanner from '@/components/MenuPlanner';
 import MenuTabs from '@/components/MenuTabs.jsx';
 import { getSupabase } from '@/lib/supabase';
 import { createSharedMenu } from '@/lib/sharedMenu.js';
 import { useFriendsList } from '@/hooks/useFriendsList.js';
-import { useMenuParticipants } from '@/hooks/useMenuParticipants.js';
 import { initialWeeklyMenuState } from '@/lib/menu';
-import ParticipantWeights from '@/components/ParticipantWeights.jsx';
 
 const supabase = getSupabase();
 
@@ -32,33 +30,6 @@ export default function MenuPage({
   }
 
   const friends = useFriendsList(session);
-
-  const participants = useMenuParticipants(isShared ? selectedMenuId : null);
-  const [participantWeights, setParticipantWeights] = useState({});
-
-  useEffect(() => {
-    console.log('preferences:', preferences);
-  }, [preferences]);
-
-  useEffect(() => {
-    if (participants.length > 0) {
-      setParticipantWeights((prev) => {
-        const count = participants.length;
-        const defaultWeight = count > 0 ? 1 / count : 0;
-        const updated = { ...prev };
-        participants.forEach((p) => {
-          if (typeof updated[p.id] !== 'number') {
-            updated[p.id] = defaultWeight;
-          }
-        });
-        return updated;
-      });
-    }
-  }, [participants]);
-
-  const handleWeightChange = (userId, weight) => {
-    setParticipantWeights((prev) => ({ ...prev, [userId]: weight }));
-  };
 
   const handleRename = async (id, name) => {
     await updateMenuName(name, id);
@@ -131,13 +102,6 @@ export default function MenuPage({
         onCreate={handleCreate}
         friends={friends}
       />
-      {isShared && participants.length > 0 && (
-        <ParticipantWeights
-          participants={participants}
-          weights={participantWeights}
-          onWeightChange={handleWeightChange}
-        />
-      )}
       <MenuPlanner
         recipes={recipes}
         weeklyMenu={weeklyMenu}

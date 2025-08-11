@@ -55,15 +55,15 @@ export function useLinkedUsers(userProfile, preferences, setPreferences, isShare
   );
 
 
-  const handleLinkedUserRatioChange = (index, newRatioStr) => {
-    const newRatio = parseInt(newRatioStr, 10);
-    if (isNaN(newRatio)) return;
+  const handleLinkedUserWeightChange = (index, newWeightStr) => {
+    const newWeight = parseFloat(newWeightStr);
+    if (!Number.isFinite(newWeight)) return;
 
     const updatedUsers = [
       ...(preferences?.commonMenuSettings?.linkedUsers || []),
     ];
     if (updatedUsers[index]) {
-      updatedUsers[index].ratio = Math.max(0, Math.min(100, newRatio));
+      updatedUsers[index].weight = Math.max(0, Math.min(1, newWeight));
     }
 
     setPreferences((prev) => ({
@@ -143,7 +143,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences, isShare
       const newLinkedUserEntry = {
         id: peerUser.id,
         name: peerUsername,
-        ratio: 0,
+        weight: 0,
         isOwner: false,
       };
 
@@ -247,7 +247,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences, isShare
             return {
               id: friendProfile.id,
               name: friendProfile.username || friendProfile.id.substring(0, 8),
-              ratio: 0,
+              weight: 0,
               isOwner: false,
             };
           })
@@ -257,21 +257,19 @@ export function useLinkedUsers(userProfile, preferences, setPreferences, isShare
         const ownerUserEntry = {
           id: userProfile.id,
           name: userProfile.username || 'Moi',
-          ratio: validLinkedUsers.length > 0 ? 50 : 100,
+          weight: validLinkedUsers.length > 0 ? 0.5 : 1,
           isOwner: true,
         };
 
         if (validLinkedUsers.length > 0) {
-          const remainingRatio = 100 - ownerUserEntry.ratio;
-          const ratioPerUser = Math.floor(
-            remainingRatio / validLinkedUsers.length
-          );
+          const remainingWeight = 1 - ownerUserEntry.weight;
+          const weightPerUser =
+            validLinkedUsers.length > 0
+              ? remainingWeight / validLinkedUsers.length
+              : 0;
           validLinkedUsers.forEach((u) => {
-            if (u) u.ratio = ratioPerUser;
+            if (u) u.weight = weightPerUser;
           });
-          const remainder = remainingRatio % validLinkedUsers.length;
-          if (remainder > 0 && validLinkedUsers[0])
-            validLinkedUsers[0].ratio += remainder;
         }
 
         const allLinkedUsersSetup = [ownerUserEntry, ...validLinkedUsers];
@@ -315,7 +313,7 @@ export function useLinkedUsers(userProfile, preferences, setPreferences, isShare
     setNewLinkedUserTag,
     isLinkingUser,
     handleAddLinkedUser,
-    handleLinkedUserRatioChange,
+    handleLinkedUserWeightChange,
     handleRemoveLinkedUser,
   };
 }

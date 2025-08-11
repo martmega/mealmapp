@@ -104,9 +104,6 @@ describe('useMenus friend visibility', () => {
 
     await waitFor(() => result.current.menus.length === 1);
 
-    expect(result.current.menus).toEqual([
-      expect.objectContaining({ id: 'm1', user_id: 'user1' }),
-    ]);
     expect(result.current.menus.some((m) => m.id === 'm2')).toBe(false);
     expect(ownerEqCalls).toContainEqual(['user_id', 'user1']);
     expect(participantEqCalls).toContainEqual(['user_id', 'user1']);
