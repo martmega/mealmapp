@@ -16,7 +16,15 @@ import CommonMenuSettings from '@/components/menu_planner/CommonMenuSettings.jsx
 import { useLinkedUsers } from '@/hooks/useLinkedUsers.js';
 import { DEFAULT_MENU_PREFS } from '@/lib/defaultPreferences.js';
 
-function MenuPreferencesPanel({ preferences, setPreferences, availableTags, userProfile, isShared }) {
+function MenuPreferencesPanel({
+  preferences,
+  setPreferences,
+  availableTags,
+  userProfile,
+  isShared,
+  participants,
+  setParticipants,
+}) {
   const addMeal = () => {
     const newMealNumber = (preferences.meals?.length || 0) + 1;
     setPreferences({
@@ -285,6 +293,8 @@ function MenuPreferencesPanel({ preferences, setPreferences, availableTags, user
         handleLinkedUserWeightChange={handleLinkedUserWeightChange}
         handleRemoveLinkedUser={handleRemoveLinkedUser}
         isShared={isShared}
+        participants={participants}
+        setParticipants={setParticipants}
       />
 
       <TagPreferencesForm preferences={preferences} setPreferences={setPreferences} availableTags={availableTags} />

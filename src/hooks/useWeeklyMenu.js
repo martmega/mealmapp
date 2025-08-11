@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { getSupabase } from '../lib/supabase.js';
 import { useToast } from '../components/ui/use-toast.js';
 import { initialWeeklyMenuState } from '../lib/menu.js';
-import { syncMenuParticipants } from '@/lib/participants';
 import { DEFAULT_MENU_PREFS } from '../lib/defaultPreferences.js';
 import { fromDbPrefs, toDbPrefs } from '@/lib/menuPreferences';
 
@@ -284,14 +283,7 @@ export function useWeeklyMenu(session, currentMenuId = null) {
 
         if (error) throw error;
 
-        if (isShared) {
-          const selected = (
-            merged.commonMenuSettings?.linkedUsers || []
-          )
-            .filter((u) => u.id && u.id !== userId)
-            .map((u) => ({ user_id: u.id, weight: u.weight }));
-          await syncMenuParticipants(supabase, id, selected);
-        }
+        // participants synchronisation handled separately
 
         if (updated) setPreferences(fromDbPrefs(updated));
         return true;

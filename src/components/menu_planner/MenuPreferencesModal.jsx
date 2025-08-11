@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button.jsx';
 import { Settings } from 'lucide-react';
 import MenuPreferencesPanel from '@/components/menu_planner/MenuPreferencesPanel.jsx';
@@ -13,6 +13,10 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog.jsx';
 import { ScrollArea } from '@/components/ui/scroll-area.jsx';
+import { getSupabase } from '@/lib/supabase';
+import { useMenuParticipants } from '@/hooks/useMenuParticipants';
+import { syncMenuParticipants } from '@/lib/syncMenuParticipants';
+import { toast } from '@/components/ui/use-toast.js';
 
 function MenuPreferencesModal({
   isOpen,
@@ -22,7 +26,30 @@ function MenuPreferencesModal({
   availableTags,
   userProfile,
   isShared,
+  menuId,
 }) {
+  const supabase = getSupabase();
+  const { rows, setRows } = useMenuParticipants(supabase, menuId);
+  const [saving, setSaving] = useState(false);
+
+  async function onSave() {
+    if (!menuId) return;
+    setSaving(true);
+    try {
+      await syncMenuParticipants(supabase, menuId, rows);
+      toast.success('Préférences enregistrées');
+      onOpenChange(false);
+    } catch (e) {
+      console.error('[WeeklyMenu] sync failed', e);
+      toast({
+        title: 'Erreur',
+        description: 'Échec enregistrement participants',
+        variant: 'destructive',
+      });
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -49,6 +76,8 @@ function MenuPreferencesModal({
             availableTags={availableTags}
             userProfile={userProfile}
             isShared={isShared}
+            participants={rows}
+            setParticipants={setRows}
           />
         </ScrollArea>
         <DialogFooter>
@@ -57,6 +86,9 @@ function MenuPreferencesModal({
               Fermer
             </Button>
           </DialogClose>
+          <Button type="button" onClick={onSave} disabled={saving || !menuId}>
+            {saving ? 'Enregistrement...' : 'Enregistrer'}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
