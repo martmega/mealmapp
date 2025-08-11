@@ -22,7 +22,7 @@ describe('preferences conversion', () => {
     expect(JSON.parse(dbShape.common_menu_settings)).toEqual(
       prefs.commonMenuSettings
     );
-    expect(JSON.parse(dbShape.daily_meal_structure)).toEqual([
+    expect(dbShape.daily_meal_structure).toEqual([
       ['petit-dejeuner', 'brunch'],
     ]);
 
