@@ -10,7 +10,8 @@
     "test": "vitest",
     "lint": "eslint --config eslint.config.js .",
     "format": "prettier --write \"src/**/*.{js,jsx,json,css}\"",
-    "validate-config": "ts-node scripts/validate-config.ts"
+    "validate-config": "ts-node scripts/validate-config.ts",
+    "estimate-missing-prices": "ts-node scripts/backfill-estimated-prices.ts"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "^1.2.1",
