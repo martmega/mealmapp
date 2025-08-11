@@ -18,42 +18,51 @@ export async function syncMenuParticipants(
   menuId: string,
   selected: MenuParticipant[]
 ) {
-  const norm = normalizeWeights(selected);
-
-  // Lire l'existant pour calculer la diff (utile pour logs et delete)
-  const { data: existing, error: readErr } = await supabase
-    .from('menu_participants')
-    .select('user_id')
-    .eq('menu_id', menuId);
-  if (readErr) throw readErr;
-
-  const existingIds = new Set((existing ?? []).map((r: any) => r.user_id));
-  const keepIds = new Set(norm.map((r) => r.user_id));
-  const toRemove = [...existingIds].filter((id) => !keepIds.has(id));
-
-  console.groupCollapsed('[syncMenuParticipants]');
-  console.info({ menuId, selected: norm, existing, toRemove });
-  console.groupEnd();
-
-  // upsert (ajout + update poids)
-  if (norm.length) {
-    const { error: upErr } = await supabase
+  let existing: any[] = [];
+  try {
+    const { data, error } = await supabase
       .from('menu_participants')
-      .upsert(
-        norm.map((r) => ({ menu_id: menuId, user_id: r.user_id, weight: r.weight })),
-        { onConflict: 'menu_id,user_id' }
-      );
-    if (upErr) throw upErr;
+      .select('user_id')
+      .eq('menu_id', menuId);
+    if (error) throw error;
+    existing = data ?? [];
+  } catch (e) {
+    console.error('[syncMenuParticipants] read error', e);
+    throw e;
   }
 
-  // delete (retirer ceux qui ne sont plus sélectionnés)
+  const keep = new Set(selected.map((p) => p.user_id));
+  const toRemove = existing
+    .map((r: any) => r.user_id)
+    .filter((id: string) => !keep.has(id));
+
+  try {
+    await supabase.from('menu_participants').upsert(
+      selected.map((p) => ({
+        menu_id: menuId,
+        user_id: p.user_id,
+        weight: clamp01(p.weight ?? 1 / selected.length),
+      })),
+      { onConflict: 'menu_id,user_id' }
+    );
+  } catch (e) {
+    console.error('[syncMenuParticipants] upsert error', e);
+    throw e;
+  }
+
   if (toRemove.length) {
-    const { error: delErr } = await supabase
-      .from('menu_participants')
-      .delete()
-      .eq('menu_id', menuId)
-      .in('user_id', toRemove);
-    if (delErr) throw delErr;
+    try {
+      await supabase
+        .from('menu_participants')
+        .delete()
+        .eq('menu_id', menuId)
+        .in('user_id', toRemove);
+    } catch (e) {
+      console.error('[syncMenuParticipants] delete error', e);
+      throw e;
+    }
   }
+
+  console.info('[syncMenuParticipants]', { menuId, selected, existing, toRemove });
 }
 

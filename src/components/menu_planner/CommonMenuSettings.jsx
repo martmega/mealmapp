@@ -38,7 +38,9 @@ function CommonMenuSettings({ isShared, participants = [], setParticipants = () 
           <Label className="text-sm font-medium text-pastel-text/90">Participants</Label>
           {participants.map((p) => (
             <div key={p.user_id} className="flex items-center justify-between gap-2 text-sm">
-              <span className="truncate flex-1">{p.user_id}</span>
+              <span className="truncate flex-1">
+                {p.username || p.user_tag || p.user_id}
+              </span>
               <div className="flex items-center gap-2">
                 <Input
                   type="number"
