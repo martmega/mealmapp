@@ -1,5 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
+import { asTextArray, as2DTextArray } from './_shared/arrayUtils.js';
 
 const supabaseUrl = process.env.SUPABASE_URL;
 if (!supabaseUrl) throw new Error('SUPABASE_URL is not defined');
@@ -53,9 +54,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ? menu_data
       : {
           ...menu_data,
-          tag_preferences: JSON.stringify(menu_data?.tag_preferences ?? []),
-          daily_meal_structure: JSON.stringify(
-            menu_data?.daily_meal_structure ?? []
+          tag_preferences: asTextArray(menu_data?.tag_preferences),
+          daily_meal_structure: as2DTextArray(
+            menu_data?.daily_meal_structure
           ),
           common_menu_settings: JSON.stringify(
             menu_data?.common_menu_settings ?? {}
