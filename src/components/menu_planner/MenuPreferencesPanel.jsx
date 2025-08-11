@@ -13,14 +13,12 @@ import {
 import MealTypeSelector from '@/components/MealTypeSelector.jsx';
 import TagPreferencesForm from '@/components/menu_planner/TagPreferencesForm.jsx';
 import CommonMenuSettings from '@/components/menu_planner/CommonMenuSettings.jsx';
-import { useLinkedUsers } from '@/hooks/useLinkedUsers.js';
 import { DEFAULT_MENU_PREFS } from '@/lib/defaultPreferences.js';
 
 function MenuPreferencesPanel({
   preferences,
   setPreferences,
   availableTags,
-  userProfile,
   isShared,
   participants,
   setParticipants,
@@ -91,14 +89,6 @@ function MenuPreferencesPanel({
     });
   };
 
-  const {
-    newLinkedUserTag,
-    setNewLinkedUserTag,
-    isLinkingUser,
-    handleAddLinkedUser,
-    handleLinkedUserWeightChange,
-    handleRemoveLinkedUser,
-  } = useLinkedUsers(userProfile, preferences, setPreferences, isShared);
 
   return (
     <motion.div
@@ -285,13 +275,6 @@ function MenuPreferencesPanel({
       </div>
 
       <CommonMenuSettings
-        preferences={preferences}
-        newLinkedUserTag={newLinkedUserTag}
-        setNewLinkedUserTag={setNewLinkedUserTag}
-        isLinkingUser={isLinkingUser}
-        handleAddLinkedUser={handleAddLinkedUser}
-        handleLinkedUserWeightChange={handleLinkedUserWeightChange}
-        handleRemoveLinkedUser={handleRemoveLinkedUser}
         isShared={isShared}
         participants={participants}
         setParticipants={setParticipants}

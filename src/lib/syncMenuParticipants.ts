@@ -2,8 +2,8 @@ import type { MenuParticipant } from '@/hooks/useMenuParticipants';
 
 const clamp01 = (n: number) => Math.max(0, Math.min(1, n));
 
-export function normalizeWeights(rows: MenuParticipant[]) {
-  // si personne n'a renseigné de poids → répartir uniformément
+export function normalizeWeights(list: MenuParticipant[]) {
+  const rows = list.map((r) => ({ ...r }));
   if (!rows.some((r) => Number.isFinite(r.weight as number))) {
     const w = rows.length ? 1 / rows.length : 0;
     rows.forEach((r) => (r.weight = w));
@@ -18,7 +18,7 @@ export async function syncMenuParticipants(
   menuId: string,
   selected: MenuParticipant[]
 ) {
-  const norm = normalizeWeights([...selected]);
+  const norm = normalizeWeights(selected);
 
   // Lire l'existant pour calculer la diff (utile pour logs et delete)
   const { data: existing, error: readErr } = await supabase
@@ -32,14 +32,7 @@ export async function syncMenuParticipants(
   const toRemove = [...existingIds].filter((id) => !keepIds.has(id));
 
   console.groupCollapsed('[syncMenuParticipants]');
-  console.info('menuId', menuId);
-  console.table({
-    selectedCount: norm.length,
-    existingCount: existing?.length ?? 0,
-  });
-  console.info('selected', norm);
-  console.info('existing', existing);
-  console.info('toRemove', toRemove);
+  console.info({ menuId, selected: norm, existing, toRemove });
   console.groupEnd();
 
   // upsert (ajout + update poids)
