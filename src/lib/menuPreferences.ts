@@ -15,15 +15,9 @@ export function fromDbPrefs(
 ): ClientMenuPreferences {
   if (!pref) return { ...DEFAULT_MENU_PREFS };
 
-  const dailyMealStructure =
-    typeof pref.daily_meal_structure === 'string'
-      ? JSON.parse(pref.daily_meal_structure || '[]')
-      : pref.daily_meal_structure;
+  const dailyMealStructure = pref.daily_meal_structure;
 
-  const tagPreferences =
-    typeof pref.tag_preferences === 'string'
-      ? JSON.parse(pref.tag_preferences || '[]')
-      : pref.tag_preferences;
+  const tagPreferences = pref.tag_preferences;
 
   const commonMenuSettings =
     typeof pref.common_menu_settings === 'string'
@@ -44,7 +38,7 @@ export function fromDbPrefs(
     maxCalories: pref.daily_calories_limit ?? 2200,
     weeklyBudget: pref.weekly_budget ?? 35,
     meals,
-    tagPreferences: (tagPreferences as string[]) || [],
+    tagPreferences: tagPreferences || [],
     commonMenuSettings: {
       ...DEFAULT_MENU_PREFS.commonMenuSettings,
       ...((commonMenuSettings as CommonMenuSettings) || {}),
@@ -70,14 +64,12 @@ export function toDbPrefs(pref: {
     portions_per_meal: effective.servingsPerMeal,
     daily_calories_limit: effective.maxCalories,
     weekly_budget: effective.weeklyBudget,
-    daily_meal_structure: JSON.stringify(
-      Array.isArray(effective.meals)
-        ? effective.meals
-            .filter((m) => m.enabled)
-            .map((m) => (Array.isArray(m.types) ? m.types : []))
-        : []
-    ),
-    tag_preferences: JSON.stringify(effective.tagPreferences || []),
+    daily_meal_structure: Array.isArray(effective.meals)
+      ? effective.meals
+          .filter((m) => m.enabled)
+          .map((m) => (Array.isArray(m.types) ? m.types : []))
+      : [],
+    tag_preferences: effective.tagPreferences || [],
     common_menu_settings: JSON.stringify(effective.commonMenuSettings ?? {}),
   };
 }
