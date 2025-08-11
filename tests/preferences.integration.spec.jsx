@@ -142,6 +142,8 @@ describe('MenuPreferencesPanel', () => {
         availableTags={[]}
         userProfile={{ id: 'user1', username: 'User1' }}
         isShared={false}
+        participants={[]}
+        setParticipants={() => {}}
       />
     );
 
@@ -189,49 +191,6 @@ describe('useWeeklyMenu.updateMenuPreferences', () => {
     expect(result.current.preferences).toEqual(expected);
   });
 
-  it('syncs menu participants based on linked users', async () => {
-    const session = { user: { id: 'user1' } };
-    global.__supabaseState.menus['menu1'].is_shared = true;
-    const { result } = renderHook(() => useWeeklyMenu(session, 'menu1'));
-    await waitFor(() => result.current.isShared === true);
-
-    const prefsWithParticipant = {
-      ...DEFAULT_MENU_PREFS,
-      commonMenuSettings: {
-        enabled: true,
-        linkedUsers: [
-          { id: 'user1', name: 'Owner', weight: 0.5, isOwner: true },
-          { id: 'user2', name: 'Friend', weight: 0.5, isOwner: false },
-        ],
-        linkedUserRecipes: [],
-      },
-    };
-
-    await act(async () => {
-      await result.current.updatePreferences(prefsWithParticipant);
-    });
-
-    expect(global.__supabaseState.menuParticipants).toEqual([
-      { menu_id: 'menu1', user_id: 'user2', weight: 0.5 },
-    ]);
-
-    const prefsAfterRemoval = {
-      ...DEFAULT_MENU_PREFS,
-      commonMenuSettings: {
-        enabled: true,
-        linkedUsers: [
-          { id: 'user1', name: 'Owner', weight: 1, isOwner: true },
-        ],
-        linkedUserRecipes: [],
-      },
-    };
-
-    await act(async () => {
-      await result.current.updatePreferences(prefsAfterRemoval);
-    });
-
-    expect(global.__supabaseState.menuParticipants).toEqual([]);
-  });
 });
 
 describe('preferences integration', () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { normalizeWeights, syncMenuParticipants } from '../src/lib/participants';
+import { normalizeWeights, syncMenuParticipants } from '../src/lib/syncMenuParticipants';
 
 describe('normalizeWeights', () => {
   it('distributes evenly when weights are empty', () => {

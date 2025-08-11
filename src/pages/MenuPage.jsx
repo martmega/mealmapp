@@ -111,6 +111,7 @@ export default function MenuPage({
         preferences={preferences}
         updatePreferences={updatePreferences}
         isShared={isShared}
+        menuId={selectedMenuId}
         onUpdateMenuName={(name) => handleRename(selectedMenuId, name)}
         onDeleteMenu={() => handleDelete(selectedMenuId)}
       />
