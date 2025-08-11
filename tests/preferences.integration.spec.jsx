@@ -78,12 +78,22 @@ vi.mock('../src/lib/supabase', async () => {
 
   function participantsQuery() {
     const q = {};
+    q.select = vi.fn(() => q);
+    q.eq = vi.fn((col, val) => {
+      return Promise.resolve({
+        data: state.menuParticipants
+          .filter((p) => p.menu_id === val)
+          .map((p) => ({ user_id: p.user_id })),
+        error: null,
+      });
+    });
     q.upsert = vi.fn((rows) => {
       rows.forEach((r) => {
-        const exists = state.menuParticipants.some(
+        const idx = state.menuParticipants.findIndex(
           (p) => p.menu_id === r.menu_id && p.user_id === r.user_id
         );
-        if (!exists) state.menuParticipants.push({ ...r });
+        if (idx >= 0) state.menuParticipants[idx] = { ...state.menuParticipants[idx], ...r };
+        else state.menuParticipants.push({ ...r });
       });
       return Promise.resolve({ data: rows, error: null });
     });
@@ -190,8 +200,8 @@ describe('useWeeklyMenu.updateMenuPreferences', () => {
       commonMenuSettings: {
         enabled: true,
         linkedUsers: [
-          { id: 'user1', name: 'Owner', ratio: 50, isOwner: true },
-          { id: 'user2', name: 'Friend', ratio: 50, isOwner: false },
+          { id: 'user1', name: 'Owner', weight: 0.5, isOwner: true },
+          { id: 'user2', name: 'Friend', weight: 0.5, isOwner: false },
         ],
         linkedUserRecipes: [],
       },
@@ -202,7 +212,7 @@ describe('useWeeklyMenu.updateMenuPreferences', () => {
     });
 
     expect(global.__supabaseState.menuParticipants).toEqual([
-      { menu_id: 'menu1', user_id: 'user2' },
+      { menu_id: 'menu1', user_id: 'user2', weight: 0.5 },
     ]);
 
     const prefsAfterRemoval = {
@@ -210,7 +220,7 @@ describe('useWeeklyMenu.updateMenuPreferences', () => {
       commonMenuSettings: {
         enabled: true,
         linkedUsers: [
-          { id: 'user1', name: 'Owner', ratio: 50, isOwner: true },
+          { id: 'user1', name: 'Owner', weight: 1, isOwner: true },
         ],
         linkedUserRecipes: [],
       },

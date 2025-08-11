@@ -142,16 +142,14 @@ export function useMenuGeneration(
     ) {
       const participants = (preferences?.commonMenuSettings?.linkedUsers || []).map((u) => ({
         userId: u.id,
-        ratio: typeof u.ratio === 'number' ? u.ratio : 0,
+        weight: typeof u.weight === 'number' ? u.weight : 0,
       }));
 
-      const ratioSum = participants.reduce((sum, p) => sum + p.ratio, 0);
+      const weightSum = participants.reduce((sum, p) => sum + p.weight, 0);
       const normalized = participants.map((p) => ({
         userId: p.userId,
         weight:
-          ratioSum > 0
-            ? p.ratio / ratioSum
-            : 1 / participants.length,
+          weightSum > 0 ? p.weight / weightSum : 1 / participants.length,
       }));
 
       const quotaMap = {};
@@ -435,23 +433,23 @@ export function useMenuGeneration(
             Array.isArray(preferences?.commonMenuSettings?.linkedUsers) &&
             preferences.commonMenuSettings.linkedUsers.length > 0
           ) {
-              const totalRatioSum =
+              const totalWeightSum =
                 preferences?.commonMenuSettings?.linkedUsers?.reduce(
-                  (sum, u) => sum + u.ratio,
+                  (sum, u) => sum + (u.weight || 0),
                   0
                 );
               const userSetting = preferences?.commonMenuSettings?.linkedUsers?.find(
                 (u) => u.id === recipe.sourceUserId
               );
-            if (userSetting && totalRatioSum > 0) {
-              const normalizedRatio = userSetting.ratio / totalRatioSum;
-              score *= 1 + normalizedRatio; // Poids plus important pour les ratios plus élevés
+            if (userSetting && totalWeightSum > 0) {
+              const normalizedWeight = (userSetting.weight || 0) / totalWeightSum;
+              score *= 1 + normalizedWeight; // Poids plus important pour les poids plus élevés
             } else if (
               userSetting &&
-              totalRatioSum === 0 &&
+              totalWeightSum === 0 &&
               preferences?.commonMenuSettings?.linkedUsers?.length === 1
             ) {
-              score *= 1.5; // Si un seul utilisateur et ratio 0, on le favorise quand même un peu
+              score *= 1.5; // Si un seul utilisateur et poids 0, on le favorise quand même un peu
             }
           }
 
