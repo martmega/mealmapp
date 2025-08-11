@@ -530,7 +530,8 @@ function RecipeForm({
       servingsChanged;
 
     let estimated = recipe?.estimated_price ?? null;
-    if (shouldEstimate && subscriptionTier === 'premium') {
+    if (shouldEstimate &&
+        (subscriptionTier === 'premium' || subscriptionTier === 'vip')) {
       estimated = await estimateRecipePrice(
         {
           ingredients: cleanedNewIngredients,
