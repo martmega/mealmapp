@@ -397,7 +397,13 @@ export function useMenuGeneration(
             if (mealCost > weeklyBudget - budgetUsed) {
               score *= 0.5;
             } else {
-              score *= 1 + Math.max(0, avgBudgetPerSlot - mealCost) / avgBudgetPerSlot;
+              const diffRatio =
+                (mealCost - avgBudgetPerSlot) / avgBudgetPerSlot;
+              const budgetScore = Math.exp(-diffRatio * diffRatio);
+              score *= budgetScore;
+              if (mealCost < avgBudgetPerSlot * 0.7) {
+                score *= 0.95;
+              }
             }
           }
 
