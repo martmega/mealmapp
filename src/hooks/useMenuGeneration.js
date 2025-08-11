@@ -2,6 +2,7 @@ import { useCallback, useState, useMemo } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 
 const MAX_RECIPE_OCCURRENCES = 1;
+const DEFAULT_RANDOMNESS_COEFFICIENT = 0.3;
 
 function shuffleArray(array) {
   const newArray = [...array];
@@ -120,6 +121,10 @@ export function useMenuGeneration(
     });
 
     const dailyCalorieTarget = preferences.maxCalories || 2200;
+    const randomnessCoefficient =
+      typeof preferences?.randomnessCoefficient === 'number'
+        ? Math.min(Math.max(preferences.randomnessCoefficient, 0), 1)
+        : DEFAULT_RANDOMNESS_COEFFICIENT;
 
     const activeMealsPreferences =
       preferences.meals?.filter((m) => m.enabled) || [];
@@ -239,7 +244,6 @@ export function useMenuGeneration(
         }
 
         let bestRecipeForMeal = null;
-        let bestRecipeScore = -1;
 
         let candidateRecipesForSlot = [];
         let candidateStageUsed = 0;
@@ -362,10 +366,14 @@ export function useMenuGeneration(
           );
         }
 
+        candidateRecipesForSlot = shuffleArray(candidateRecipesForSlot);
+        const scoredCandidates = [];
+        let totalDeterministicScore = 0;
+
         for (const candidate of candidateRecipesForSlot) {
           const recipe = candidate.recipe;
           const baseId = getBaseRecipeId(recipe.id);
-          let score = 1 + Math.random();
+          let score = 1;
           const timesUsed = recipeUsageCount[baseId] || 0;
           score /= 1 + timesUsed * 1.2;
 
@@ -447,9 +455,26 @@ export function useMenuGeneration(
             }
           }
 
-          if (score > bestRecipeScore) {
-            bestRecipeScore = score;
-            bestRecipeForMeal = recipe;
+          scoredCandidates.push({ ...candidate, score });
+          totalDeterministicScore += score;
+        }
+
+        if (scoredCandidates.length > 0) {
+          const rand = Math.random();
+          let cumulative = 0;
+          for (const c of scoredCandidates) {
+            const normalized =
+              totalDeterministicScore > 0
+                ? c.score / totalDeterministicScore
+                : 1 / scoredCandidates.length;
+            const weight =
+              (1 - randomnessCoefficient) * normalized +
+              randomnessCoefficient * (1 / scoredCandidates.length);
+            cumulative += weight;
+            if (rand <= cumulative) {
+              bestRecipeForMeal = c.recipe;
+              break;
+            }
           }
         }
 
