@@ -282,6 +282,42 @@ export function useWeeklyMenu(session, currentMenuId = null) {
           .single();
 
         if (error) throw error;
+
+        if (isShared) {
+          const prevIds = (
+            preferences?.commonMenuSettings?.linkedUsers || []
+          )
+            .map((u) => u.id)
+            .filter((uid) => uid && uid !== userId);
+
+          const selectedUserIds = (
+            merged.commonMenuSettings?.linkedUsers || []
+          )
+            .map((u) => u.id)
+            .filter((uid) => uid && uid !== userId);
+
+          const removedUserIds = prevIds.filter(
+            (id) => !selectedUserIds.includes(id)
+          );
+
+          if (selectedUserIds.length > 0) {
+            await supabase
+              .from('menu_participants')
+              .upsert(
+                selectedUserIds.map((user_id) => ({ menu_id: id, user_id })),
+                { onConflict: 'menu_id,user_id' }
+              );
+          }
+
+          if (removedUserIds.length > 0) {
+            await supabase
+              .from('menu_participants')
+              .delete()
+              .eq('menu_id', id)
+              .in('user_id', removedUserIds);
+          }
+        }
+
         if (updated) setPreferences(fromDbPrefs(updated));
         return true;
       } catch (err) {

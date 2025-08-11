@@ -9,7 +9,7 @@ let inCalls = [];
 let weeklyMenusData = [];
 let participantRowsData = [];
 
-vi.mock('../lib/supabase', () => {
+vi.mock('@/lib/supabase', () => {
   function applyFilters(data, filters) {
     let result = data;
     filters.forEach(([c, v]) => {
