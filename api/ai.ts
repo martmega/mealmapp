@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import { getUserFromRequest } from '../src/utils/auth.js';
 import generateRecipeImagePrompt from '../src/lib/recipeImagePrompt.js';
 import { SUPABASE_BUCKETS } from './_shared/constants.js';
+import { log } from './_shared/logger.js';
 
 const supabaseUrl = process.env.SUPABASE_URL;
 if (!supabaseUrl) throw new Error('SUPABASE_URL is not defined');
@@ -37,6 +38,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
+  const start = Date.now();
+  const recipeId = (req.body as any)?.recipe?.id as string | undefined;
+  let errorMessage: string | undefined;
+
+  const send = (status: number, body: any) => {
+    if (status >= 400 && typeof body?.error === 'string') {
+      errorMessage = body.error;
+    }
+    return res.status(status).json(body);
+  };
+
   const { data: profile, error: profileError } = await supabaseAdmin
     .from('public_user_view')
     .select('subscription_tier')
@@ -44,14 +56,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     .maybeSingle();
 
   if (profileError) {
-    console.error('Subscription fetch error:', profileError.message);
+    log({
+      level: 'error',
+      message: 'Subscription fetch error',
+      userId: user.id,
+      recipeId,
+      error: profileError.message,
+    });
   }
 
   const subscriptionTier = profile?.subscription_tier || 'standard';
 
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ error: 'Missing OpenAI API key' });
+    return send(500, { error: 'Missing OpenAI API key' });
   }
 
   const openai = new OpenAI({ apiKey });
@@ -64,7 +82,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           subscriptionTier !== 'standard' &&
           subscriptionTier !== 'vip'
         ) {
-          return res.status(403).json({ error: 'Forbidden' });
+          return send(403, { error: 'Forbidden' });
         }
 
         let parsed;
@@ -72,10 +90,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           const { recipe } = req.body;
           parsed = RecipeSchema.parse(recipe);
         } catch (err) {
-          console.error('Payload invalid:', err);
-          return res
-            .status(400)
-            .json({ error: 'Invalid recipe payload', details: err });
+          const msg = err instanceof Error ? err.message : 'Invalid recipe payload';
+          log({
+            level: 'error',
+            message: 'Payload invalid',
+            userId: user.id,
+            recipeId,
+            error: msg,
+          });
+          return send(400, { error: msg });
         }
 
         const prompt = `
@@ -103,7 +126,7 @@ Ne termine pas par une formule type “Bon appétit”.
           credit_type: 'text',
         });
 
-        return res.status(200).json({ description });
+        return send(200, { description });
       }
       case 'image': {
         if (
@@ -111,7 +134,7 @@ Ne termine pas par une formule type “Bon appétit”.
           subscriptionTier !== 'standard' &&
           subscriptionTier !== 'vip'
         ) {
-          return res.status(403).json({ error: 'Forbidden' });
+          return send(403, { error: 'Forbidden' });
         }
 
         const { data: creditRow, error: creditErr } = await supabaseAdmin
@@ -121,17 +144,23 @@ Ne termine pas par une formule type “Bon appétit”.
           .maybeSingle();
 
         if (creditErr) {
-          console.error('ia_credits fetch error:', creditErr.message);
+          log({
+            level: 'error',
+            message: 'ia_credits fetch error',
+            userId: user.id,
+            recipeId,
+            error: creditErr.message,
+          });
         }
 
         const currentCredits = creditRow?.image_credits ?? 0;
         if (currentCredits <= 0) {
-          return res.status(402).json({ error: 'Insufficient image credits' });
+          return send(402, { error: 'Insufficient image credits' });
         }
 
         const { recipe } = req.body;
         if (!recipe) {
-          return res.status(400).json({ error: 'Missing recipe' });
+          return send(400, { error: 'Missing recipe' });
         }
 
         const prompt = generateRecipeImagePrompt(recipe);
@@ -164,11 +193,11 @@ Ne termine pas par une formule type “Bon appétit”.
           credit_type: 'image',
         });
 
-        return res.status(200).json({ path: fileName });
+        return send(200, { path: fileName });
       }
       case 'cost': {
         if (subscriptionTier !== 'premium') {
-          return res.status(403).json({ error: 'Premium only' });
+          return send(403, { error: 'Premium only' });
         }
 
         const { recipe } = req.body;
@@ -198,7 +227,7 @@ Ne termine pas par une formule type “Bon appétit”.
           credit_type: 'text',
         });
 
-        return res.status(200).json({ price });
+        return send(200, { price });
       }
       case 'format': {
         if (
@@ -206,7 +235,7 @@ Ne termine pas par une formule type “Bon appétit”.
           subscriptionTier !== 'standard' &&
           subscriptionTier !== 'vip'
         ) {
-          return res.status(403).json({ error: 'Forbidden' });
+          return send(403, { error: 'Forbidden' });
         }
 
         const { data: creditRow, error: creditErr } = await supabaseAdmin
@@ -216,17 +245,23 @@ Ne termine pas par une formule type “Bon appétit”.
           .maybeSingle();
 
         if (creditErr) {
-          console.error('ia_credits fetch error:', creditErr.message);
+          log({
+            level: 'error',
+            message: 'ia_credits fetch error',
+            userId: user.id,
+            recipeId,
+            error: creditErr.message,
+          });
         }
 
         const currentCredits = creditRow?.text_credits ?? 0;
         if (currentCredits <= 0) {
-          return res.status(402).json({ error: 'Insufficient text credits' });
+          return send(402, { error: 'Insufficient text credits' });
         }
 
         const { rawText } = req.body || {};
         if (!rawText || typeof rawText !== 'string') {
-          return res.status(400).json({ error: 'Invalid rawText' });
+          return send(400, { error: 'Invalid rawText' });
         }
 
         const prompt = `Tu es un assistant culinaire. Reprends ces instructions de recette et transforme-les en une suite d'étapes claires, numérotées si nécessaire. \nChaque étape doit être concise, contenir une seule action ou phase logique, et être formulée de manière naturelle.\nRetourne le tout sous forme d’un tableau JSON, chaque élément représentant une étape.\nN’ajoute pas d’ingrédients, ne déduis pas de quantités, ne change pas l’ordre des étapes.\nVoici les instructions brutes : ${rawText}`;
@@ -255,8 +290,15 @@ Ne termine pas par une formule type “Bon appétit”.
             throw new Error('Not an array');
           }
         } catch (err) {
-          console.error('Parse error:', err);
-          return res.status(500).json({ error: 'Malformed AI response' });
+          const msg = err instanceof Error ? err.message : 'Malformed AI response';
+          log({
+            level: 'error',
+            message: 'Parse error',
+            userId: user.id,
+            recipeId,
+            error: msg,
+          });
+          return send(500, { error: msg });
         }
 
         await supabaseAdmin.rpc('decrement_ia_credit', {
@@ -264,13 +306,23 @@ Ne termine pas par une formule type “Bon appétit”.
           credit_type: 'text',
         });
 
-        return res.status(200).json({ instructions });
+        return send(200, { instructions });
       }
       default:
-        return res.status(400).json({ error: 'Invalid action' });
+        return send(400, { error: 'Invalid action' });
     }
   } catch (err) {
-    console.error('OpenAI error:', err);
-    return res.status(500).json({ error: 'Internal Server Error', details: String(err) });
+    const msg = err instanceof Error ? err.message : 'Internal Server Error';
+    return send(500, { error: msg });
+  } finally {
+    const duration = Date.now() - start;
+    log({
+      level: errorMessage ? 'error' : 'info',
+      message: `ai ${finalAction}`,
+      userId: user.id,
+      recipeId,
+      durationMs: duration,
+      error: errorMessage,
+    });
   }
 }
