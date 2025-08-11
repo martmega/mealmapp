@@ -70,14 +70,12 @@ export function toDbPrefs(pref: {
     portions_per_meal: effective.servingsPerMeal,
     daily_calories_limit: effective.maxCalories,
     weekly_budget: effective.weeklyBudget,
-    daily_meal_structure: JSON.stringify(
-      Array.isArray(effective.meals)
-        ? effective.meals
-            .filter((m) => m.enabled)
-            .map((m) => (Array.isArray(m.types) ? m.types : []))
-        : []
-    ),
-    tag_preferences: JSON.stringify(effective.tagPreferences || []),
-    common_menu_settings: JSON.stringify(effective.commonMenuSettings ?? {}),
+    daily_meal_structure: Array.isArray(effective.meals)
+      ? effective.meals
+          .filter((m) => m.enabled)
+          .map((m) => (Array.isArray(m.types) ? m.types : []))
+      : [],
+    tag_preferences: effective.tagPreferences || [],
+    common_menu_settings: effective.commonMenuSettings ?? {},
   };
 }

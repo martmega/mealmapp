@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
-import { useMenus } from '../hooks/useMenus.js';
 
 let ownerEqCalls = [];
 let participantEqCalls = [];
@@ -66,10 +65,12 @@ beforeEach(() => {
   inCalls = [];
   weeklyMenusData = [];
   participantRowsData = [];
+  vi.resetModules();
 });
 
 describe('useMenus friend visibility', () => {
   it('includes shared menus from friends', async () => {
+    const { useMenus } = await import('../hooks/useMenus.js');
     weeklyMenusData = [
       { id: 'm1', user_id: 'user1', name: 'Menu 1', updated_at: 'now', is_shared: false },
       { id: 'm2', user_id: 'user2', name: 'Menu Ami', updated_at: 'now', is_shared: false },
@@ -94,6 +95,7 @@ describe('useMenus friend visibility', () => {
   });
 
   it('ignores menus that are not shared', async () => {
+    const { useMenus } = await import('../hooks/useMenus.js');
     weeklyMenusData = [
       { id: 'm1', user_id: 'user1', name: 'Menu 1', updated_at: 'now', is_shared: false },
       { id: 'm2', user_id: 'user2', name: 'Menu Ami', updated_at: 'now', is_shared: false },
