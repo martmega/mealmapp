@@ -58,6 +58,7 @@ export interface WeeklyMenu {
 export interface MenuParticipant {
   menu_id: string;
   user_id: string;
+  weight?: number;
 }
 
 export interface UserRelationship {
