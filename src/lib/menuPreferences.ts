@@ -114,6 +114,6 @@ export function toDbPrefs(pref: {
         : []
     ),
     tag_preferences: asTextArray(effective.tagPreferences),
-    common_menu_settings: JSON.stringify(effective.commonMenuSettings ?? {}),
+    common_menu_settings: effective.commonMenuSettings ?? {},
   };
 }

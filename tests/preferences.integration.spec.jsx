@@ -133,10 +133,6 @@ describe('useWeeklyMenu.updateMenuPreferences', () => {
 
     const actual = { ...global.__supabaseState.lastUpsert };
     const expectedDb = toDbPrefs(newPrefs);
-    ['common_menu_settings'].forEach((f) => {
-      actual[f] = JSON.parse(actual[f]);
-      expectedDb[f] = JSON.parse(expectedDb[f]);
-    });
     expect(actual).toEqual({ menu_id: 'menu1', ...expectedDb });
   });
 
@@ -152,10 +148,6 @@ describe('useWeeklyMenu.updateMenuPreferences', () => {
     const expectedDb = toDbPrefs({ ...expected, commonMenuSettings: {} });
 
     const actual = { ...global.__supabaseState.lastUpsert };
-    ['common_menu_settings'].forEach((f) => {
-      actual[f] = JSON.parse(actual[f]);
-      expectedDb[f] = JSON.parse(expectedDb[f]);
-    });
     expect(actual).toEqual({ menu_id: 'menu1', ...expectedDb });
     expect(result.current.preferences).toEqual(expected);
   });
