@@ -328,14 +328,30 @@ export function useMenuGeneration(
 
         if (weeklyBudget > 0) {
           const remaining = weeklyBudget - budgetUsed;
-          const withinBudget = candidateRecipesForSlot.filter(({ recipe }) => {
-            if (typeof recipe.estimated_price !== 'number') return false;
+          const affordable = [];
+          const unpriced = [];
+          for (const candidate of candidateRecipesForSlot) {
+            const { recipe } = candidate;
             const base = recipe.servings && recipe.servings > 0 ? recipe.servings : 1;
-            const mealCost = (recipe.estimated_price / base) * defaultServingsPerMealGlobal;
-            return mealCost <= remaining;
-          });
-          if (withinBudget.length > 0) {
-            candidateRecipesForSlot = withinBudget;
+            if (typeof recipe.estimated_price === 'number') {
+              const mealCost =
+                (recipe.estimated_price / base) * defaultServingsPerMealGlobal;
+              if (mealCost <= remaining) {
+                affordable.push(candidate);
+              }
+            } else {
+              const assumedCost = avgBudgetPerSlot;
+              if (assumedCost <= remaining) {
+                affordable.push(candidate);
+              } else {
+                unpriced.push(candidate);
+              }
+            }
+          }
+          if (affordable.length > 0) {
+            candidateRecipesForSlot = affordable;
+          } else if (unpriced.length > 0) {
+            candidateRecipesForSlot = unpriced;
           }
         }
 
