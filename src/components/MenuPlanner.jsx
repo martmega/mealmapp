@@ -167,7 +167,6 @@ function MenuPlanner({
             preferences={internalPreferences}
             setPreferences={handleSetPreferences}
             availableTags={availableTags}
-            userProfile={userProfile}
             isShared={isShared}
             menuId={menuId}
           />

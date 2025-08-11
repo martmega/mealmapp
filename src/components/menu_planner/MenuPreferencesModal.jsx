@@ -24,7 +24,6 @@ function MenuPreferencesModal({
   preferences,
   setPreferences,
   availableTags,
-  userProfile,
   isShared,
   menuId,
 }) {
@@ -41,11 +40,7 @@ function MenuPreferencesModal({
       onOpenChange(false);
     } catch (e) {
       console.error('[WeeklyMenu] sync failed', e);
-      toast({
-        title: 'Erreur',
-        description: 'Échec enregistrement participants',
-        variant: 'destructive',
-      });
+      toast.error('Échec enregistrement participants');
     } finally {
       setSaving(false);
     }
@@ -74,7 +69,6 @@ function MenuPreferencesModal({
             preferences={preferences}
             setPreferences={setPreferences}
             availableTags={availableTags}
-            userProfile={userProfile}
             isShared={isShared}
             participants={rows}
             setParticipants={setRows}

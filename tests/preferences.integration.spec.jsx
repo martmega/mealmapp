@@ -140,7 +140,6 @@ describe('MenuPreferencesPanel', () => {
         preferences={prefs}
         setPreferences={updateSpy}
         availableTags={[]}
-        userProfile={{ id: 'user1', username: 'User1' }}
         isShared={false}
         participants={[]}
         setParticipants={() => {}}
