@@ -16,6 +16,7 @@ vi.mock('../src/lib/supabase', async () => {
     },
     preferences: {},
     lastUpsert: null,
+    menuParticipants: [],
   };
 
   function menuQuery() {
@@ -75,11 +76,36 @@ vi.mock('../src/lib/supabase', async () => {
     return q;
   }
 
+  function participantsQuery() {
+    const q = {};
+    q.upsert = vi.fn((rows) => {
+      rows.forEach((r) => {
+        const exists = state.menuParticipants.some(
+          (p) => p.menu_id === r.menu_id && p.user_id === r.user_id
+        );
+        if (!exists) state.menuParticipants.push({ ...r });
+      });
+      return Promise.resolve({ data: rows, error: null });
+    });
+    q.delete = vi.fn(() => ({
+      eq: vi.fn((col, val) => ({
+        in: vi.fn((col2, vals) => {
+          state.menuParticipants = state.menuParticipants.filter(
+            (p) => !(p.menu_id === val && vals.includes(p.user_id))
+          );
+          return Promise.resolve({ data: null, error: null });
+        }),
+      })),
+    }));
+    return q;
+  }
+
   const supabase = {
     from: (table) => {
       if (table === 'weekly_menu_preferences') return prefQuery();
       if (table === 'weekly_menus') return menuQuery();
-      return menuQuery();
+       if (table === 'menu_participants') return participantsQuery();
+       return menuQuery();
     },
   };
 
@@ -92,6 +118,7 @@ beforeEach(() => {
     menu1: { menu_id: 'menu1', ...toDbPrefs(DEFAULT_MENU_PREFS) },
   };
   global.__supabaseState.lastUpsert = null;
+  global.__supabaseState.menuParticipants = [];
 });
 
 describe('MenuPreferencesPanel', () => {
@@ -150,6 +177,50 @@ describe('useWeeklyMenu.updateMenuPreferences', () => {
     const actual = { ...global.__supabaseState.lastUpsert };
     expect(actual).toEqual({ menu_id: 'menu1', ...expectedDb });
     expect(result.current.preferences).toEqual(expected);
+  });
+
+  it('syncs menu participants based on linked users', async () => {
+    const session = { user: { id: 'user1' } };
+    global.__supabaseState.menus['menu1'].is_shared = true;
+    const { result } = renderHook(() => useWeeklyMenu(session, 'menu1'));
+    await waitFor(() => result.current.isShared === true);
+
+    const prefsWithParticipant = {
+      ...DEFAULT_MENU_PREFS,
+      commonMenuSettings: {
+        enabled: true,
+        linkedUsers: [
+          { id: 'user1', name: 'Owner', ratio: 50, isOwner: true },
+          { id: 'user2', name: 'Friend', ratio: 50, isOwner: false },
+        ],
+        linkedUserRecipes: [],
+      },
+    };
+
+    await act(async () => {
+      await result.current.updatePreferences(prefsWithParticipant);
+    });
+
+    expect(global.__supabaseState.menuParticipants).toEqual([
+      { menu_id: 'menu1', user_id: 'user2' },
+    ]);
+
+    const prefsAfterRemoval = {
+      ...DEFAULT_MENU_PREFS,
+      commonMenuSettings: {
+        enabled: true,
+        linkedUsers: [
+          { id: 'user1', name: 'Owner', ratio: 50, isOwner: true },
+        ],
+        linkedUserRecipes: [],
+      },
+    };
+
+    await act(async () => {
+      await result.current.updatePreferences(prefsAfterRemoval);
+    });
+
+    expect(global.__supabaseState.menuParticipants).toEqual([]);
   });
 });
 
