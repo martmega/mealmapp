@@ -90,7 +90,7 @@ export function useRecipes(session, subscriptionTier) {
 
   useEffect(() => {
     const estimateMissingPrices = async () => {
-      if (subscriptionTier !== 'premium') return;
+      if (subscriptionTier !== 'premium' && subscriptionTier !== 'vip') return;
       for (const recipe of Array.isArray(recipes) ? recipes : []) {
         if (
           recipe &&

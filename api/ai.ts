@@ -167,7 +167,10 @@ Ne termine pas par une formule type “Bon appétit”.
         return res.status(200).json({ path: fileName });
       }
       case 'cost': {
-        if (subscriptionTier !== 'premium') {
+        if (
+          subscriptionTier !== 'premium' &&
+          subscriptionTier !== 'vip'
+        ) {
           return res.status(403).json({ error: 'Premium only' });
         }
 
