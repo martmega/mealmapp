@@ -18,51 +18,81 @@ export async function syncMenuParticipants(
   menuId: string,
   selected: MenuParticipant[]
 ) {
+  console.groupCollapsed('[ParticipantsSync]');
   let existing: any[] = [];
-  try {
-    const { data, error } = await supabase
-      .from('menu_participants')
-      .select('user_id')
-      .eq('menu_id', menuId);
-    if (error) throw error;
-    existing = data ?? [];
-  } catch (e) {
-    console.error('[syncMenuParticipants] read error', e);
-    throw e;
+  let toRemove: string[] = [];
+  let upsertRows: any[] = [];
+
+  console.log('before read', {
+    menuId,
+    selected,
+    selectedLength: selected.length,
+    existing,
+    toRemove,
+    upsertRows,
+  });
+  const { data, error: readErr } = await supabase
+    .from('menu_participants')
+    .select('user_id')
+    .eq('menu_id', menuId);
+  console.log('readErr', readErr);
+  if (readErr) {
+    console.error('[syncMenuParticipants] read error', readErr);
+    console.groupEnd();
+    throw readErr;
   }
+  existing = data ?? [];
 
   const keep = new Set(selected.map((p) => p.user_id));
-  const toRemove = existing
+  toRemove = existing
     .map((r: any) => r.user_id)
     .filter((id: string) => !keep.has(id));
+  upsertRows = selected.map((p) => ({
+    menu_id: menuId,
+    user_id: p.user_id,
+    weight: clamp01(p.weight ?? 1 / selected.length),
+  }));
 
-  try {
-    await supabase.from('menu_participants').upsert(
-      selected.map((p) => ({
-        menu_id: menuId,
-        user_id: p.user_id,
-        weight: clamp01(p.weight ?? 1 / selected.length),
-      })),
-      { onConflict: 'menu_id,user_id' }
-    );
-  } catch (e) {
-    console.error('[syncMenuParticipants] upsert error', e);
-    throw e;
+  console.log('before upsert', {
+    menuId,
+    selected,
+    selectedLength: selected.length,
+    existing,
+    toRemove,
+    upsertRows,
+  });
+  const { error: upErr } = await supabase
+    .from('menu_participants')
+    .upsert(upsertRows, { onConflict: 'menu_id,user_id' });
+  console.log('upErr', upErr);
+  if (upErr) {
+    console.error('[syncMenuParticipants] upsert error', upErr);
+    console.groupEnd();
+    throw upErr;
   }
 
   if (toRemove.length) {
-    try {
-      await supabase
-        .from('menu_participants')
-        .delete()
-        .eq('menu_id', menuId)
-        .in('user_id', toRemove);
-    } catch (e) {
-      console.error('[syncMenuParticipants] delete error', e);
-      throw e;
+    console.log('before delete', {
+      menuId,
+      selected,
+      selectedLength: selected.length,
+      existing,
+      toRemove,
+      upsertRows,
+    });
+    const { error: delErr } = await supabase
+      .from('menu_participants')
+      .delete()
+      .eq('menu_id', menuId)
+      .in('user_id', toRemove);
+    console.log('delErr', delErr);
+    if (delErr) {
+      console.error('[syncMenuParticipants] delete error', delErr);
+      console.groupEnd();
+      throw delErr;
     }
   }
 
-  console.info('[syncMenuParticipants]', { menuId, selected, existing, toRemove });
+  console.groupEnd();
 }
 
