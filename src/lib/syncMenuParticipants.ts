@@ -13,6 +13,11 @@ export function normalizeWeights(list: MenuParticipant[]) {
   return rows;
 }
 
+/**
+ * Sync participants for a menu on the client side. Note that server-side
+ * creation (e.g. the `create-shared-menu` API route) may also insert rows into
+ * `menu_participants`, so this isn't the only writer to that table.
+ */
 export async function syncMenuParticipants(
   supabase: any,
   menuId: string,
