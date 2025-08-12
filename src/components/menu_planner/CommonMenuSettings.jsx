@@ -4,6 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Link, Unlink } from 'lucide-react';
+import { getSupabase } from '@/lib/supabase';
+
+const supabase = getSupabase();
 
 function CommonMenuSettings({ isShared, participants = [], setParticipants = () => {} }) {
   const [newUserId, setNewUserId] = useState('');
@@ -20,10 +23,28 @@ function CommonMenuSettings({ isShared, participants = [], setParticipants = () 
     );
   };
 
-  const addParticipant = () => {
+  const addParticipant = async () => {
     const id = newUserId.trim();
     if (!id || participants.some((p) => p.user_id === id)) return;
-    setParticipants([...participants, { user_id: id, weight: 0 }]);
+
+    let username;
+    let user_tag;
+    try {
+      const { data } = await supabase
+        .from('public_user_view')
+        .select('username, user_tag')
+        .eq('id', id)
+        .maybeSingle();
+      username = data?.username;
+      user_tag = data?.user_tag;
+    } catch (e) {
+      console.error('Failed to fetch user info', e);
+    }
+
+    setParticipants([
+      ...participants,
+      { user_id: id, weight: 0, username, user_tag },
+    ]);
     setNewUserId('');
   };
 
