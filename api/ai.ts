@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import { getUserFromRequest } from '../src/utils/auth.js';
 import generateRecipeImagePrompt from '../src/lib/recipeImagePrompt.js';
 import { SUPABASE_BUCKETS } from './_shared/constants.js';
+import { logError } from './_shared/logger.js';
 
 const supabaseUrl = process.env.SUPABASE_URL;
 if (!supabaseUrl) throw new Error('SUPABASE_URL is not defined');
@@ -44,7 +45,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     .maybeSingle();
 
   if (profileError) {
-    console.error('Subscription fetch error:', profileError.message);
+    logError('subscription_fetch_error', {
+      userId: user.id,
+      error: profileError.message,
+    });
   }
 
   const subscriptionTier = profile?.subscription_tier || 'standard';
@@ -55,7 +59,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const openai = new OpenAI({ apiKey });
-
+  const recipe = (req.body as any)?.recipe;
+  const startTime = Date.now();
   try {
     switch (finalAction) {
       case 'description': {
@@ -72,7 +77,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           const { recipe } = req.body;
           parsed = RecipeSchema.parse(recipe);
         } catch (err) {
-          console.error('Payload invalid:', err);
+          logError('payload_invalid', {
+            userId: user.id,
+            recipeId: recipe?.id,
+            error: err instanceof Error ? err.message : String(err),
+          });
           return res
             .status(400)
             .json({ error: 'Invalid recipe payload', details: err });
@@ -121,7 +130,10 @@ Ne termine pas par une formule type “Bon appétit”.
           .maybeSingle();
 
         if (creditErr) {
-          console.error('ia_credits fetch error:', creditErr.message);
+          logError('ia_credits_fetch_error', {
+            userId: user.id,
+            error: creditErr.message,
+          });
         }
 
         const currentCredits = creditRow?.image_credits ?? 0;
@@ -219,7 +231,10 @@ Ne termine pas par une formule type “Bon appétit”.
           .maybeSingle();
 
         if (creditErr) {
-          console.error('ia_credits fetch error:', creditErr.message);
+          logError('ia_credits_fetch_error', {
+            userId: user.id,
+            error: creditErr.message,
+          });
         }
 
         const currentCredits = creditRow?.text_credits ?? 0;
@@ -258,7 +273,11 @@ Ne termine pas par une formule type “Bon appétit”.
             throw new Error('Not an array');
           }
         } catch (err) {
-          console.error('Parse error:', err);
+          logError('parse_error', {
+            userId: user.id,
+            recipeId: recipe?.id,
+            error: err instanceof Error ? err.message : String(err),
+          });
           return res.status(500).json({ error: 'Malformed AI response' });
         }
 
@@ -273,7 +292,16 @@ Ne termine pas par une formule type “Bon appétit”.
         return res.status(400).json({ error: 'Invalid action' });
     }
   } catch (err) {
-    console.error('OpenAI error:', err);
-    return res.status(500).json({ error: 'Internal Server Error', details: String(err) });
+    const duration = Date.now() - startTime;
+    logError('ai_handler', {
+      action: finalAction,
+      userId: user.id,
+      recipeId: recipe?.id,
+      durationMs: duration,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return res.status(500).json({
+      error: err instanceof Error ? err.message : 'Unknown error',
+    });
   }
 }
